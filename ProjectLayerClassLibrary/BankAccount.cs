@@ -54,7 +54,33 @@ namespace ProjectLayerClassLibrary
             return accountOwnerSurname; 
         }
 
+        public float getAccountBalance()
+        {
+            return accountBalance;
+        }
 
+        public bool withdraw(float withdrawSum)
+        {
+            if (withdrawSum < 0)
+            {
+                throw new ArgumentException("Withdraw sum shouldn't be negtive");
+            }
+            if (withdrawSum <= accountBalance)
+            {
+                accountBalance -= withdrawSum;
+                return true;
+            }
+            return false;
+        }
 
+        public bool deposit(float depositSum)
+        {
+            if (depositSum < 0)
+            {
+                throw new ArgumentException("Deposit sum shouldn't be negtive");
+            }
+            accountBalance += depositSum;
+            return true;
+        }
     }
 }
