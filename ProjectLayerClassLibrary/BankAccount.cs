@@ -71,8 +71,8 @@ namespace ProjectLayerClassLibrary
                 return true;
             }
             return false;
-        }
-
+        }        
+        
         public bool deposit(float depositSum)
         {
             if (depositSum < 0)
