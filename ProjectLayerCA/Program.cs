@@ -1,9 +1,9 @@
 ﻿using ProjectLayerClassLibrary;
 
 
-string? displayMenu()
+string? displayMenu(BankAccount bankAccount)
 {
-    Console.WriteLine("Possible operations:\n" 
+    Console.WriteLine($"Your possible operations, {bankAccount.getAccountOwnerName()} {bankAccount.getAccountOwnerSurname()}:\n" 
         + "1. Change owner name\n"
         + "2. Change owner surname\n"
         + "3. Show balance\n"
@@ -12,6 +12,33 @@ string? displayMenu()
         + "6. Exit\n"
         + "What you want to do: ");
     return Console.ReadLine();
+}
+
+void changeOwnerName(BankAccount bankAccount)
+{
+    Console.WriteLine("Enter your new name: ");
+    string? read = Console.ReadLine();
+    while (read == null || read == "")
+    {
+        Console.WriteLine("You entered incorect name!\nEnter your new name one more time: ");
+        read = Console.ReadLine();
+    }
+    bankAccount.setAccountOwnerName(read);
+    Console.WriteLine($"\nYou have changed your name to {bankAccount.getAccountOwnerName()}!");
+}
+
+
+void changeOwnerSurname(BankAccount bankAccount)
+{
+    Console.WriteLine("Enter your new surname: ");
+    string? read = Console.ReadLine();
+    while (read == null || read == "")
+    {
+        Console.WriteLine("You entered incorect name!\nEnter your new surname one more time: ");
+        read = Console.ReadLine();
+    }
+    bankAccount.setAccountOwnerSurname(read);
+    Console.WriteLine($"\nYou have changed your surname to {bankAccount.getAccountOwnerSurname()}!");
 }
 
 void showBalance(BankAccount bankAccount)
@@ -39,7 +66,7 @@ void deposit(BankAccount bankAccount)
         }
         else
         {
-            Console.WriteLine("ENter value is not number!");
+            Console.WriteLine("Enter value is not number!");
         }
     }
 
@@ -81,14 +108,14 @@ BankAccount bankAccount = new BankAccount("Jan", "Kowalski");
 Console.WriteLine($"Welcome in Bank {bankAccount.getAccountOwnerName()} {bankAccount.getAccountOwnerSurname()}!\n\n");
 while (active)
 {
-    switch (displayMenu())
+    switch (displayMenu(bankAccount))
     {
         case "1":
-
+            changeOwnerName(bankAccount);
             break;
 
         case "2":
-
+            changeOwnerSurname(bankAccount);
             break;
 
         case "3":
