@@ -11,7 +11,7 @@ namespace ProjectLayerClassLibrary.LogicLayer
     {
         public BasicLogicLayer(ADataLayer? dataLayer = default(ADataLayer))
         {
-            this.dataLayer = dataLayer == null ? ADataLayer.createDataLayerInstance() : dataLayer;
+            //this.dataLayer = dataLayer == null ? ADataLayer.createDataLayerInstance() : dataLayer;
         }
     }
 }

@@ -12,5 +12,25 @@ namespace ProjectLayerClassLibrary.DataLayer
         {
 
         }
+
+        public override AAccountOwner GetAccountOwner(int ownerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ICollection<AAccountOwner> GetAccountOwners()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ABankAccount GetBankAccount(string accountNumber)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ICollection<ABankAccount> GetBankAccounts()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
