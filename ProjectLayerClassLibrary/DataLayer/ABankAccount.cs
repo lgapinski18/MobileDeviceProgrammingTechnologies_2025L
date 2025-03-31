@@ -8,6 +8,8 @@ namespace ProjectLayerClassLibrary.DataLayer
 {
     public abstract class ABankAccount : IIdentifiable
     {
+        private int id;
+
         private string accountNumber;
         public string AccountNumber { get { return accountNumber; } set { accountNumber = value; } }
 
@@ -36,12 +38,12 @@ namespace ProjectLayerClassLibrary.DataLayer
 
         public int GetId()
         {
-            throw new NotImplementedException();
+            return id;
         }
 
         public void SetId(int id)
         {
-            throw new NotImplementedException();
+            this.id = id;
         }
     }
 }
