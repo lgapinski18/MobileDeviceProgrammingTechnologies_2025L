@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjectLayerClassLibrary.DataLayer
 {
-    public abstract class ABankAccountRaport
+    public interface IIdentifiable
     {
+        public int GetId();
+        public void SetId(int id);
     }
 }

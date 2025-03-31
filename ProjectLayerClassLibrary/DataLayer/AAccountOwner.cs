@@ -6,10 +6,9 @@ using System.Threading.Tasks;
 
 namespace ProjectLayerClassLibrary.DataLayer
 {
-    public abstract class AAccountOwner
+    public abstract class AAccountOwner : IIdentifiable
     {
-        private int ownerId;
-        public int OwnerId { get { return ownerId; } set { ownerId = value; } }
+        private int id;
 
         private string ownerName;
         public string OwnerName { get { return ownerName; } set { ownerName = value; } }
@@ -25,11 +24,21 @@ namespace ProjectLayerClassLibrary.DataLayer
 
         public AAccountOwner(int ownerId, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
-            this.ownerId = ownerId;
+            this.id = ownerId;
             this.ownerName = ownerName;
-            this.OwnerSurname = ownerSurname;
+            this.ownerSurname = ownerSurname;
             this.ownerSurname = ownerEmail;
             this.ownerSurname = ownerPassword;
+        }
+
+        public int GetId()
+        {
+            return id;
+        }
+
+        public void SetId(int id)
+        {
+            this.id = id;
         }
     }
 }

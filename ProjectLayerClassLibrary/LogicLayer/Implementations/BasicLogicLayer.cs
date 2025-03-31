@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibrary.LogicLayer
+namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 {
     internal class BasicLogicLayer : ALogicLayer
     {
-        public BasicLogicLayer(ADataLayer? dataLayer = default(ADataLayer))
+        public BasicLogicLayer(ADataLayer? dataLayer = default)
         {
-            this.dataLayer = dataLayer == null ? ADataLayer.createDataLayerInstance() : dataLayer;
+            this.dataLayer = dataLayer == null ? ADataLayer.CreateDataLayerInstance() : dataLayer;
         }
     }
 }

@@ -13,7 +13,11 @@ namespace ProjectLayerClassLibrary.LogicLayer
 
         public static ALogicLayer createLogicLayerInstance(ADataLayer? dataLayer = default(ADataLayer))
         {
-            return new BasicLogicLayer(dataLayer);
+            return new Implementations.BasicLogicLayer(dataLayer);
         }
+
+        public abstract bool AuthenticateAccountOwner(int ownerId, string password);
+        public abstract AAccountOwner GetAccountOwner(int ownerId);
+        public abstract ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId);
     }
 }
