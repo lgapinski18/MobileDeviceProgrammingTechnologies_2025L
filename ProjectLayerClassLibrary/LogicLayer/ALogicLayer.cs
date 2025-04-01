@@ -18,6 +18,17 @@ namespace ProjectLayerClassLibrary.LogicLayer
             TIMEOUT,
             TRANSFER_HAS_BEEN_INTERUPTED
         }
+
+        [Flags]
+        public enum CreationAccountOwnerFlags
+        {
+            SUCCESS = 0,
+            INCORRECT_NAME = 1,
+            INCORRECT_SURNAME = 2,
+            INCORRECT_EMAIL = 3,
+            INCORRECT_PASSWORD = 4
+        }
+
         protected ADataLayer dataLayer;
 
         public static ALogicLayer createLogicLayerInstance(ADataLayer? dataLayer = default(ADataLayer))
@@ -25,7 +36,7 @@ namespace ProjectLayerClassLibrary.LogicLayer
             return new Implementations.BasicLogicLayer(dataLayer);
         }
 
-        public abstract AAccountOwner CreateNewAccountOwner(string name, string surname, string email, string  password);
+        public abstract AAccountOwner CreateNewAccountOwner(string name, string surname, string email, string  password, out CreationAccountOwnerFlags creationAccountOwnerFlags);
         public abstract ABankAccount OpenNewBankAccount(int ownerId);
 
         public abstract bool AuthenticateAccountOwner(int ownerId, string password);

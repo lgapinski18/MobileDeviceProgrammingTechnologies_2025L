@@ -11,11 +11,37 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
     {
         public BasicLogicLayer(ADataLayer? dataLayer = default)
         {
-<<<<<<< HEAD:ProjectLayerClassLibrary/LogicLayer/Implementations/BasicLogicLayer.cs
             this.dataLayer = dataLayer == null ? ADataLayer.CreateDataLayerInstance() : dataLayer;
-=======
-            //this.dataLayer = dataLayer == null ? ADataLayer.createDataLayerInstance() : dataLayer;
->>>>>>> 0db1557180464e1cc4e643bade5af6cf7731cd6d:ProjectLayerClassLibrary/LogicLayer/BasicLogicLayer.cs
+        }
+
+        public override bool AuthenticateAccountOwner(int ownerId, string password)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override AAccountOwner CreateNewAccountOwner(string name, string surname, string email, string password, out CreationAccountOwnerFlags creationAccountOwnerFlags)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override AAccountOwner GetAccountOwner(int ownerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override ABankAccount OpenNewBankAccount(int ownerId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override TransferCodes performTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description)
+        {
+            throw new NotImplementedException();
         }
     }
 }

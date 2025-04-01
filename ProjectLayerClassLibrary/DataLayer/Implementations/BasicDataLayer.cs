@@ -19,8 +19,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         public BasicDataLayer()
         {
-            accountOwnerRepository = new BasicAccountOwnerRepository();
-            bankAccountRepository = new BasicBankAccountRepository();
+            accountOwnerRepository = RepositoryFactory.CreateAccountOwnerRepository();
+            bankAccountRepository = RepositoryFactory.CreateBankAccountRepository();
 
             GenerateStartingContent();
         }
