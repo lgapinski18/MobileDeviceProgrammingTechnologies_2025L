@@ -3,7 +3,7 @@ using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
 {
-    public class RelayCommand : ICommand
+    internal class RelayCommand : ICommand
     {
         private readonly Action<object> _execute;
         private readonly Predicate<object> _canExecute;

@@ -10,11 +10,14 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer
 {
     public abstract class AModelLayer
     {
-        protected ALogicLayer logicLayer;
-
-        public static AModelLayer createModelLayerInstance(ALogicLayer? logicLayer = default(ALogicLayer))
-        {
-            return new BasicModelLayer(logicLayer);
+        private static AModelLayer? instance;
+        public static AModelLayer Instance { get
+            {
+                instance ??= new BasicModelLayer();
+                return instance;
+            } 
         }
+
+        internal abstract ALogicLayer LogicLayer { get; }
     }
 }

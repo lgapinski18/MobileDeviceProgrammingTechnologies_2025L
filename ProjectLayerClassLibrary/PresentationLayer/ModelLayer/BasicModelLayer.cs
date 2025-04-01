@@ -10,9 +10,12 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer
 {
     internal class BasicModelLayer : AModelLayer
     {
-        public BasicModelLayer(ALogicLayer? logicLayer = default(ALogicLayer))
+        private ALogicLayer logicLayer;
+        public BasicModelLayer()
         {
-            this.logicLayer = logicLayer == null ? ALogicLayer.CreateLogicLayerInstance() : logicLayer;
+            logicLayer = ALogicLayer.CreateLogicLayerInstance();
         }
+
+        internal override ALogicLayer LogicLayer => logicLayer;
     }
 }
