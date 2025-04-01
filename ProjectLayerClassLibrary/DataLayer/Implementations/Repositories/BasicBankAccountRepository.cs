@@ -4,10 +4,11 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using ProjectLayerClassLibrary.DataLayer.Repositories;
 
-[assembly: InternalsVisibleTo("ProjectLayerClassLibrary")]
+[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
-namespace ProjectLayerClassLibrary.DataLayer.Repositories.Implementations
+namespace ProjectLayerClassLibrary.DataLayer.Implementations.Repositories
 {
     internal class BasicBankAccountRepository : ARepository<ABankAccount>, IBankAccountRepository
     {
@@ -16,19 +17,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Repositories.Implementations
             entities = new List<ABankAccount>();
         }
 
-        public ICollection<ABankAccount> GetAll()
-        {
-            return entities;
-        }
-
         public ABankAccount? GetByAccountNumber(string accountNumber)
         {
             return entities.Where(bankAccount => bankAccount.AccountNumber == accountNumber).FirstOrDefault();
-        }
-
-        public ICollection<ABankAccount> GetByAccountOwnerId()
-        {
-            throw new NotImplementedException();
         }
 
         public ICollection<ABankAccount> GetByAccountOwnerId(int ownerId)

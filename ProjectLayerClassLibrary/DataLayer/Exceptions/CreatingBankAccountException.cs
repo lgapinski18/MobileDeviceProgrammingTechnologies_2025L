@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectLayerClassLibrary.DataLayer.Exceptions
 {
-    public class CreatingBankAccountException : Exception
+    public class CreatingBankAccountException : DataLayerException
     {
         public CreatingBankAccountException() { }
 

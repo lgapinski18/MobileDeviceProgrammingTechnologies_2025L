@@ -17,11 +17,25 @@ namespace ProjectLayerClassLibrary.DataLayer
         private float previousAccountBalance;
         public float PreviousAccountBalance { get { return previousAccountBalance; } }
 
-        public ABankAccountReport()
+        private string ownerName;
+        public string OwnerName { get { return ownerName; } }
+
+        private string ownerSurname;
+        public string OwnerSurname { get { return ownerSurname; } }
+
+        private string ownerEmail;
+        public string OwnerEmail { get { return ownerEmail; } }
+
+        public ABankAccountReport(float previousAccountBalance, float currentAccountBalance, string ownerName, string ownerSurname, string ownerEmail)
         {
+            this.previousAccountBalance = previousAccountBalance;
+            this.currentAccountBalance = currentAccountBalance;
             timeOfReportCreation = DateTime.UtcNow;
+            this.ownerName = ownerName;
+            this.ownerSurname = ownerSurname;
+            this.ownerEmail = ownerEmail;
         }
 
-        public abstract string GetRaportContent();
+        public abstract string GetReportContent();
     }
 }

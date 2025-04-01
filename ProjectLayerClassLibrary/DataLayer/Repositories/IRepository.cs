@@ -8,8 +8,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Repositories
 {
     public interface IRepository<T> where T : IIdentifiable
     {
-        T? Get(int id);
-
-        bool Save(T entity);
+        public T? Get(int id);
+        public bool Save(T entity);
+        public bool Remove(T entity);
+        public bool Remove(int id);
+        public ICollection<T> GetAll();
     }
 }

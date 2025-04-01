@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectLayerClassLibrary.DataLayer.Exceptions
 {
-    internal class CreatingAccountOwnerException : Exception
+    public class CreatingAccountOwnerException : DataLayerException
     {
         public CreatingAccountOwnerException() { }
 

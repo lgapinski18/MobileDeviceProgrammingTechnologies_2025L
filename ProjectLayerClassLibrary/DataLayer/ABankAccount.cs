@@ -17,16 +17,10 @@ namespace ProjectLayerClassLibrary.DataLayer
         public AAccountOwner AccountOwner { get { return accountOwner; } set { accountOwner = value; } }
 
         private float accountBalance;
-        public float AccountBalance { get { return accountBalance; } }
+        public float AccountBalance { get { return accountBalance; } set { accountBalance = value; } }
 
-        private ICollection<ABankAccountReport> bankAccountReports;
+        protected ICollection<ABankAccountReport> bankAccountReports;
 
-        public ABankAccount(string accountNumber, AAccountOwner accountOwner)
-        {
-            this.accountNumber = accountNumber;
-            this.accountOwner = accountOwner;
-            this.accountBalance = 0.0f;
-        }
 
         public abstract void IncreaseAccountBalance(float amount);
 

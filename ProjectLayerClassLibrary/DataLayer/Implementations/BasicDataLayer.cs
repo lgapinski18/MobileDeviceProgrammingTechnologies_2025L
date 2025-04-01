@@ -1,6 +1,6 @@
 ﻿using ProjectLayerClassLibrary.DataLayer.Exceptions;
 using ProjectLayerClassLibrary.DataLayer.Repositories;
-using ProjectLayerClassLibrary.DataLayer.Repositories.Implementations;
+using ProjectLayerClassLibrary.DataLayer.Implementations.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("ProjectLayerClassLibrary")]
+[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
 namespace ProjectLayerClassLibrary.DataLayer.Implementations
 {
@@ -21,6 +21,13 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             accountOwnerRepository = new BasicAccountOwnerRepository();
             bankAccountRepository = new BasicBankAccountRepository();
+
+            GenerateStartingContent();
+        }
+
+        private void GenerateStartingContent()
+        {
+
         }
 
         public override AAccountOwner CreateAccountOwner(int ownerId, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)

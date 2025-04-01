@@ -8,6 +8,5 @@ namespace ProjectLayerClassLibrary.DataLayer.Repositories
 {
     public interface IAccountOwnerRepository : IRepository<AAccountOwner>
     {
-        public ICollection<AAccountOwner> GetAll();
     }
 }

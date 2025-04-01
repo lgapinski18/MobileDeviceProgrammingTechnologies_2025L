@@ -10,6 +10,5 @@ namespace ProjectLayerClassLibrary.DataLayer.Repositories
     {
         public ABankAccount? GetByAccountNumber(string accountNumber);
         public ICollection<ABankAccount> GetByAccountOwnerId(int ownerId);
-        public ICollection<ABankAccount> GetAll();
     }
 }

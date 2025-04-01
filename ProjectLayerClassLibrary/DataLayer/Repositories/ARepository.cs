@@ -15,6 +15,30 @@ namespace ProjectLayerClassLibrary.DataLayer.Repositories
             return entities.Where(e => e.GetId() == id).FirstOrDefault();
         }
 
+        public ICollection<T> GetAll()
+        {
+            return entities;
+        }
+
+        public bool Remove(T entity)
+        {
+            if (entity != null)
+            {
+                return entities.Remove(entity);
+            }
+            return true;
+        }
+
+        public bool Remove(int id)
+        {
+            T? t = Get(id);
+            if (t != null)
+            {
+                return entities.Remove(t);
+            }
+            return true;
+        }
+
         public bool Save(T entity)
         {
             entities.Add(entity);
