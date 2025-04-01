@@ -20,6 +20,7 @@ namespace ProjectLayerClassLibrary.DataLayer
 
 
         public abstract AAccountOwner? GetAccountOwner(int ownerId);
+        public abstract AAccountOwner? GetAccountOwner(string ownerLogin);
         public abstract ABankAccount? GetBankAccount(string accountNumber);
         public abstract ICollection<ABankAccount> GetBankAccounts(int ownerId);
         public abstract ICollection<AAccountOwner> GetAllAccountOwners();

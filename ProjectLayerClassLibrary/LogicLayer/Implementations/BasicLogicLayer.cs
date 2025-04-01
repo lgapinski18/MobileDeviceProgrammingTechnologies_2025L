@@ -11,18 +11,21 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 {
     internal class BasicLogicLayer : ALogicLayer
     {
+        private ADataLayer dataLayer;
+        public ADataLayer DataLayer { get { return dataLayer; } }
+
         public BasicLogicLayer(ADataLayer? dataLayer = default)
         {
-            this.dataLayer = dataLayer == null ? ADataLayer.CreateDataLayerInstance() : dataLayer;
+            this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
         }
 
-        public override bool AuthenticateAccountOwner(int ownerId, string password)
+        public override bool AuthenticateAccountOwner(string login, string password)
         {
-            AAccountOwner? accountOwner = dataLayer.GetAccountOwner(ownerId);
+            AAccountOwner? accountOwner = dataLayer.GetAccountOwner(login);
 
-            if (accountOwner == null)
+            if (login == null)
             {
-                throw new ThereIsNoSuchOwnerException($"Nie znaleziono właściciela konta z podanym identyfikatorem: {ownerId}");
+                throw new ArgumentNullException("Podany obiekt string loginu jest null");
             }
 
             if (password == null)
@@ -30,39 +33,70 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
                 throw new ArgumentNullException("Podany obiekt string hasła jest null");
             }
 
+            if (accountOwner == null)
+            {
+                throw new ThereIsNoSuchOwnerException($"Nie znaleziono właściciela konta z podanym loginem: {login}");
+            }
+
             return password == accountOwner.OwnerPassword;
         }
 
-        public override AAccountOwner CreateNewAccountOwner(string name, string surname, string email, string password, out CreationAccountOwnerFlags creationAccountOwnerFlags)
+        public override AAccountOwner? CreateNewAccountOwner(string name, string surname, string email, string password, out CreationAccountOwnerFlags creationAccountOwnerFlags)
         {
-            throw new NotImplementedException();
-            //string pattern = @"^$";
-            //pattern = @"^[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}$";
-            //if (!Regex.IsMatch(email, pattern))
-            //{
-            //    creationAccountOwnerFlags = creationAccountOwnerFlags | CreationAccountOwnerFlags.INCORRECT_EMAIL;
-            //}
-            //dataLayer.CreateAccountOwner();
+            creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
+
+            string pattern = @"^$";
+            if (!Regex.IsMatch(name, pattern))
+            {
+                creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_NAME;
+            }
+            pattern = @"^$";
+            if (!Regex.IsMatch(surname, pattern))
+            {
+                creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_SURNAME;
+            }
+            pattern = @"^[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}$";
+            if (!Regex.IsMatch(email, pattern))
+            {
+                creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_EMAIL;
+            }
+            if (password.Length >= 8)
+            {
+                creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_PASSWORD;
+            }
+
+            if (creationAccountOwnerFlags == CreationAccountOwnerFlags.EMPTY)
+            {
+                creationAccountOwnerFlags = CreationAccountOwnerFlags.SUCCESS;
+                return dataLayer.CreateAccountOwner(name, surname, email, password);
+            }
+
+            return null;
         }
 
-        public override AAccountOwner GetAccountOwner(int ownerId)
+        public override AAccountOwner? GetAccountOwner(int ownerId)
         {
-            throw new NotImplementedException();
+            return dataLayer.GetAccountOwner(ownerId);
         }
 
         public override ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId)
         {
-            throw new NotImplementedException();
+            return dataLayer.GetBankAccounts(ownerId);
         }
 
-        public override ABankAccount OpenNewBankAccount(int ownerId)
+        public override ABankAccount? OpenNewBankAccount(int ownerId)
+        {
+            return dataLayer.CreateBankAccount(ownerId);
+        }
+
+        public override TransferCodes PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description)
         {
             throw new NotImplementedException();
         }
 
-        public override TransferCodes performTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description)
+        public override AAccountOwner? GetAccountOwner(string login)
         {
-            throw new NotImplementedException();
+            return dataLayer.GetAccountOwner(login);
         }
     }
 }

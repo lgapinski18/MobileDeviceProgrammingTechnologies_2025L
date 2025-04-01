@@ -16,5 +16,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations.Repositories
         {
             entities = new List<AAccountOwner>();
         }
+
+        public AAccountOwner? GetByOwnerLogin(string ownerLogin)
+        {
+            return entities.Where(accountOwner => accountOwner.OwnerLogin == ownerLogin).FirstOrDefault();
+        }
     }
 }

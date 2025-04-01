@@ -12,7 +12,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer
     {
         public BasicModelLayer(ALogicLayer? logicLayer = default(ALogicLayer))
         {
-            this.logicLayer = logicLayer == null ? ALogicLayer.createLogicLayerInstance() : logicLayer;
+            this.logicLayer = logicLayer == null ? ALogicLayer.CreateLogicLayerInstance() : logicLayer;
         }
     }
 }

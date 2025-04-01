@@ -10,6 +10,9 @@ namespace ProjectLayerClassLibrary.DataLayer
     {
         private int id;
 
+        private string ownerLogin;
+        public string OwnerLogin { get { return ownerLogin; } set { ownerLogin = value; } }
+
         private string ownerName;
         public string OwnerName { get { return ownerName; } set { ownerName = value; } }
 
@@ -22,13 +25,14 @@ namespace ProjectLayerClassLibrary.DataLayer
         private string ownerPassword;
         public string OwnerPassword { get { return ownerPassword; } set { ownerPassword = value; } }
 
-        public AAccountOwner(int ownerId, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
+        public AAccountOwner(int ownerId, string ownerLogin, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             this.id = ownerId;
+            this.ownerLogin = ownerLogin;
             this.ownerName = ownerName;
             this.ownerSurname = ownerSurname;
-            this.ownerSurname = ownerEmail;
-            this.ownerSurname = ownerPassword;
+            this.ownerEmail = ownerEmail;
+            this.ownerPassword = ownerPassword;
         }
 
         public int GetId()

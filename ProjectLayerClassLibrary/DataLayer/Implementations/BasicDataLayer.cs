@@ -33,7 +33,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
-            int ownerId = 1000_0000;
+            const string loginPrefix = "IK";
+            int ownerId = 0;
             ICollection<AAccountOwner> accountOwners = accountOwnerRepository.GetAll();
             if (accountOwners.Count != 0)
             {
@@ -45,7 +46,22 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 ownerId += 1;
             }
 
-            AAccountOwner accountOwner = new BasicAccountOwner(ownerId, ownerName, ownerSurname, ownerEmail, ownerPassword);
+            string ownerLogin;
+
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                byte[] bytes = new byte[4]; // 4 bytes = 32-bit integer
+                int number;
+                do
+                {
+                    rng.GetBytes(bytes);
+                    number = BitConverter.ToInt32(bytes, 0) & 0x7FFFFFFF; // Ensure positive
+                    ownerLogin = loginPrefix + (number % 1_000_000).ToString("D6"); // Exactly 8 digits
+                }
+                while (accountOwnerRepository.GetByOwnerLogin(ownerLogin) != null);
+            }
+
+            AAccountOwner accountOwner = new BasicAccountOwner(ownerId, ownerLogin, ownerName, ownerSurname, ownerEmail, ownerPassword);
             if (!accountOwnerRepository.Save(accountOwner))
             {
                 throw new CreatingAccountOwnerException("Wystąpił problem podczas zapisu utworzonego obiektu właściciela konta bankowego do repoytorium!");
@@ -112,6 +128,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         public override ICollection<ABankAccount> GetBankAccounts(int ownerId)
         {
             return bankAccountRepository.GetByAccountOwnerId(ownerId);
+        }
+
+        public override AAccountOwner? GetAccountOwner(string ownerLogin)
+        {
+            return accountOwnerRepository.GetByOwnerLogin(ownerLogin);
         }
     }
 }

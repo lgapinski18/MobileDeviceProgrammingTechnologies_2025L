@@ -22,27 +22,27 @@ namespace ProjectLayerClassLibrary.LogicLayer
         [Flags]
         public enum CreationAccountOwnerFlags
         {
-            SUCCESS = 0,
-            INCORRECT_NAME = 1,
-            INCORRECT_SURNAME = 2,
-            INCORRECT_EMAIL = 3,
-            INCORRECT_PASSWORD = 4
+            EMPTY = 0,
+            SUCCESS = 1,
+            INCORRECT_NAME = 2,
+            INCORRECT_SURNAME = 3,
+            INCORRECT_EMAIL = 4,
+            INCORRECT_PASSWORD = 5,
         }
 
-        protected ADataLayer dataLayer;
-
-        public static ALogicLayer createLogicLayerInstance(ADataLayer? dataLayer = default(ADataLayer))
+        public static ALogicLayer CreateLogicLayerInstance(ADataLayer? dataLayer = default)
         {
             return new Implementations.BasicLogicLayer(dataLayer);
         }
 
-        public abstract AAccountOwner CreateNewAccountOwner(string name, string surname, string email, string  password, out CreationAccountOwnerFlags creationAccountOwnerFlags);
-        public abstract ABankAccount OpenNewBankAccount(int ownerId);
+        public abstract AAccountOwner? CreateNewAccountOwner(string name, string surname, string email, string  password, out CreationAccountOwnerFlags creationAccountOwnerFlags);
+        public abstract ABankAccount? OpenNewBankAccount(int ownerId);
 
-        public abstract bool AuthenticateAccountOwner(int ownerId, string password);
-        public abstract AAccountOwner GetAccountOwner(int ownerId);
+        public abstract bool AuthenticateAccountOwner(string login, string password);
+        public abstract AAccountOwner? GetAccountOwner(int ownerId);
+        public abstract AAccountOwner? GetAccountOwner(string login);
         public abstract ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId);
 
-        public abstract TransferCodes performTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description);
+        public abstract TransferCodes PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description);
     }
 }
