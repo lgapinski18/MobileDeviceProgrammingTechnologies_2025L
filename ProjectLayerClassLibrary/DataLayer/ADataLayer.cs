@@ -14,9 +14,9 @@ namespace ProjectLayerClassLibrary.DataLayer
             return new Implementations.BasicDataLayer();
         }
 
-        public abstract AAccountOwner CreateAccountOwner(int ownerId, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword);
+        public abstract AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword);
 
-        public abstract ABankAccount CreateBankAccount(string accountNumber, int ownerId);
+        public abstract ABankAccount CreateBankAccount(int ownerId);
 
 
         public abstract AAccountOwner? GetAccountOwner(int ownerId);

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -30,22 +31,51 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         }
 
-        public override AAccountOwner CreateAccountOwner(int ownerId, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
+        public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
+            int ownerId = 1000_0000;
+            ICollection<AAccountOwner> accountOwners = accountOwnerRepository.GetAll();
+            if (accountOwners.Count != 0)
+            {
+                ownerId = accountOwners.Last().GetId();
+            }
+
+            while (accountOwnerRepository.Get(ownerId) != null)
+            {
+                ownerId += 1;
+            }
+
             AAccountOwner accountOwner = new BasicAccountOwner(ownerId, ownerName, ownerSurname, ownerEmail, ownerPassword);
             if (!accountOwnerRepository.Save(accountOwner))
             {
                 throw new CreatingAccountOwnerException("Wystąpił problem podczas zapisu utworzonego obiektu właściciela konta bankowego do repoytorium!");
             }
 
+            CreateBankAccount(ownerId);
+
             return accountOwner;
         }
 
-        public override ABankAccount CreateBankAccount(string accountNumber, int ownerId)
+        public override ABankAccount CreateBankAccount(int ownerId)
         {
             AAccountOwner? accountOwner = accountOwnerRepository.Get(ownerId);
             if (accountOwner != null)
             {
+                string accountNumber;
+
+                using (var rng = RandomNumberGenerator.Create())
+                {
+                    byte[] bytes = new byte[4]; // 4 bytes = 32-bit integer
+                    int number;
+                    do
+                    {
+                        rng.GetBytes(bytes);
+                        number = BitConverter.ToInt32(bytes, 0) & 0x7FFFFFFF; // Ensure positive
+                        accountNumber = (number % 100000000).ToString("D8"); // Exactly 8 digits
+                    }
+                    while (bankAccountRepository.GetByAccountNumber(accountNumber) != null);
+                }
+
                 ABankAccount bankAccount = new BasicBankAccount(accountNumber, accountOwner);
                 if (!bankAccountRepository.Save(bankAccount))
                 {

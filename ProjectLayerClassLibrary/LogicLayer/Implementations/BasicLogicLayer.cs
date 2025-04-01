@@ -1,8 +1,10 @@
 ﻿using ProjectLayerClassLibrary.DataLayer;
+using ProjectLayerClassLibrary.LogicLayer.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ProjectLayerClassLibrary.LogicLayer.Implementations
@@ -16,12 +18,31 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 
         public override bool AuthenticateAccountOwner(int ownerId, string password)
         {
-            throw new NotImplementedException();
+            AAccountOwner? accountOwner = dataLayer.GetAccountOwner(ownerId);
+
+            if (accountOwner == null)
+            {
+                throw new ThereIsNoSuchOwnerException($"Nie znaleziono właściciela konta z podanym identyfikatorem: {ownerId}");
+            }
+
+            if (password == null)
+            {
+                throw new ArgumentNullException("Podany obiekt string hasła jest null");
+            }
+
+            return password == accountOwner.OwnerPassword;
         }
 
         public override AAccountOwner CreateNewAccountOwner(string name, string surname, string email, string password, out CreationAccountOwnerFlags creationAccountOwnerFlags)
         {
             throw new NotImplementedException();
+            //string pattern = @"^$";
+            //pattern = @"^[\w.%+-]+@[\w.-]+\.[A-Za-z]{2,}$";
+            //if (!Regex.IsMatch(email, pattern))
+            //{
+            //    creationAccountOwnerFlags = creationAccountOwnerFlags | CreationAccountOwnerFlags.INCORRECT_EMAIL;
+            //}
+            //dataLayer.CreateAccountOwner();
         }
 
         public override AAccountOwner GetAccountOwner(int ownerId)
