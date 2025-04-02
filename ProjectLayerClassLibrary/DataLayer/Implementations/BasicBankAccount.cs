@@ -12,6 +12,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 {
     internal class BasicBankAccount : ABankAccount
     {
+        private object accountBalanceLock = new object();
+        private object bankAccountReportsLock = new object();
+
         public BasicBankAccount(string accountNumber, AAccountOwner accountOwner)
         {
             AccountNumber = accountNumber;
@@ -25,28 +28,40 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         public override void DecreaseAccountBalance(float amount)
         {
-            if (AccountBalance <  amount)
+            lock (accountBalanceLock)
             {
-                throw new InvalidBankAccountOperationException("Nie wystarczająco środków na kącie, aby przeprowadzić zmniejszenie stanu kąta!");
+                if (AccountBalance < amount)
+                {
+                    throw new InvalidBankAccountOperationException("Nie wystarczająco środków na kącie, aby przeprowadzić zmniejszenie stanu kąta!");
+                }
+                AccountBalance -= amount;
             }
-            AccountBalance -= amount;
         }
 
         public override ABankAccountReport GenerateBankAccountReport()
         {
-            ABankAccountReport bankAccountReport = new BankAccountReportWithOwnerData(bankAccountReports.Last().CurrentAccountBalance, AccountBalance, AccountOwner.OwnerName, AccountOwner.OwnerSurname, AccountOwner.OwnerEmail);
-            bankAccountReports.Add(bankAccountReport);
-            return bankAccountReport;
+            lock (bankAccountReportsLock)
+            {
+                ABankAccountReport bankAccountReport = new BankAccountReportWithOwnerData(bankAccountReports.Last().CurrentAccountBalance, AccountBalance, AccountOwner.OwnerName, AccountOwner.OwnerSurname, AccountOwner.OwnerEmail);
+                bankAccountReports.Add(bankAccountReport);
+                return bankAccountReport;
+            }
         }
 
         public override ICollection<ABankAccountReport> GetBankAccountReports()
         {
-            return bankAccountReports;
+            lock (bankAccountReportsLock)
+            {
+                return bankAccountReports;
+            }
         }
 
         public override void IncreaseAccountBalance(float amount)
         {
-            AccountBalance += amount;
+            lock (accountBalanceLock)
+            {
+                AccountBalance += amount;
+            }
         }
     }
 }

@@ -30,6 +30,8 @@ namespace ProjectLayerClassLibrary.LogicLayer
             INCORRECT_PASSWORD = 5,
         }
 
+        public delegate void TransferCallback(TransferCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
+
         public static ALogicLayer CreateLogicLayerInstance(ADataLayer? dataLayer = default)
         {
             return new Implementations.BasicLogicLayer(dataLayer);
@@ -43,6 +45,6 @@ namespace ProjectLayerClassLibrary.LogicLayer
         public abstract AAccountOwner? GetAccountOwner(string login);
         public abstract ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId);
 
-        public abstract TransferCodes PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description);
+        public abstract void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback);
     }
 }
