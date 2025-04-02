@@ -16,7 +16,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewLayer
         public Login()
         {
             InitializeComponent();
-            DataContext = ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.AViewModelLayer.Instance.CreateLoginDataContext();
+            DataContext = ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.AViewModelLayer.Instance.CreateLoginDataContext(PopUpLoginFailure);
         }
     }
 }

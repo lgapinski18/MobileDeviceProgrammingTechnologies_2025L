@@ -16,7 +16,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewLayer
         public Register()
         {
             InitializeComponent();
-            DataContext = ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.AViewModelLayer.Instance.CreateRegisterDataContext();
+            DataContext = ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.AViewModelLayer.Instance.CreateRegisterDataContext(RegisterFailurePopUp);
         }
     }
 }

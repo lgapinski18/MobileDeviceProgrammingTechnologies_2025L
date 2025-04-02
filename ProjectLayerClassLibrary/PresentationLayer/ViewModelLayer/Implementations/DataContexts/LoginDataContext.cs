@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementations.DataContexts
@@ -16,7 +17,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
     {
         private string login = "";
         private string password = "";
-        private ICommand loginCommand;
+        private Popup loginFailurePopUp;
 
         public string Login { get => login; set => login = value; }
         public string Password { get => password; set
@@ -26,16 +27,21 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
             }
         }
 
+        private ICommand loginCommand;
         public ICommand LoginCommand { get => loginCommand; }
 
-        public LoginDataContext(AViewModelLayer viewModelLayer) : base(viewModelLayer)
+        public LoginDataContext(AViewModelLayer viewModelLayer, Popup loginFailurePopUp) : base(viewModelLayer)
         {
+            this.loginFailurePopUp = loginFailurePopUp;
             loginCommand = new RelayCommand(ExecuteLogin);
         }
 
         private void ExecuteLogin(object? parameter)
         {
-            viewModelLayer.ModelLayer.Login(Login, Password, parameter as Type);
+            if (!viewModelLayer.ModelLayer.Login(Login, Password, parameter as Type))
+            {
+                loginFailurePopUp.IsOpen = true;
+            }
         }
     }
 }

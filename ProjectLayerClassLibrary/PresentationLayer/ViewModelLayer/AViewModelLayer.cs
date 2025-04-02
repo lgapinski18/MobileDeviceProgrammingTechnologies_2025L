@@ -7,6 +7,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls.Primitives;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
 {
@@ -34,8 +35,8 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
 
         public abstract void Redirect(Type? viewType);
 
-        public abstract ILoginDataContext CreateLoginDataContext();
-        public abstract IRegisterDataContext CreateRegisterDataContext();
+        public abstract ILoginDataContext CreateLoginDataContext(Popup loginFailurePopUp);
+        public abstract IRegisterDataContext CreateRegisterDataContext(Popup registerFailurePopup);
         public abstract IUserBankAccountsDataContext CreateUserBankAccountDataContext();
         public abstract ICreateTransferDataContext CreateCreateTransferDataContext();
 

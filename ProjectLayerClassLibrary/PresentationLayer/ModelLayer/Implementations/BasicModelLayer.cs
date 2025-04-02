@@ -8,6 +8,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Windows.Controls.Primitives;
 using static ProjectLayerClassLibrary.LogicLayer.ALogicLayer;
 using Timer = System.Timers.Timer;
 
@@ -59,15 +60,18 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 
         public override bool Login(string login, string password, Type? succesViewRedirection)
         {
-            if (logicLayer.AuthenticateAccountOwner(login, password))
+            try
             {
-                AAccountOwner owner = logicLayer.GetAccountOwner(login);
-                userContext = new UserContext(owner, logicLayer.GetAccountOwnerBankAccounts(owner.GetId()));
-                Redirect(succesViewRedirection);
+                if (logicLayer.AuthenticateAccountOwner(login, password))
+                {
+                    AAccountOwner owner = logicLayer.GetAccountOwner(login);
+                    userContext = new UserContext(owner, logicLayer.GetAccountOwnerBankAccounts(owner.GetId()));
+                    Redirect(succesViewRedirection);
+                }
             }
-            else
+            catch (Exception ex)
             {
-
+                return false;
             }
             return true;
         }
@@ -78,13 +82,37 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             Redirect(loginView);
         }
 
-        public override void Register(string name, string surname, string email, string password, string repeatPassword, Type? succesViewRedirection)
+        public override void Register(string name, string surname, string email, string password, string repeatPassword, Type? succesViewRedirection, Popup registerFailurePopup)
         {
             AAccountOwner? owner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out ALogicLayer.CreationAccountOwnerFlags creationAccountOwnerFlags);
             if (creationAccountOwnerFlags == ALogicLayer.CreationAccountOwnerFlags.SUCCESS)
             {
                 userContext = new UserContext(owner, logicLayer.GetAccountOwnerBankAccounts(owner.GetId()));
                 Redirect(succesViewRedirection);
+            }
+            else
+            {
+                if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.EMPTY) != 0)
+                {
+                    registerFailurePopup.DataContext = new PopupMessage("Empty field");
+                }
+                else if((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_NAME) != 0)
+                {
+                    registerFailurePopup.DataContext = new PopupMessage("Incorrect Name");
+                }
+                else if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_SURNAME) != 0)
+                {
+                    registerFailurePopup.DataContext = new PopupMessage("Incorrect Surname");
+                }
+                else if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_EMAIL) != 0)
+                {
+                    registerFailurePopup.DataContext = new PopupMessage("Incorrect Email");
+                }
+                else if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_PASSWORD) != 0)
+                {
+                    registerFailurePopup.DataContext = new PopupMessage("Incorrect Password");
+                }
+                registerFailurePopup.IsOpen = true;
             }
         }
 

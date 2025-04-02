@@ -9,6 +9,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementations
@@ -44,14 +45,14 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
             modelLayer.Redirect(viewType);
         }
 
-        public override ILoginDataContext CreateLoginDataContext()
+        public override ILoginDataContext CreateLoginDataContext(Popup loginFailurePopUp)
         {
-            return new LoginDataContext(this);
+            return new LoginDataContext(this, loginFailurePopUp);
         }
 
-        public override IRegisterDataContext CreateRegisterDataContext()
+        public override IRegisterDataContext CreateRegisterDataContext(Popup registerFailurePopup)
         {
-            return new RegisterDataContext(this);
+            return new RegisterDataContext(this, registerFailurePopup);
         }
 
         public override IUserBankAccountsDataContext CreateUserBankAccountDataContext()

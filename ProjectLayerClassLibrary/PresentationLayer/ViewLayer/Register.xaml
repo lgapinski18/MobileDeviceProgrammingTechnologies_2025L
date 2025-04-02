@@ -19,20 +19,17 @@
             <TextBox  HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2" Padding="5" Text="{Binding Email}"/>
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Width="210" Margin="2.5">
-            <Label Content="Mother's Maiden Lastname"/>
-            <TextBox  HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2" Padding="5" Text="{Binding MothersMaidenSurname}"/>
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Width="210" Margin="2.5">
             <Label Content="Password"/>
-            <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2" Padding="5" />
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Left" Width="210" Margin="2.5">
-            <Label Content="Repeat password"/>
-            <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2" Padding="5"/>
+            <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2" Padding="5" Text="{Binding Password}"/>
         </StackPanel>
         <StackPanel Width="210" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2.5">
             <Button Content="Register" HorizontalAlignment="Right" Style="{DynamicResource PrimaryButton}" Command="{Binding RegisterCommand}" CommandParameter="{x:Type v:UserBankAccounts}"/>
             <Button Content="Back" HorizontalAlignment="Right" Style="{DynamicResource PrimaryButton}" Command="{Binding Redirect}" CommandParameter="{x:Type v:Login}"/>
         </StackPanel>
+        <Popup x:Name="RegisterFailurePopUp" Placement="MousePoint" StaysOpen="False">
+            <Border Background="LightYellow" BorderBrush="Black" BorderThickness="1" Padding="10">
+                <TextBlock Text="{Binding Message}" Foreground="Black"/>
+            </Border>
+        </Popup>
     </StackPanel>
 </UserControl>
