@@ -20,6 +20,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewLayer
         public CreateTransfer()
         {
             InitializeComponent();
+            DataContext = ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.AViewModelLayer.Instance.CreateCreateTransferDataContext();
         }
     }
 }

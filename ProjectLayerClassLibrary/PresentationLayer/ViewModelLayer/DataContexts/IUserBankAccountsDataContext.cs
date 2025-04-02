@@ -13,7 +13,9 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
         string UserName { get; }
         string UserSurname { get; }
         ICollection<IBankAccount> BankAccounts { get; }
+        ICollection<string> ReportMessages { get; }
 
-        ICommand TransferCommand { get; }
+        ICommand LogoutCommand { get; }
+        ICommand OpenNewBankAccountCommand { get; }
     }
 }

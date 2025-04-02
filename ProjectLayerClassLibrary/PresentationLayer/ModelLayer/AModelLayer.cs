@@ -35,8 +35,11 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer
         public abstract void Redirect(Type? viewType);
 
         public abstract bool Login(string login, string password, Type? succesViewRedirection);
+        public abstract void Logout(Type? loginView);
         public abstract void Register(string name, string surname, string email, string password, string repeatPassword, Type? succesViewRedirection);
-        public abstract void MakeTransfer(string sourceAccountNumber, string destinationAccountNumber, float transferAmount, string transferTitle);
+        public abstract void MakeTransfer(string sourceAccountNumber, string destinationAccountNumber, float transferAmount, string transferTitle, Type? userBankAccountsView);
+        public abstract void CreateTransferForBankAccount(string accountNumber, Type? createTransferView);
+        public abstract void OpenNewBankAccount();
 
         internal abstract ALogicLayer LogicLayer { get; }
     }

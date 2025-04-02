@@ -29,10 +29,10 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
 
-            bankAccountReportTimer = new Timer(new TimeSpan(24, 0, 0));
+            bankAccountReportTimer = new Timer(new TimeSpan(0, 1, 0));
             bankAccountReportTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
             {
-                if (DateTime.UtcNow.Day == 2)
+                //if (DateTime.UtcNow.Day == 2)
                 {
                     reportsHasBeenUpdatedRecently = true;
                     foreach (DataLayer.ABankAccount bankAccount in this.dataLayer.GetAllBankAccounts())

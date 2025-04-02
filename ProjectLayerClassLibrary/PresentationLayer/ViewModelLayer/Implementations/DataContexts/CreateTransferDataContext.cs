@@ -37,11 +37,12 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         public CreateTransferDataContext(AViewModelLayer viewModelLayer) : base(viewModelLayer)
         {
             makeTransferCommand = new RelayCommand(ExecuteMakeTransferCommand);
+            sourceAccountNumber = viewModelLayer.ModelLayer.UserContext.BankAccountNumberForTransfer;
         }
 
         private void ExecuteMakeTransferCommand(object? parameter)
         {
-            viewModelLayer.ModelLayer.MakeTransfer(SourceAccountNumber, DestinationAccountNumber, TransferAmount, TransferTitle);
+            viewModelLayer.ModelLayer.MakeTransfer(SourceAccountNumber, DestinationAccountNumber, TransferAmount, TransferTitle, parameter as Type);
         }
     }
 }

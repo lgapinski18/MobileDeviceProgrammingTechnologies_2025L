@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
 {
-    interface ICreateTransferDataContext : IDataContext
+    public interface ICreateTransferDataContext : IDataContext
     {
         string SourceAccountNumber { get; set; }
         string DestinationAccountNumber { get; set; }

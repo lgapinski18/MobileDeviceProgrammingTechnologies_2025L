@@ -14,6 +14,8 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         public string AccountNumber => bankAccount.AccountNumber;
         public float AccountBalance => bankAccount.AccountBalance;
 
+        public ICollection<string> Reports => bankAccount.GetBankAccountReports().Select(report => report.GetReportContent()).ToList();
+
         public BankAccount(ABankAccount bankAccount) 
         { 
             this.bankAccount = bankAccount;

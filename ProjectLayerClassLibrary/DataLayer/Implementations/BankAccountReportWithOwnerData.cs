@@ -18,7 +18,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         public override string GetReportContent()
         {
-            return $"Czas wyg.:{TimeOfReportCreation}; Imię: {OwnerName} Nazwisko: {OwnerSurname} Email: {OwnerEmail}; Poprz. stan konta: {PreviousAccountBalance} Obecny stan konta: {CurrentAccountBalance} Saldo: {CurrentAccountBalance - PreviousAccountBalance}";
+            return $"Czas wyg.:{TimeOfReportCreation};\nImię: {OwnerName} Nazwisko: {OwnerSurname}\nEmail: {OwnerEmail};\nPoprz. stan konta: {PreviousAccountBalance}\nObecny stan konta: {CurrentAccountBalance}\nSaldo: {CurrentAccountBalance - PreviousAccountBalance}";
         }
     }
 }

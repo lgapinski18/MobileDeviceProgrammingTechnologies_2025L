@@ -37,6 +37,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
         public abstract ILoginDataContext CreateLoginDataContext();
         public abstract IRegisterDataContext CreateRegisterDataContext();
         public abstract IUserBankAccountsDataContext CreateUserBankAccountDataContext();
+        public abstract ICreateTransferDataContext CreateCreateTransferDataContext();
 
     }
 }

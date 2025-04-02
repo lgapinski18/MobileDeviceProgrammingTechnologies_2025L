@@ -3,30 +3,31 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:ProjectLayerClassLibrary.PresentationLayer.ViewLayer"
+             xmlns:v="clr-namespace:ProjectLayerClassLibrary.PresentationLayer.ViewLayer"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel>
+        <Button Content="Back" HorizontalAlignment="Left" Style="{DynamicResource PrimaryButton}" Command="{Binding Redirect}" CommandParameter="{x:Type v:UserBankAccounts}"/>
         <StackPanel Orientation="Horizontal">
             <Label Content="Source: " />
-            <TextBlock Text="{Binding SourceAccountNumber}" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
+            <TextBlock Text="{Binding SourceAccountNumber}" Width="200" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label Content="Destination: " />
-            <TextBox Text="{Binding DestinationAccountNumber}" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
+            <TextBox Text="{Binding DestinationAccountNumber}" Width="200" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label Content="Recipient: " />
-            <TextBox Text="{Binding TransferRecipient}" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
+            <TextBox Text="{Binding TransferRecipient}" Width="200" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label Content="Title: " />
-            <TextBox Text="{Binding TransferTitle}" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
+            <TextBox Text="{Binding TransferTitle}" Width="200" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
         </StackPanel>
         <StackPanel Orientation="Horizontal">
             <Label Content="Amount: " />
             <TextBox Text="{Binding TransferAmount}" VerticalAlignment="Center" FontWeight="Bold" Margin="2.5, 0, 0, 0"/>
         </StackPanel>
-        <Button Content="Make Transfer" Command="{Binding MakeTransferCommand}"/>
+        <Button Content="Make Transfer" Style="{DynamicResource PrimaryButton}" Command="{Binding MakeTransferCommand}" CommandParameter="{x:Type v:UserBankAccounts}"/>
     </StackPanel>
 </UserControl>

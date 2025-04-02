@@ -58,5 +58,10 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         {
             return new UserBankAccountsDataContext(this);
         }
+
+        public override ICreateTransferDataContext CreateCreateTransferDataContext()
+        {
+            return new CreateTransferDataContext(this);
+        }
     }
 }

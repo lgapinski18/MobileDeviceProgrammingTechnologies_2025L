@@ -7,7 +7,9 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Timers;
 using static ProjectLayerClassLibrary.LogicLayer.ALogicLayer;
+using Timer = System.Timers.Timer;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 {
@@ -15,17 +17,28 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
     {
         private ALogicLayer logicLayer;
         private IUserContext? userContext = null;
-
-        public BasicModelLayer()
-        {
-            logicLayer = ALogicLayer.CreateLogicLayerInstance();
-        }
         private object currentView;
 
         public override object CurrentView => currentView;
         public override IUserContext UserContext => userContext;
 
         internal override ALogicLayer LogicLayer => logicLayer;
+
+        public BasicModelLayer()
+        {
+            logicLayer = ALogicLayer.CreateLogicLayerInstance();
+            reportUpdateChackingTimer = new Timer(new TimeSpan(0, 1, 0));
+            reportUpdateChackingTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
+            {
+                if (logicLayer.CheckForReportsUpdates())
+                {
+                    OnPropertyChanged("ReportMessages");
+                }
+            };
+            reportUpdateChackingTimer.Enabled = true;
+            reportUpdateChackingTimer.AutoReset = true;
+            reportUpdateChackingTimer.Start();
+        }
 
         #region EVENTS
 
@@ -35,6 +48,12 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        #endregion
+
+        #region JOBS
+
+        private Timer reportUpdateChackingTimer;
 
         #endregion
 
@@ -51,6 +70,12 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 
             }
             return true;
+        }
+
+        public override void Logout(Type? loginView)
+        {
+            userContext = null;
+            Redirect(loginView);
         }
 
         public override void Register(string name, string surname, string email, string password, string repeatPassword, Type? succesViewRedirection)
@@ -76,14 +101,28 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             }
         }
 
-        public override void MakeTransfer(string sourceAccountNumber, string destinationAccountNumber, float transferAmount, string transferTitle)
+        public override void MakeTransfer(string sourceAccountNumber, string destinationAccountNumber, float transferAmount, string transferTitle, Type? userBankAccountsView)
         {
             logicLayer.PerformTransfer(sourceAccountNumber, destinationAccountNumber, transferAmount, transferTitle, TransferCallback);
+            Redirect(userBankAccountsView);
         }
 
         private void TransferCallback(TransferCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description)
         {
 
+        }
+
+        public override void CreateTransferForBankAccount(string bankAccountNumber, Type? createTransferView)
+        {
+            UserContext.BankAccountNumberForTransfer = bankAccountNumber;
+            Redirect(createTransferView);
+        }
+
+        public override void OpenNewBankAccount()
+        {
+            logicLayer.OpenNewBankAccount(UserContext.Id);
+            userContext = new UserContext(logicLayer.GetAccountOwner(UserContext.Id), logicLayer.GetAccountOwnerBankAccounts(UserContext.Id));
+            OnPropertyChanged("BankAccounts");
         }
     }
 }

@@ -10,5 +10,6 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer
     {
         string AccountNumber { get; }
         float AccountBalance { get; }
+        ICollection<string> Reports { get; }
     }
 }
