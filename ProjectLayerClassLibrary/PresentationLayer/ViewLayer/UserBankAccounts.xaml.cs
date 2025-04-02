@@ -1,4 +1,8 @@
-﻿using System.Text;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -11,12 +15,12 @@ using System.Windows.Shapes;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewLayer
 {
-    partial class Register : UserControl
+    public partial class UserBankAccounts : UserControl
     {
-        public Register()
+        public UserBankAccounts()
         {
             InitializeComponent();
-            DataContext = ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.AViewModelLayer.Instance.CreateRegisterDataContext();
+            DataContext = ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.AViewModelLayer.Instance.CreateUserBankAccountDataContext();
         }
     }
 }

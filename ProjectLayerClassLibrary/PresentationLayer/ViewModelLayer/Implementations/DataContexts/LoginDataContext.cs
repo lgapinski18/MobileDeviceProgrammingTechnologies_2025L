@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
+namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementations.DataContexts
 {
     internal class LoginDataContext : ADataContext, ILoginDataContext
     {
@@ -34,7 +35,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
 
         private void ExecuteLogin(object? parameter)
         {
-            Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} - trying to log {login} - {password}");
+            viewModelLayer.ModelLayer.Login(Login, Password, parameter as Type);
         }
     }
 }

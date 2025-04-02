@@ -1,5 +1,6 @@
 ﻿using ProjectLayerClassLibrary.PresentationLayer.ModelLayer;
-using ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Register;
+using ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts;
+using ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementations.DataContexts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,56 +11,52 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
+namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementations
 {
     internal class BasicViewModelLayer : AViewModelLayer
     {
-        private AModelLayer? modelLayer;
-        private object currentView;
+        private AModelLayer modelLayer;
 
-        private ILoginDataContext loginDataContext;
-        private IRegisterDataContext registerDataContext;
+        public override object CurrentView { get => modelLayer.CurrentView; }
 
-        public override object CurrentView
+        internal override AModelLayer ModelLayer => modelLayer;
+
+        #region EVENTS
+
+        public override event PropertyChangedEventHandler? PropertyChanged;
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            get => currentView;
-            protected set
-            {
-                currentView = value;
-                OnPropertyChanged();
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-        internal override AModelLayer? ModelLayer => modelLayer;
+        #endregion
 
         public BasicViewModelLayer()
         {
             //this.modelLayer = AModelLayer.createModelLayerInstance();
             modelLayer = AModelLayer.Instance;
-            loginDataContext = new LoginDataContext(this);
-            registerDataContext = new RegisterDataContext(this);
+            modelLayer.PropertyChanged += (sender, args) => PropertyChanged?.Invoke(this, args);
         }
 
         public override void Redirect(Type? viewType)
         {
-            if (viewType != null)
-            {
-                object? newView = Activator.CreateInstance(viewType);
-                if (newView != null)
-                {
-                    CurrentView = newView;
-                }
-            }
+            modelLayer.Redirect(viewType);
         }
 
-        public override ILoginDataContext GetLoginDataContext()
+        public override ILoginDataContext CreateLoginDataContext()
         {
-            return loginDataContext;
+            return new LoginDataContext(this);
         }
 
-        public override IRegisterDataContext GetRegisterDataContext()
+        public override IRegisterDataContext CreateRegisterDataContext()
         {
-            return registerDataContext;
+            return new RegisterDataContext(this);
+        }
+
+        public override IUserBankAccountsDataContext CreateUserBankAccountDataContext()
+        {
+            return new UserBankAccountsDataContext(this);
         }
     }
 }

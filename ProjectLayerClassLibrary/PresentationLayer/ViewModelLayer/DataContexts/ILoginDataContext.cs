@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 
-namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
+namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
 {
     public interface ILoginDataContext : IDataContext
     {

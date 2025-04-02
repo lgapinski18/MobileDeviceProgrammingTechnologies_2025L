@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Register
+namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
 {
     public interface IRegisterDataContext : IDataContext
     {
@@ -13,6 +13,8 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Register
         string Surname { get; set; }
         string Email { get; set; }
         string MothersMaidenSurname { get; set; }
+        string Password { get; set; }
+        string RepeatPassword { get; set; }
         ICommand RegisterCommand { get; }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using ProjectLayerClassLibrary.PresentationLayer.ModelLayer;
-using ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Register;
+using ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,27 +19,24 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
             {
                 if (instance == null)
                 {
-                    instance = new BasicViewModelLayer();
+                    instance = new Implementations.BasicViewModelLayer();
                 }
                 return instance;
             }
         }
 
-        public abstract object CurrentView { get; protected set; }
+        public abstract object CurrentView { get; }
 
-        internal abstract AModelLayer? ModelLayer { get; }
+        internal abstract AModelLayer ModelLayer { get; }
 
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        public abstract event PropertyChangedEventHandler? PropertyChanged;
 
         public abstract void Redirect(Type? viewType);
 
-        public abstract ILoginDataContext GetLoginDataContext();
-        public abstract IRegisterDataContext GetRegisterDataContext();
+        public abstract ILoginDataContext CreateLoginDataContext();
+        public abstract IRegisterDataContext CreateRegisterDataContext();
+        public abstract IUserBankAccountsDataContext CreateUserBankAccountDataContext();
 
     }
 }

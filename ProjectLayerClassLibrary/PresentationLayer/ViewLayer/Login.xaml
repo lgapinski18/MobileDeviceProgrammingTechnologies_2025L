@@ -10,11 +10,11 @@
         </StackPanel>
         <StackPanel HorizontalAlignment="Left" Width="210" Margin="2.5">
             <Label Content="Password"/>
-            <PasswordBox HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2" Padding="5" />
+            <TextBox HorizontalAlignment="Stretch" VerticalAlignment="Center" BorderBrush="Black" BorderThickness="2" Padding="5" Text="{Binding Password, Mode=OneWayToSource}"/>
             <!--Password="{Binding Password, Mode=TwoWay}" PasswordChanged="PasswordBox_PasswordChanged"-->
         </StackPanel>
         <Grid Width="210" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="2.5">
-            <Button Content="Login" HorizontalAlignment="Left" Style="{DynamicResource PrimaryButton}" Command="{Binding LoginCommand}"/>
+            <Button Content="Login" HorizontalAlignment="Left" Style="{DynamicResource PrimaryButton}" Command="{Binding LoginCommand}" CommandParameter="{x:Type v:UserBankAccounts}"/>
             <Button Content="Register" HorizontalAlignment="Right" Style="{DynamicResource SecondaryButton}" Command="{Binding Redirect}" CommandParameter="{x:Type v:Register}"/>
             <!--  -->
         </Grid>

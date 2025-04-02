@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer
+namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
 {
     public interface IDataContext : INotifyPropertyChanged
     {
