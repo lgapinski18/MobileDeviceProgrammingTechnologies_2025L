@@ -36,7 +36,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             ABankAccountReport bankAccountReport = new BankAccountReportWithOwnerData(previousAccountBalance, currentAccountBalance, ownerName, ownerSurname, ownerEmail);
 
             Assert.AreEqual(
-                $"Czas wyg.:{bankAccountReport.TimeOfReportCreation}; Imię: {ownerName} Nazwisko: {ownerSurname} Email: {ownerEmail}; Poprz. stan konta: {previousAccountBalance} Obecny stan konta: {currentAccountBalance} Saldo: {currentAccountBalance - previousAccountBalance}", 
+                $"Czas wyg.:{bankAccountReport.TimeOfReportCreation};\nImię: {ownerName} Nazwisko: {ownerSurname}\nEmail: {ownerEmail};\nPoprz. stan konta: {previousAccountBalance}\nObecny stan konta: {currentAccountBalance}\nSaldo: {currentAccountBalance - previousAccountBalance}", 
                 bankAccountReport.GetReportContent());
         }
     }

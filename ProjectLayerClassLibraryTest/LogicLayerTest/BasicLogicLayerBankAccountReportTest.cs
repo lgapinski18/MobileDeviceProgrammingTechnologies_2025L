@@ -36,7 +36,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ProjectLayerClassLibrary.LogicLayer.ABankAccountReport logicBankAccountReport = new ProjectLayerClassLibrary.LogicLayer.Implementations.BasicLogicLayerBankAccountReport(bankAccountReport);
 
             Assert.AreEqual(
-                $"Czas wyg.:{logicBankAccountReport.TimeOfReportCreation}; Imię: {ownerName} Nazwisko: {ownerSurname} Email: {ownerEmail}; Poprz. stan konta: {previousAccountBalance} Obecny stan konta: {currentAccountBalance} Saldo: {currentAccountBalance - previousAccountBalance}",
+                $"Czas wyg.:{logicBankAccountReport.TimeOfReportCreation};\nImię: {ownerName} Nazwisko: {ownerSurname}\nEmail: {ownerEmail};\nPoprz. stan konta: {previousAccountBalance}\nObecny stan konta: {currentAccountBalance}\nSaldo: {currentAccountBalance - previousAccountBalance}",
                 logicBankAccountReport.GetReportContent());
         }
     }
