@@ -18,7 +18,14 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 
         public override void DecreaseAccountBalance(float amount)
         {
-            dataLayerBankAccount.DecreaseAccountBalance(amount);
+            try
+            {
+                dataLayerBankAccount.DecreaseAccountBalance(amount);
+            }
+            catch (DataLayer.Exceptions.InvalidBankAccountOperationException ex)
+            {
+                throw new LogicLayer.Exceptions.InvalidBankAccountOperationException(ex.Message, ex);
+            }
         }
 
         public override ABankAccountReport GenerateBankAccountReport()

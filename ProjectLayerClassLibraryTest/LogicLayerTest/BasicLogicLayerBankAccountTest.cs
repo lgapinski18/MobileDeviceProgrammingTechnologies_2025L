@@ -100,7 +100,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ProjectLayerClassLibrary.DataLayer.ABankAccount bankAccount = new ProjectLayerClassLibrary.DataLayer.Implementations.BasicBankAccount(id, accountNumber, accountOwner);
             ProjectLayerClassLibrary.LogicLayer.ABankAccount? logicBankAccount = ProjectLayerClassLibrary.LogicLayer.ABankAccount.CreateBankAccount(bankAccount);
             Assert.AreEqual(0.0f, logicBankAccount.AccountBalance);
-            Assert.ThrowsException<InvalidBankAccountOperationException>(() => logicBankAccount.DecreaseAccountBalance(Math.Abs(change)));
+            Assert.ThrowsException<ProjectLayerClassLibrary.LogicLayer.Exceptions.InvalidBankAccountOperationException>(() => logicBankAccount.DecreaseAccountBalance(Math.Abs(change)));
         }
 
         [TestMethod]

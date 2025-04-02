@@ -81,12 +81,12 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         {
             creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
 
-            string pattern = @"^[\p{L}][\p{L}'\- ]*[\p{L}]?$";
+            string pattern = @"^[\p{Lu}][\p{L}'\- ]*[\p{L}]?$";
             if (!Regex.IsMatch(name, pattern))
             {
                 creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_NAME;
             }
-            pattern = @"^[\p{L}][\p{L}'\- ]*[\p{L}]?$";
+            pattern = @"^[\p{Lu}][\p{L}'\- ]*[\p{L}]?$";
             if (!Regex.IsMatch(surname, pattern))
             {
                 creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_SURNAME;
@@ -96,7 +96,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             {
                 creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_EMAIL;
             }
-            if (password.Length >= 8)
+            if (password.Length < 8)
             {
                 creationAccountOwnerFlags |= CreationAccountOwnerFlags.INCORRECT_PASSWORD;
             }
@@ -202,7 +202,9 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 
         public override bool CheckForReportsUpdates()
         {
-            return reportsHasBeenUpdatedRecently;
+            bool temp = reportsHasBeenUpdatedRecently;
+            reportsHasBeenUpdatedRecently = false;
+            return temp;
         }
     }
 }
