@@ -45,6 +45,6 @@ namespace ProjectLayerClassLibrary.LogicLayer
         public abstract AAccountOwner? GetAccountOwner(string login);
         public abstract ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId);
 
-        public abstract void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback);
+        public abstract Thread PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback);
     }
 }

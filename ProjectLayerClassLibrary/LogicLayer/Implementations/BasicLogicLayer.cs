@@ -4,9 +4,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
+[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
 namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 {
@@ -14,6 +17,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
     {
         private ADataLayer dataLayer;
         private object accountOwnersLock = new object();
+        private object bankAccountsLock = new object();
 
         public ADataLayer DataLayer { get { return dataLayer; } }
 
@@ -74,7 +78,10 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             if (creationAccountOwnerFlags == CreationAccountOwnerFlags.EMPTY)
             {
                 creationAccountOwnerFlags = CreationAccountOwnerFlags.SUCCESS;
-                return AAccountOwner.CreateAccountOwner(dataLayer.CreateAccountOwner(name, surname, email, password));
+                lock (accountOwnersLock)
+                {
+                    return AAccountOwner.CreateAccountOwner(dataLayer.CreateAccountOwner(name, surname, email, password));
+                }
             }
 
             return null;
@@ -82,30 +89,45 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 
         public override AAccountOwner? GetAccountOwner(int ownerId)
         {
-            return AAccountOwner.CreateAccountOwner(dataLayer.GetAccountOwner(ownerId));
+            lock (accountOwnersLock)
+            {
+                return AAccountOwner.CreateAccountOwner(dataLayer.GetAccountOwner(ownerId));
+            }
         }
 
         public override AAccountOwner? GetAccountOwner(string login)
         {
-            return AAccountOwner.CreateAccountOwner(dataLayer.GetAccountOwner(login));
+            lock (accountOwnersLock)
+            {
+                return AAccountOwner.CreateAccountOwner(dataLayer.GetAccountOwner(login));
+            }
         }
 
         public override ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId)
         {
             ICollection<ABankAccount> bankAccounts = new List<ABankAccount>();
-            foreach (DataLayer.ABankAccount bankAccount in dataLayer.GetBankAccounts(ownerId))
+            lock (bankAccountsLock)
             {
-                bankAccounts.Add(ABankAccount.CreateBankAccount(bankAccount));
+                lock (accountOwnersLock)
+                {
+                    foreach (DataLayer.ABankAccount bankAccount in dataLayer.GetBankAccounts(ownerId))
+                    {
+                        bankAccounts.Add(ABankAccount.CreateBankAccount(bankAccount));
+                    }
+                }
             }
             return bankAccounts;
         }
 
         public override ABankAccount? OpenNewBankAccount(int ownerId)
         {
-            return ABankAccount.CreateBankAccount(dataLayer.CreateBankAccount(ownerId));
+            lock (bankAccountsLock)
+            {
+                return ABankAccount.CreateBankAccount(dataLayer.CreateBankAccount(ownerId));
+            }
         }
 
-        public override void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback)
+        public override Thread PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback)
         {
             Thread thread = new Thread(() =>
             {
@@ -149,6 +171,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             }
             );
             thread.Start();
+            return thread;
         }
     }
 }

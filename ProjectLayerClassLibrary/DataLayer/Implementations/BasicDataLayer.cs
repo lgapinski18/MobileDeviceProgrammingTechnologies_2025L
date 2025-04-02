@@ -18,6 +18,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private IAccountOwnerRepository accountOwnerRepository;
         private IBankAccountRepository bankAccountRepository;
 
+        private object accountOwnerLock = new object();
+        private object bankAccountLock = new object();
+
         public BasicDataLayer()
         {
             accountOwnerRepository = RepositoryFactory.CreateAccountOwnerRepository();
@@ -33,51 +36,23 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
-            const string loginPrefix = "IK";
-            int ownerId = 0;
-            ICollection<AAccountOwner> accountOwners = accountOwnerRepository.GetAll();
-            if (accountOwners.Count != 0)
+            AAccountOwner accountOwner;
+            lock (accountOwnerLock)
             {
-                ownerId = accountOwners.Last().GetId();
-            }
-
-            while (accountOwnerRepository.Get(ownerId) != null)
-            {
-                ownerId += 1;
-            }
-
-            string ownerLogin;
-
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                byte[] bytes = new byte[4]; // 4 bytes = 32-bit integer
-                int number;
-                do
+                const string loginPrefix = "IK";
+                int ownerId = 0;
+                ICollection<AAccountOwner> accountOwners = accountOwnerRepository.GetAll();
+                if (accountOwners.Count != 0)
                 {
-                    rng.GetBytes(bytes);
-                    number = BitConverter.ToInt32(bytes, 0) & 0x7FFFFFFF; // Ensure positive
-                    ownerLogin = loginPrefix + (number % 1_000_000).ToString("D6"); // Exactly 8 digits
+                    ownerId = accountOwners.Last().GetId();
                 }
-                while (accountOwnerRepository.GetByOwnerLogin(ownerLogin) != null);
-            }
 
-            AAccountOwner accountOwner = new BasicAccountOwner(ownerId, ownerLogin, ownerName, ownerSurname, ownerEmail, ownerPassword);
-            if (!accountOwnerRepository.Save(accountOwner))
-            {
-                throw new CreatingAccountOwnerException("Wystąpił problem podczas zapisu utworzonego obiektu właściciela konta bankowego do repoytorium!");
-            }
+                while (accountOwnerRepository.Get(ownerId) != null)
+                {
+                    ownerId += 1;
+                }
 
-            CreateBankAccount(ownerId);
-
-            return accountOwner;
-        }
-
-        public override ABankAccount CreateBankAccount(int ownerId)
-        {
-            AAccountOwner? accountOwner = accountOwnerRepository.Get(ownerId);
-            if (accountOwner != null)
-            {
-                string accountNumber;
+                string ownerLogin;
 
                 using (var rng = RandomNumberGenerator.Create())
                 {
@@ -87,52 +62,113 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     {
                         rng.GetBytes(bytes);
                         number = BitConverter.ToInt32(bytes, 0) & 0x7FFFFFFF; // Ensure positive
-                        accountNumber = (number % 100000000).ToString("D8"); // Exactly 8 digits
+                        ownerLogin = loginPrefix + (number % 1_000_000).ToString("D6"); // Exactly 8 digits
                     }
-                    while (bankAccountRepository.GetByAccountNumber(accountNumber) != null);
+                    while (accountOwnerRepository.GetByOwnerLogin(ownerLogin) != null);
                 }
 
-                ABankAccount bankAccount = new BasicBankAccount(accountNumber, accountOwner);
-                if (!bankAccountRepository.Save(bankAccount))
+                accountOwner = new BasicAccountOwner(ownerId, ownerLogin, ownerName, ownerSurname, ownerEmail, ownerPassword);
+                if (!accountOwnerRepository.Save(accountOwner))
                 {
-                    throw new CreatingBankAccountException("Wystąpił problem podczas zapisu utworzonego obiektu konta bankowego do repoytorium!");
+                    throw new CreatingAccountOwnerException("Wystąpił problem podczas zapisu utworzonego obiektu właściciela konta bankowego do repoytorium!");
                 }
-                return bankAccount;
+
+                CreateBankAccount(ownerId);
             }
-            else
+
+            return accountOwner;
+        }
+
+        public override ABankAccount CreateBankAccount(int ownerId)
+        {
+            lock (accountOwnerLock)
             {
-                throw new ArgumentException($"Nie istnieje właściciel konta bankowego o id {ownerId}!");
+                AAccountOwner? accountOwner = accountOwnerRepository.Get(ownerId);
+                if (accountOwner != null)
+                {
+                    string accountNumber;
+                    ABankAccount bankAccount;
+
+                    lock (bankAccountLock)
+                    {
+                        using (var rng = RandomNumberGenerator.Create())
+                        {
+                            byte[] bytes = new byte[4]; // 4 bytes = 32-bit integer
+                            int number;
+                            do
+                            {
+                                rng.GetBytes(bytes);
+                                number = BitConverter.ToInt32(bytes, 0) & 0x7FFFFFFF; // Ensure positive
+                                accountNumber = (number % 100000000).ToString("D8"); // Exactly 8 digits
+                            }
+                            while (bankAccountRepository.GetByAccountNumber(accountNumber) != null);
+                        }
+
+                        bankAccount = new BasicBankAccount(accountNumber, accountOwner);
+                        if (!bankAccountRepository.Save(bankAccount))
+                        {
+                            throw new CreatingBankAccountException("Wystąpił problem podczas zapisu utworzonego obiektu konta bankowego do repoytorium!");
+                        }
+                    }
+
+                    return bankAccount;
+                }
+                else
+                {
+                    throw new ArgumentException($"Nie istnieje właściciel konta bankowego o id {ownerId}!");
+                }
             }
         }
 
         public override AAccountOwner? GetAccountOwner(int ownerId)
         {
-            return accountOwnerRepository.Get(ownerId);
+            lock (accountOwnerLock)
+            {
+                return accountOwnerRepository.Get(ownerId);
+            }
         }
 
         public override ICollection<AAccountOwner> GetAllAccountOwners()
         {
-            return accountOwnerRepository.GetAll();
+            lock (accountOwnerLock)
+            {
+                return accountOwnerRepository.GetAll();
+            }
         }
 
         public override ICollection<ABankAccount> GetAllBankAccounts()
         {
-            return bankAccountRepository.GetAll();
+            lock (bankAccountLock)
+            {
+                return bankAccountRepository.GetAll();
+            }
         }
 
         public override ABankAccount? GetBankAccount(string accountNumber)
         {
-            return bankAccountRepository.GetByAccountNumber(accountNumber);
+            lock (bankAccountLock)
+            {
+                return bankAccountRepository.GetByAccountNumber(accountNumber);
+            }
         }
 
         public override ICollection<ABankAccount> GetBankAccounts(int ownerId)
         {
-            return bankAccountRepository.GetByAccountOwnerId(ownerId);
+            lock (bankAccountLock)
+            {
+                lock (accountOwnerLock)
+                {
+                    return bankAccountRepository.GetByAccountOwnerId(ownerId);
+                }
+            }
         }
 
         public override AAccountOwner? GetAccountOwner(string ownerLogin)
         {
-            return accountOwnerRepository.GetByOwnerLogin(ownerLogin);
+            lock (accountOwnerLock)
+            {
+                return accountOwnerRepository.GetByOwnerLogin(ownerLogin);
+            }
         }
     }
 }
