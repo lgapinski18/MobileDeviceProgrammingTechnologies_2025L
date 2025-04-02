@@ -41,6 +41,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             lines.Add($"{accountOwner1.GetId()}, {accountOwner1.OwnerLogin}, {accountOwner1.OwnerPassword}; {accountOwner1.OwnerName}, {accountOwner1.OwnerSurname}, {accountOwner1.OwnerEmail}");
             lines.Add($"{accountOwner2.GetId()}, {accountOwner2.OwnerLogin}, {accountOwner2.OwnerPassword}; {accountOwner2.OwnerName}, {accountOwner2.OwnerSurname}, {accountOwner2.OwnerEmail}");
 
+            bankAccountRepository.GetByAccountOwnerId(accountOwner1.GetId()).First().AccountBalance = 2000.0f;
+            bankAccountRepository.GetByAccountOwnerId(accountOwner2.GetId()).First().AccountBalance = 1000.0f;
+
             File.WriteAllLines("StartingDataCreationLog.txt", lines);
         }
 
