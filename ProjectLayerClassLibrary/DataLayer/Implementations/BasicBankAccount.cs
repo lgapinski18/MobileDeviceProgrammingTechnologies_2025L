@@ -15,11 +15,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object accountBalanceLock = new object();
         private object bankAccountReportsLock = new object();
 
-        public BasicBankAccount(string accountNumber, AAccountOwner accountOwner)
+        public BasicBankAccount(int id, string accountNumber, AAccountOwner accountOwner)
+            : base(id, accountNumber, accountOwner)
         {
             AccountNumber = accountNumber;
             AccountOwner = accountOwner;
-            AccountBalance = 0.0f;
             bankAccountReports = new List<ABankAccountReport>();
 
             ABankAccountReport startingBankAccountReport = new BankAccountReportWithOwnerData(0.0f, 0.0f, accountOwner.OwnerName, accountOwner.OwnerSurname, accountOwner.OwnerEmail);
@@ -30,6 +30,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             lock (accountBalanceLock)
             {
+                if (amount < 0.0f)
+                {
+                    throw new ArgumentException("Amout nie może być wartością ujemną!");
+                }
                 if (AccountBalance < amount)
                 {
                     throw new InvalidBankAccountOperationException("Nie wystarczająco środków na kącie, aby przeprowadzić zmniejszenie stanu kąta!");
@@ -60,6 +64,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             lock (accountBalanceLock)
             {
+                if (amount < 0.0f)
+                {
+                    throw new ArgumentException("Amout nie może być wartością ujemną!");
+                }
                 AccountBalance += amount;
             }
         }

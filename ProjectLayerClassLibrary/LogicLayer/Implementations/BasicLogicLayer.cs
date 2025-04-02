@@ -8,6 +8,8 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Timers;
+using Timer = System.Timers.Timer;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -18,12 +20,36 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         private ADataLayer dataLayer;
         private object accountOwnersLock = new object();
         private object bankAccountsLock = new object();
+        private Timer bankAccountReportTimer;
+        private bool reportsHasBeenUpdatedRecently = false;
 
         public ADataLayer DataLayer { get { return dataLayer; } }
 
         public BasicLogicLayer(ADataLayer? dataLayer = default)
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
+
+            bankAccountReportTimer = new Timer(new TimeSpan(24, 0, 0));
+            bankAccountReportTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
+            {
+                if (DateTime.UtcNow.Day == 2)
+                {
+                    reportsHasBeenUpdatedRecently = true;
+                    foreach (DataLayer.ABankAccount bankAccount in this.dataLayer.GetAllBankAccounts())
+                    {
+                        bankAccount.GenerateBankAccountReport();
+                    }
+                }
+            };
+            bankAccountReportTimer.Enabled = true;
+            bankAccountReportTimer.AutoReset = true;
+            bankAccountReportTimer.Start();
+        }
+
+        public void Dispose()
+        {
+            bankAccountReportTimer.Stop();
+            bankAccountReportTimer.Dispose();
         }
 
         public override bool AuthenticateAccountOwner(string login, string password)
@@ -172,6 +198,11 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             );
             thread.Start();
             return thread;
+        }
+
+        public override bool CheckForReportsUpdates()
+        {
+            return reportsHasBeenUpdatedRecently;
         }
     }
 }

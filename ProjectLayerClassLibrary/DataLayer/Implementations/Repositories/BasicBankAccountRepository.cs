@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -24,7 +25,12 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations.Repositories
 
         public ICollection<ABankAccount> GetByAccountOwnerId(int ownerId)
         {
-            return (ICollection<ABankAccount>)entities.Where(bankAccount => bankAccount.AccountOwner.GetId() == ownerId);
+            ICollection<ABankAccount> bankAccounts = new List<ABankAccount>();
+            foreach (ABankAccount bankAccount in entities.Where(bankAccount => bankAccount.AccountOwner.GetId() == ownerId))
+            {
+                bankAccounts.Add(bankAccount);
+            }
+            return bankAccounts;
         }
     }
 }

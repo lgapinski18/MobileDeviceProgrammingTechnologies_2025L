@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Xml.Linq;
 
 namespace ProjectLayerClassLibrary.DataLayer
 {
@@ -43,6 +45,20 @@ namespace ProjectLayerClassLibrary.DataLayer
         public void SetId(int id)
         {
             this.id = id;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (obj == null || GetType() != obj.GetType())
+                return false;
+
+            AAccountOwner other = (AAccountOwner)obj;
+            return id == other.id
+                   && ownerLogin == other.ownerLogin
+                   && ownerName == other.ownerName
+                   && ownerSurname == other.ownerSurname
+                   && OwnerEmail == other.OwnerEmail
+                   && ownerPassword == other.ownerPassword;
         }
     }
 }
