@@ -22,12 +22,15 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object accountOwnerLock = new object();
         private object bankAccountLock = new object();
 
-        public BasicDataLayer()
+        public BasicDataLayer(bool generateDefaultContent = true)
         {
             accountOwnerRepository = RepositoryFactory.CreateAccountOwnerRepository();
             bankAccountRepository = RepositoryFactory.CreateBankAccountRepository();
 
-            GenerateStartingContent();
+            if (generateDefaultContent)
+            {
+                GenerateStartingContent();
+            }
         }
 
         private void GenerateStartingContent()

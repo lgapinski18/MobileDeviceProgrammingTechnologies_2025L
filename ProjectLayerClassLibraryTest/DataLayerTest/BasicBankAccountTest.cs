@@ -88,7 +88,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         {
             ABankAccount bankAccount = new BasicBankAccount(id, accountNumber, accountOwner);
             Assert.AreEqual(0.0f, bankAccount.AccountBalance);
-            Assert.ThrowsException<InvalidBankAccountOperationException>(() => bankAccount.DecreaseAccountBalance(-Math.Abs(change)));
+            Assert.ThrowsException<InvalidBankAccountOperationException>(() => bankAccount.DecreaseAccountBalance(Math.Abs(change)));
         }
 
         [TestMethod]
@@ -96,6 +96,9 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         public void shouldCreateAdditionalReport(int id, string accountNumber)
         {
             ABankAccount bankAccount = new BasicBankAccount(id, accountNumber, accountOwner);
+            Assert.AreEqual(1, bankAccount.GetBankAccountReports().Count);
+            bankAccount.GenerateBankAccountReport();
+            Assert.AreEqual(2, bankAccount.GetBankAccountReports().Count);
         }
     }
 }
