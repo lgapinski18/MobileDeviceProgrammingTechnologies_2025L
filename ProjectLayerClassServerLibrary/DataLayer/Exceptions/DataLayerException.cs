@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibrary.DataLayer.Exceptions
+namespace ProjectLayerClassServerLibrary.DataLayer.Exceptions
 {
     public class DataLayerException : Exception
     {

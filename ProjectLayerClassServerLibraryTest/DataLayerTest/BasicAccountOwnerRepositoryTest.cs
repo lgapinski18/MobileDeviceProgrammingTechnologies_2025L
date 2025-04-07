@@ -1,14 +1,14 @@
-﻿using ProjectLayerClassLibrary.DataLayer;
-using ProjectLayerClassLibrary.DataLayer.Implementations;
-using ProjectLayerClassLibrary.DataLayer.Implementations.Repositories;
-using ProjectLayerClassLibrary.DataLayer.Repositories;
+﻿using ProjectLayerClassServerLibrary.DataLayer;
+using ProjectLayerClassServerLibrary.DataLayer.Implementations;
+using ProjectLayerClassServerLibrary.DataLayer.Implementations.Repositories;
+using ProjectLayerClassServerLibrary.DataLayer.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibraryTest.DataLayerTest
+namespace ProjectLayerClassServerLibraryTest.DataLayerTest
 {
     [TestClass]
     public class BasicAccountOwnerRepositoryTest

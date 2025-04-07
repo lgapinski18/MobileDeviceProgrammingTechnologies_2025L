@@ -1,11 +1,11 @@
-﻿using ProjectLayerClassLibrary.DataLayer;
+﻿using ProjectLayerClassServerLibrary.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibrary.LogicLayer
+namespace ProjectLayerClassServerLibrary.LogicLayer
 {
     public abstract class ALogicLayer
     {

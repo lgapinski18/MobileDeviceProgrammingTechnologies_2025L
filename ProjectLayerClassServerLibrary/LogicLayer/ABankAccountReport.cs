@@ -1,4 +1,4 @@
-﻿using ProjectLayerClassLibrary.LogicLayer.Implementations;
+﻿using ProjectLayerClassServerLibrary.LogicLayer.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
-namespace ProjectLayerClassLibrary.LogicLayer
+namespace ProjectLayerClassServerLibrary.LogicLayer
 {
     public abstract class ABankAccountReport
     {

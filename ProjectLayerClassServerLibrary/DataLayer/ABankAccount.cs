@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibrary.DataLayer
+namespace ProjectLayerClassServerLibrary.DataLayer
 {
     public abstract class ABankAccount : IIdentifiable
     {

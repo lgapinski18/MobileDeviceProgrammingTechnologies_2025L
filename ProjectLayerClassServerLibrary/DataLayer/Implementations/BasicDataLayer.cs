@@ -1,6 +1,6 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Exceptions;
-using ProjectLayerClassLibrary.DataLayer.Repositories;
-using ProjectLayerClassLibrary.DataLayer.Implementations.Repositories;
+﻿using ProjectLayerClassServerLibrary.DataLayer.Exceptions;
+using ProjectLayerClassServerLibrary.DataLayer.Repositories;
+using ProjectLayerClassServerLibrary.DataLayer.Implementations.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,9 +10,9 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
 
-[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
+[assembly: InternalsVisibleTo("ProjectLayerClassServerLibraryTest")]
 
-namespace ProjectLayerClassLibrary.DataLayer.Implementations
+namespace ProjectLayerClassServerLibrary.DataLayer.Implementations
 {
     internal class BasicDataLayer : ADataLayer
     {

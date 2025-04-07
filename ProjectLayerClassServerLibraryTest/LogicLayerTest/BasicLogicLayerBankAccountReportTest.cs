@@ -1,11 +1,11 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Implementations;
+﻿using ProjectLayerClassServerLibrary.DataLayer.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibraryTest.LogicLayerTest
+namespace ProjectLayerClassServerLibraryTest.LogicLayerTest
 {
     [TestClass]
     public class BasicLogicLayerBankAccountReportTest
@@ -15,8 +15,8 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
         public void shouldCreateCorrect(float previousAccountBalance, float currentAccountBalance, string ownerName, string ownerSurname, string ownerEmail)
         {
             DateTime prev = DateTime.UtcNow;
-            ProjectLayerClassLibrary.DataLayer.ABankAccountReport bankAccountReport = new ProjectLayerClassLibrary.DataLayer.Implementations.BankAccountReportWithOwnerData(previousAccountBalance, currentAccountBalance, ownerName, ownerSurname, ownerEmail);
-            ProjectLayerClassLibrary.LogicLayer.ABankAccountReport logicBankAccountReport = new ProjectLayerClassLibrary.LogicLayer.Implementations.BasicLogicLayerBankAccountReport(bankAccountReport);
+            ProjectLayerClassServerLibrary.DataLayer.ABankAccountReport bankAccountReport = new ProjectLayerClassServerLibrary.DataLayer.Implementations.BankAccountReportWithOwnerData(previousAccountBalance, currentAccountBalance, ownerName, ownerSurname, ownerEmail);
+            ProjectLayerClassServerLibrary.LogicLayer.ABankAccountReport logicBankAccountReport = new ProjectLayerClassServerLibrary.LogicLayer.Implementations.BasicLogicLayerBankAccountReport(bankAccountReport);
             DateTime after = DateTime.UtcNow;
 
             Assert.IsTrue(logicBankAccountReport.TimeOfReportCreation > prev);
@@ -32,8 +32,8 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
         [DataRow(0.0f, 100.0f, "Adam", "Nowak", "an@poczta.com")]
         public void shouldReturnCorrectMessage(float previousAccountBalance, float currentAccountBalance, string ownerName, string ownerSurname, string ownerEmail)
         {
-            ProjectLayerClassLibrary.DataLayer.ABankAccountReport bankAccountReport = new ProjectLayerClassLibrary.DataLayer.Implementations.BankAccountReportWithOwnerData(previousAccountBalance, currentAccountBalance, ownerName, ownerSurname, ownerEmail);
-            ProjectLayerClassLibrary.LogicLayer.ABankAccountReport logicBankAccountReport = new ProjectLayerClassLibrary.LogicLayer.Implementations.BasicLogicLayerBankAccountReport(bankAccountReport);
+            ProjectLayerClassServerLibrary.DataLayer.ABankAccountReport bankAccountReport = new ProjectLayerClassServerLibrary.DataLayer.Implementations.BankAccountReportWithOwnerData(previousAccountBalance, currentAccountBalance, ownerName, ownerSurname, ownerEmail);
+            ProjectLayerClassServerLibrary.LogicLayer.ABankAccountReport logicBankAccountReport = new ProjectLayerClassServerLibrary.LogicLayer.Implementations.BasicLogicLayerBankAccountReport(bankAccountReport);
 
             Assert.AreEqual(
                 $"Czas wyg.:{logicBankAccountReport.TimeOfReportCreation};\nImię: {ownerName} Nazwisko: {ownerSurname}\nEmail: {ownerEmail};\nPoprz. stan konta: {previousAccountBalance}\nObecny stan konta: {currentAccountBalance}\nSaldo: {currentAccountBalance - previousAccountBalance}",

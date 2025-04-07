@@ -1,4 +1,4 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Exceptions;
+﻿using ProjectLayerClassServerLibrary.DataLayer.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -6,9 +6,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
+[assembly: InternalsVisibleTo("ProjectLayerClassServerLibraryTest")]
 
-namespace ProjectLayerClassLibrary.DataLayer.Implementations
+namespace ProjectLayerClassServerLibrary.DataLayer.Implementations
 {
     internal class BasicBankAccount : ABankAccount
     {

@@ -5,9 +5,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
+[assembly: InternalsVisibleTo("ProjectLayerClassServerLibraryTest")]
 
-namespace ProjectLayerClassLibrary.DataLayer.Implementations
+namespace ProjectLayerClassServerLibrary.DataLayer.Implementations
 {
     internal class BankAccountReportWithOwnerData : ABankAccountReport
     {

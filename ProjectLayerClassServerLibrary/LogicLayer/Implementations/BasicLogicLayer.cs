@@ -1,5 +1,5 @@
-﻿using ProjectLayerClassLibrary.DataLayer;
-using ProjectLayerClassLibrary.LogicLayer.Exceptions;
+﻿using ProjectLayerClassServerLibrary.DataLayer;
+using ProjectLayerClassServerLibrary.LogicLayer.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 using System.Timers;
 using Timer = System.Timers.Timer;
 
-[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
+[assembly: InternalsVisibleTo("ProjectLayerClassServerLibraryTest")]
 
-namespace ProjectLayerClassLibrary.LogicLayer.Implementations
+namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
 {
     internal class BasicLogicLayer : ALogicLayer
     {

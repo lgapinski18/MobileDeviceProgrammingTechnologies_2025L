@@ -1,17 +1,17 @@
-﻿using ProjectLayerClassLibrary.DataLayer;
-using ProjectLayerClassLibrary.DataLayer.Implementations;
-using ProjectLayerClassLibrary.LogicLayer;
-using ProjectLayerClassLibrary.LogicLayer.Exceptions;
-using ProjectLayerClassLibrary.LogicLayer.Implementations;
+﻿using ProjectLayerClassServerLibrary.DataLayer;
+using ProjectLayerClassServerLibrary.DataLayer.Implementations;
+using ProjectLayerClassServerLibrary.LogicLayer;
+using ProjectLayerClassServerLibrary.LogicLayer.Exceptions;
+using ProjectLayerClassServerLibrary.LogicLayer.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using static ProjectLayerClassLibrary.LogicLayer.ALogicLayer;
+using static ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer;
 
-namespace ProjectLayerClassLibraryTest.LogicLayerTest
+namespace ProjectLayerClassServerLibraryTest.LogicLayerTest
 {
     [TestClass]
     public class BasicLogicLayerTest
@@ -25,7 +25,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             Assert.IsNotNull(logicLayer);
 
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
             Assert.IsTrue((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_NAME) == 0);
             Assert.IsTrue((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_SURNAME) == 0);
             Assert.IsTrue((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_EMAIL) == 0);
@@ -49,7 +49,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             Assert.IsNotNull(logicLayer);
 
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
             Assert.IsTrue((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_NAME) != 0);
             Assert.IsTrue((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_SURNAME) != 0);
             Assert.IsTrue((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_EMAIL) != 0);
@@ -64,9 +64,9 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
 
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwnerReturned = logicLayer.GetAccountOwner(logicAccountOwner.OwnerLogin);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwnerReturned = logicLayer.GetAccountOwner(logicAccountOwner.OwnerLogin);
             Assert.IsNotNull(logicAccountOwnerReturned);
             Assert.AreEqual(logicAccountOwner.DataLayerAccountOwner, logicAccountOwnerReturned.DataLayerAccountOwner);
             logicAccountOwnerReturned = logicLayer.GetAccountOwner(logicAccountOwner.GetId());
@@ -81,7 +81,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
 
             Assert.IsTrue(logicLayer.AuthenticateAccountOwner(logicAccountOwner.OwnerLogin, logicAccountOwner.OwnerPassword));
         }
@@ -93,7 +93,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
 
             Assert.IsFalse(logicLayer.AuthenticateAccountOwner(logicAccountOwner.OwnerLogin, failPassword));
         }
@@ -105,7 +105,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
 
             Assert.ThrowsException<ThereIsNoSuchOwnerException>(() => logicLayer.AuthenticateAccountOwner(failLogin, logicAccountOwner.OwnerPassword));
         }
@@ -117,7 +117,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
 
             Assert.ThrowsException<ArgumentNullException>(() => logicLayer.AuthenticateAccountOwner(null, logicAccountOwner.OwnerPassword));
             Assert.ThrowsException<ArgumentNullException>(() => logicLayer.AuthenticateAccountOwner(logicAccountOwner.OwnerLogin, null));
@@ -130,7 +130,7 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
             //CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            //ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            //ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
 
             Assert.IsFalse(logicLayer.CheckForReportsUpdates());
         }
@@ -142,12 +142,12 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
             CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
-            ProjectLayerClassLibrary.LogicLayer.ABankAccount? logicBankAccount = logicLayer.OpenNewBankAccount(logicAccountOwner.GetId());
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            ProjectLayerClassServerLibrary.LogicLayer.ABankAccount? logicBankAccount = logicLayer.OpenNewBankAccount(logicAccountOwner.GetId());
             Assert.IsNotNull(logicBankAccount);
             Assert.AreEqual(logicAccountOwner.DataLayerAccountOwner, logicBankAccount.AccountOwner.DataLayerAccountOwner);
 
-            ICollection<ProjectLayerClassLibrary.LogicLayer.ABankAccount> bankAccounts = logicLayer.GetAccountOwnerBankAccounts(logicAccountOwner.GetId());
+            ICollection<ProjectLayerClassServerLibrary.LogicLayer.ABankAccount> bankAccounts = logicLayer.GetAccountOwnerBankAccounts(logicAccountOwner.GetId());
         }
 
     }

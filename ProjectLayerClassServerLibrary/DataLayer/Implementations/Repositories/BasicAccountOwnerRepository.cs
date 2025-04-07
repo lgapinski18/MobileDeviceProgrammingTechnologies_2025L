@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
-using ProjectLayerClassLibrary.DataLayer.Repositories;
+using ProjectLayerClassServerLibrary.DataLayer.Repositories;
 
-[assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
+[assembly: InternalsVisibleTo("ProjectLayerClassServerLibraryTest")]
 
-namespace ProjectLayerClassLibrary.DataLayer.Implementations.Repositories
+namespace ProjectLayerClassServerLibrary.DataLayer.Implementations.Repositories
 {
     internal class BasicAccountOwnerRepository : ARepository<AAccountOwner>, IAccountOwnerRepository
     {

@@ -1,12 +1,12 @@
-﻿using ProjectLayerClassLibrary.DataLayer;
-using ProjectLayerClassLibrary.DataLayer.Implementations;
+﻿using ProjectLayerClassServerLibrary.DataLayer;
+using ProjectLayerClassServerLibrary.DataLayer.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibraryTest.DataLayerTest
+namespace ProjectLayerClassServerLibraryTest.DataLayerTest
 {
     [TestClass]
     public class BasicDataLayerTest

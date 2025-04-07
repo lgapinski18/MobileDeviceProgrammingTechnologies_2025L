@@ -1,15 +1,15 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Implementations;
-using ProjectLayerClassLibrary.LogicLayer.Implementations;
-using ProjectLayerClassLibrary.DataLayer;
-using ProjectLayerClassLibrary.LogicLayer;
-using ProjectLayerClassLibrary;
+﻿using ProjectLayerClassServerLibrary.DataLayer.Implementations;
+using ProjectLayerClassServerLibrary.LogicLayer.Implementations;
+using ProjectLayerClassServerLibrary.DataLayer;
+using ProjectLayerClassServerLibrary.LogicLayer;
+using ProjectLayerClassServerLibrary;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassLibraryTest.LogicLayerTest
+namespace ProjectLayerClassServerLibraryTest.LogicLayerTest
 {
     [TestClass]
     public class BasicLogicLayerAccountOwnerTest
@@ -18,8 +18,8 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
         [DataRow(1, "IK123456", "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public void shouldCreateCorrect(int ownerId, string ownerLogin, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
-            ProjectLayerClassLibrary.DataLayer.AAccountOwner accountOwner = new ProjectLayerClassLibrary.DataLayer.Implementations.BasicAccountOwner(ownerId, ownerLogin, ownerName, ownerSurname, ownerEmail, ownerPassword);
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = ProjectLayerClassLibrary.LogicLayer.AAccountOwner.CreateAccountOwner(accountOwner);
+            ProjectLayerClassServerLibrary.DataLayer.AAccountOwner accountOwner = new ProjectLayerClassServerLibrary.DataLayer.Implementations.BasicAccountOwner(ownerId, ownerLogin, ownerName, ownerSurname, ownerEmail, ownerPassword);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner.CreateAccountOwner(accountOwner);
             Assert.IsNotNull(logicAccountOwner);
             Assert.AreEqual(ownerId, logicAccountOwner.GetId());
             Assert.AreEqual(ownerLogin, logicAccountOwner.OwnerLogin);
@@ -34,8 +34,8 @@ namespace ProjectLayerClassLibraryTest.LogicLayerTest
         public void shouldChangeEveryProperty(int ownerId, string ownerLogin, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword,
                                               int ownerId2, string ownerLogin2, string ownerName2, string ownerSurname2, string ownerEmail2, string ownerPassword2)
         {
-            ProjectLayerClassLibrary.DataLayer.AAccountOwner accountOwner = new ProjectLayerClassLibrary.DataLayer.Implementations.BasicAccountOwner(ownerId, ownerLogin, ownerName, ownerSurname, ownerEmail, ownerPassword);
-            ProjectLayerClassLibrary.LogicLayer.AAccountOwner? logicAccountOwner = ProjectLayerClassLibrary.LogicLayer.AAccountOwner.CreateAccountOwner(accountOwner);
+            ProjectLayerClassServerLibrary.DataLayer.AAccountOwner accountOwner = new ProjectLayerClassServerLibrary.DataLayer.Implementations.BasicAccountOwner(ownerId, ownerLogin, ownerName, ownerSurname, ownerEmail, ownerPassword);
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner.CreateAccountOwner(accountOwner);
             Assert.IsNotNull(logicAccountOwner);
             logicAccountOwner.SetId(ownerId2);
             logicAccountOwner.OwnerLogin = ownerLogin2;

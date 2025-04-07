@@ -1,7 +1,7 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Implementations.Repositories;
-using ProjectLayerClassLibrary.DataLayer.Implementations;
-using ProjectLayerClassLibrary.DataLayer.Repositories;
-using ProjectLayerClassLibrary.DataLayer;
+﻿using ProjectLayerClassServerLibrary.DataLayer.Implementations.Repositories;
+using ProjectLayerClassServerLibrary.DataLayer.Implementations;
+using ProjectLayerClassServerLibrary.DataLayer.Repositories;
+using ProjectLayerClassServerLibrary.DataLayer;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 
-namespace ProjectLayerClassLibraryTest.DataLayerTest
+namespace ProjectLayerClassServerLibraryTest.DataLayerTest
 {
     [TestClass]
     public class BasicBankAccountRepositoryTest
