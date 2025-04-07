@@ -15,7 +15,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
     {
         private ClientWebSocket clientWebSocket;
         private CancellationTokenSource cts;
-        private int portNo = 5000;
+        private int portNo = 8080;
 
         private object accountOwnerLock = new object();
         private object bankAccountLock = new object();
@@ -49,7 +49,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             if (!isConnected)
             {
-                await clientWebSocket.ConnectAsync(new Uri($"ws://localhost:{portNo}/ws"), cts.Token);
+                await clientWebSocket.ConnectAsync(new Uri($"ws://localhost:{portNo}/"), cts.Token);
                 lock (checkConnectionLock)
                 {
                     isConnected = true;
@@ -102,7 +102,6 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 throw new NotConnectedToAplicationServer();
             }
-
             throw new NotImplementedException();
         }
 
@@ -125,7 +124,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 throw new NotConnectedToAplicationServer();
             }
 
-            throw new NotImplementedException();
+            return null;
+            //throw new NotImplementedException();
         }
 
         public override AAccountOwner? GetAccountOwner(string ownerLogin)
@@ -147,7 +147,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 throw new NotConnectedToAplicationServer();
             }
 
-            throw new NotImplementedException();
+            return null;
+            //throw new NotImplementedException();
         }
 
         public override ICollection<AAccountOwner> GetAllAccountOwners()

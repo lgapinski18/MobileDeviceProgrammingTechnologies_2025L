@@ -22,6 +22,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object accountOwnerLock = new object();
         private object bankAccountLock = new object();
 
+        private ServerComunicatingDataLayer client;
+
         public BasicDataLayer(bool generateDefaultContent = true)
         {
             accountOwnerRepository = RepositoryFactory.CreateAccountOwnerRepository();
@@ -31,6 +33,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 GenerateStartingContent();
             }
+
+            client = new ServerComunicatingDataLayer();
         }
 
         private void GenerateStartingContent()
@@ -192,6 +196,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             lock (accountOwnerLock)
             {
+                client.GetAccountOwner(ownerLogin);
                 return accountOwnerRepository.GetByOwnerLogin(ownerLogin);
             }
         }

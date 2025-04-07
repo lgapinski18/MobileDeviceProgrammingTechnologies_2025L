@@ -17,6 +17,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 {
     internal class BasicLogicLayer : ALogicLayer
     {
+        Task client;
         private ADataLayer dataLayer;
         private object accountOwnersLock = new object();
         private object bankAccountsLock = new object();
@@ -28,7 +29,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         public BasicLogicLayer(ADataLayer? dataLayer = default)
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
-
+            //this.client = WebSocketClient.Connect(new Uri($@"http://localhost:{20000}/"), Log);
             bankAccountReportTimer = new Timer(new TimeSpan(0, 1, 0));
             bankAccountReportTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
             {
@@ -44,6 +45,11 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             bankAccountReportTimer.Enabled = true;
             bankAccountReportTimer.AutoReset = true;
             bankAccountReportTimer.Start();
+        }
+
+        private void Log(string message)
+        {
+            Console.WriteLine(message);
         }
 
         public void Dispose()
