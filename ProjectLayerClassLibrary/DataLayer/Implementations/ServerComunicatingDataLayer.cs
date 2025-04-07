@@ -50,11 +50,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             if (!isConnected)
             {
                 await clientWebSocket.ConnectAsync(new Uri($"ws://localhost:{portNo}/ws"), cts.Token);
-            }
-
-            lock (checkConnectionLock)
-            {
-                isConnected = true;
+                lock (checkConnectionLock)
+                {
+                    isConnected = true;
+                }
             }
         }
 
