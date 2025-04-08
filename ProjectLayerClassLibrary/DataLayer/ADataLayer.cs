@@ -18,6 +18,8 @@ namespace ProjectLayerClassLibrary.DataLayer
 
         public abstract ABankAccount CreateBankAccount(int ownerId);
 
+        public abstract bool AuthenticateAccountOwner(string login, string password);
+
 
         public abstract AAccountOwner? GetAccountOwner(int ownerId);
         public abstract AAccountOwner? GetAccountOwner(string ownerLogin);

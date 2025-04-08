@@ -4,10 +4,13 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<OutputType>Exe</OutputType>
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="PresentationLayer\" />
+    <Compile Remove="PresentationLayer\**" />
+    <EmbeddedResource Remove="PresentationLayer\**" />
+    <None Remove="PresentationLayer\**" />
   </ItemGroup>
 
 </Project>
