@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ProjectLayerClassServerLibrary.LogicLayer;
+using ProjectLayerClassServerLibrary.Presentation.Factory;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,7 +15,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
         public static void Main(string[] args)
         {
             Console.WriteLine("Starting server on port 8080");
-            WebSocketServer server = new WebSocketServer(8080);
+            IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(8080, ALogicLayer.CreateLogicLayerInstance());
             Console.WriteLine("Server started on port 8080");
             while (server.IsRunning)
             {

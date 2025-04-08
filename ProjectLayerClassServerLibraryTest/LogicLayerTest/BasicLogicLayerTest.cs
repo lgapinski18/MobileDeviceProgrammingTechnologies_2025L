@@ -129,10 +129,10 @@ namespace ProjectLayerClassServerLibraryTest.LogicLayerTest
         {
             ADataLayer dataLayer = new BasicDataLayer(false);
             ALogicLayer logicLayer = new BasicLogicLayer(dataLayer);
-            //CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
-            //ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
+            CreationAccountOwnerFlags creationAccountOwnerFlags = CreationAccountOwnerFlags.EMPTY;
+            ProjectLayerClassServerLibrary.LogicLayer.AAccountOwner? logicAccountOwner = logicLayer.CreateNewAccountOwner(name, surname, email, password, out creationAccountOwnerFlags);
 
-            Assert.IsFalse(logicLayer.CheckForReportsUpdates());
+            Assert.IsFalse(logicLayer.CheckForReportsUpdates(logicAccountOwner.GetId()));
         }
 
         [TestMethod]

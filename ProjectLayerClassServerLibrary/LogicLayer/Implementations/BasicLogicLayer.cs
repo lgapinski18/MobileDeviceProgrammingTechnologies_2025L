@@ -200,7 +200,7 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
             return thread;
         }
 
-        public override bool CheckForReportsUpdates()
+        public override bool CheckForReportsUpdates(int ownerId)
         {
             bool temp = reportsHasBeenUpdatedRecently;
             reportsHasBeenUpdatedRecently = false;

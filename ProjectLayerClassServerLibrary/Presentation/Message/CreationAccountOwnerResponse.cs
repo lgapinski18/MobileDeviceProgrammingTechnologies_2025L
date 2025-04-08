@@ -10,8 +10,8 @@ namespace ProjectLayerClassServerLibrary.Presentation.Message
     [XmlRoot("CreationAccountOwnerResponse")]
     internal class CreationAccountOwnerResponse
     {
-        [XmlElement("ResponseCodes")]
-        public List<string> ResponseCodes { get; set; }
+        [XmlElement("CreationFlags")]
+        public CreationAccountOwnerDataLayerFlags CreationFlags { get; set; }
         [XmlElement("AccountOwner")]
         public AccountOwnerDto? AccountOwner { get; set; }
     }

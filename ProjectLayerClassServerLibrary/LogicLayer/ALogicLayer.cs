@@ -50,6 +50,6 @@ namespace ProjectLayerClassServerLibrary.LogicLayer
 
         public abstract Thread PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback);
 
-        public abstract bool CheckForReportsUpdates();
+        public abstract bool CheckForReportsUpdates(int ownerId);
     }
 }
