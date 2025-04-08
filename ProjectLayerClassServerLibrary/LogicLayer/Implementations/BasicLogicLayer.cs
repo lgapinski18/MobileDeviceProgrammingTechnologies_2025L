@@ -200,11 +200,31 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
             return thread;
         }
 
-        public override bool CheckForReportsUpdates()
+        public override bool CheckForReportsUpdates(int ownerId)
         {
             bool temp = reportsHasBeenUpdatedRecently;
             reportsHasBeenUpdatedRecently = false;
             return temp;
+        }
+
+        public override ICollection<AAccountOwner> GetAllAccountsOwners()
+        {
+            return dataLayer.GetAllAccountOwners().Select(accountOwner => (AAccountOwner) new BasicLogicLayerAccountOwner(accountOwner)).ToList();
+        }
+
+        public override ICollection<ABankAccount> GetAllBankAccounts()
+        {
+            return dataLayer.GetAllBankAccounts().Select(bankAccount => (ABankAccount) new BasicLogicLayerBankAccount(bankAccount)).ToList();
+        }
+
+        public override ABankAccount? GetBankAccountByAccountNumber(string accountNumber)
+        {
+            ProjectLayerClassServerLibrary.DataLayer.ABankAccount? bankAccount = dataLayer.GetBankAccount(accountNumber);
+            if (bankAccount == null)
+            {
+                return null;
+            }
+            return new BasicLogicLayerBankAccount(bankAccount);
         }
     }
 }

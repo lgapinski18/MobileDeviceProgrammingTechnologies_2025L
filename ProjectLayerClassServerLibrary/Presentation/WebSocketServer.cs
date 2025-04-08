@@ -9,11 +9,12 @@ using System.Xml.Serialization;
 using ProjectLayerClassServerLibrary.LogicLayer;
 using ProjectLayerClassServerLibrary.Presentation.Message;
 using System.Xml;
+using System.Security.Principal;
 
 
 namespace ProjectLayerClassServerLibrary.Presentation
 {
-    public partial class WebSocketServer
+    internal class WebSocketServer : IWebSocketServer
     {
         private Task serverLoopTask;
         private List<WebSocketConnection> connections = new();
@@ -21,9 +22,9 @@ namespace ProjectLayerClassServerLibrary.Presentation
 
         public bool IsRunning { get => !serverLoopTask.IsCompleted; }
 
-        public WebSocketServer(int portNo)
+        public WebSocketServer(int portNo, ALogicLayer logicLayer)
         {
-            logicLayer = ALogicLayer.CreateLogicLayerInstance();
+            this.logicLayer = logicLayer;
             Uri _uri = new Uri($@"http://localhost:{portNo}/");
             serverLoopTask = Task.Factory.StartNew(() => ServerLoop(_uri, OnConnection));
         }
@@ -73,6 +74,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             string messageType = message.Substring(MESSAGE_TYPE_POSITION, MESSAGE_TYPE_LENGTH);
             int messageSequenceNo = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SEQUENCE_NUMBER_POSITION, MESSAGE_SEQUENCE_NUMBER_LENGTH)));
             int messageSize = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SIZE_POSITION, MESSAGE_SIZE_LENGTH)));
+            string messageContent = message.Substring(MESSAGE_CONTENT_POSITION, messageSize);
 
             Console.WriteLine($"MessageType: {messageType}, MessageSequenceNo: {messageSequenceNo}, MessageSize: {messageSize}");
 
@@ -84,45 +86,63 @@ namespace ProjectLayerClassServerLibrary.Presentation
 
             switch (messageType)
             {
+                case "_AAO":
+                    //AAO - authethicate account owner, data: string login, string password
+                    responseContent = ProcessAuthenthicateAccountOwner(GetData<Credentials>(messageContent));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
                 case "_CAO":
                     //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "_CBA":
                     //_CBA - create bank account; Dane: int ownerId
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessCreateBankAccount(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "_GAO":
                     //_GAO - get account owner; Dane: int ownerId
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessGetAccountOwner(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GAAO":
                     //GAAO - get all account owners; 0 danych
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    responseContent = ProcessGetAllAccountOwners();
+                    serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
                     break;
 
                 case "GBAN":
                     //GBAN - get bank account; dane: "{accountNumber}"
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessGetBankAccountByNumber(GetData<string>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GBAS":
                     //GBAS - get bank accounts for owner id; dane: int owner id;
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessGetBankAccounts(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GABA":
                     //GABA - get all accounts; 0 danych
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessGetAllBankAccounts();
+                    serializer = new XmlSerializer(typeof(List<BankAccountDto>));
+                    break;
+
+                case "GAOL":
+                    //GAOL - get account owner by login, data: string login
+                    responseContent = ProcessGetAccountOwnerByLogin(GetData<string>(messageContent));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "CFRU":
+                    //CFRU - check for reports updates, data: int ownerId
+                    responseContent = ProcessCheckForReportsUpdate(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
@@ -158,6 +178,27 @@ namespace ProjectLayerClassServerLibrary.Presentation
             return deserialized;
         }
 
+        private static int? GetInt(string message) 
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(int));
+            int? deserialized = null;
+            using (var reader = new StringReader(message))
+            {
+                deserialized = (int?)serializer.Deserialize(reader);
+            }
+
+            return deserialized;
+        }
+
+        private bool? ProcessAuthenthicateAccountOwner(Credentials? credentials)
+        {
+            if (credentials == null)
+            {
+                return null;
+            }
+            return logicLayer.AuthenticateAccountOwner(credentials.Login, credentials.Password);
+        }
+
         private CreationAccountOwnerResponse? ProcessCreateAccountOwner(AccountOwnerCreationData? accountOwnerCreationData)
         {
             if (accountOwnerCreationData == null)
@@ -165,42 +206,161 @@ namespace ProjectLayerClassServerLibrary.Presentation
                 return null; 
             }
 
-            AAccountOwner? accountOwner = logicLayer.CreateNewAccountOwner(accountOwnerCreationData.Name, accountOwnerCreationData.Surname, accountOwnerCreationData.Email, accountOwnerCreationData.Password, out ALogicLayer.CreationAccountOwnerFlags creationAccountOwnerFlags);
+            AAccountOwner? accountOwner = 
+                logicLayer.CreateNewAccountOwner(accountOwnerCreationData.Name, 
+                                                 accountOwnerCreationData.Surname,
+                                                 accountOwnerCreationData.Email,
+                                                 accountOwnerCreationData.Password,
+                                                 out ALogicLayer.CreationAccountOwnerFlags creationAccountOwnerFlags);
 
             CreationAccountOwnerResponse response = new();
-            if (creationAccountOwnerFlags == ALogicLayer.CreationAccountOwnerFlags.SUCCESS)
+            response.CreationFlags = (CreationAccountOwnerDataLayerFlags)(int)creationAccountOwnerFlags;
+            if (accountOwner != null)
             {
-                response.AccountOwner = new AccountOwnerDto() { Id = accountOwner.GetId(), Name = accountOwner.OwnerName, Surname = accountOwner.OwnerSurname, Email = accountOwner.OwnerEmail };
-                response.ResponseCodes = new() { ALogicLayer.CreationAccountOwnerFlags.SUCCESS.ToString() };
+                response.AccountOwner = new AccountOwnerDto() { 
+                    Id = accountOwner.GetId(), 
+                    Name = accountOwner.OwnerName, 
+                    Surname = accountOwner.OwnerSurname,
+                    Email = accountOwner.OwnerEmail 
+                };
             }
             else
             {
                 response.AccountOwner = null;
-                response.ResponseCodes = new()
-                    ;
-                if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.EMPTY) != 0)
-                {
-                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.EMPTY.ToString());
-                }
-                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_NAME) != 0)
-                {
-                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_NAME.ToString());
-                }
-                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_SURNAME) != 0)
-                {
-                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_SURNAME.ToString());
-                }
-                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_EMAIL) != 0)
-                {
-                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_EMAIL.ToString());
-                }
-                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_PASSWORD) != 0)
-                {
-                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_PASSWORD.ToString());
-                }
             }
 
             return response;
+        }
+
+        private List<AccountOwnerDto> ProcessGetAllAccountOwners()
+        {
+            return logicLayer.GetAllAccountsOwners()
+                                .Select(accountOwner => new  AccountOwnerDto() { 
+                                    Id = accountOwner.GetId(), 
+                                    Name = accountOwner.OwnerName, 
+                                    Surname = accountOwner.OwnerSurname,
+                                    Email = accountOwner.OwnerEmail 
+                                })
+                                .ToList();
+        }
+
+        private List<BankAccountDto> ProcessGetAllBankAccounts()
+        {
+            return logicLayer.GetAllBankAccounts()
+                                .Select(bankAccount => new BankAccountDto()
+                                {
+                                    Id = bankAccount.GetId(),
+                                    OwnerId = bankAccount.AccountOwner.GetId(),
+                                    AccountNumber = bankAccount.AccountNumber,
+                                    Balance = bankAccount.AccountBalance,
+                                })
+                                .ToList();
+        }
+
+        private AccountOwnerDto? ProcessGetAccountOwner(int? ownerId)
+        {
+            if (ownerId == null)
+            {
+                return null;
+            }
+            AAccountOwner? accountOwner = logicLayer.GetAccountOwner(ownerId.Value);
+            if (accountOwner == null)
+            {
+                return null;
+            }
+            return new AccountOwnerDto()
+            {
+                Id = accountOwner.GetId(),
+                Name = accountOwner.OwnerName,
+                Surname = accountOwner.OwnerSurname,
+                Email = accountOwner.OwnerEmail
+            };
+        }
+
+        private AccountOwnerDto? ProcessGetAccountOwnerByLogin(string? login)
+        {
+            if (login == null)
+            {
+                return null;
+            }
+            AAccountOwner? accountOwner = logicLayer.GetAccountOwner(login);
+            if (accountOwner == null)
+            {
+                return null;
+            }
+            return new AccountOwnerDto()
+            {
+                Id = accountOwner.GetId(),
+                Name = accountOwner.OwnerName,
+                Surname = accountOwner.OwnerSurname,
+                Email = accountOwner.OwnerEmail
+            };
+        }
+
+        private BankAccountDto? ProcessCreateBankAccount(int? ownerId)
+        {
+            if (ownerId == null)
+            {
+                return null;
+            }
+            ABankAccount? bankAccount = logicLayer.OpenNewBankAccount(ownerId.Value);
+            if (bankAccount == null)
+            {
+                return null;
+            }
+            return new BankAccountDto()
+            { 
+                Id = bankAccount.GetId(),
+                OwnerId = bankAccount.AccountOwner.GetId(),
+                AccountNumber = bankAccount.AccountNumber,
+                Balance = bankAccount.AccountBalance, 
+            };
+        }
+
+        private List<BankAccountDto> ProcessGetBankAccounts(int? ownerId)
+        {
+            if (ownerId == null)
+            {
+                return null;
+            }
+            return logicLayer.GetAccountOwnerBankAccounts(ownerId.Value)
+                                .Select(bankAccount => new BankAccountDto()
+                                {
+                                    Id = bankAccount.GetId(),
+                                    OwnerId = bankAccount.AccountOwner.GetId(),
+                                    AccountNumber = bankAccount.AccountNumber,
+                                    Balance = bankAccount.AccountBalance,
+                                })
+                                .ToList();
+        }
+
+        private BankAccountDto? ProcessGetBankAccountByNumber(string? accountNumber)
+        {
+            if (accountNumber == null)
+            {
+                return null;
+            }
+            ABankAccount? bankAccount = logicLayer.GetBankAccountByAccountNumber(accountNumber);
+            if (bankAccount == null)
+            {
+                return null;
+            }
+            return new BankAccountDto()
+            {
+                Id = bankAccount.GetId(),
+                OwnerId = bankAccount.AccountOwner.GetId(),
+                AccountNumber = bankAccount.AccountNumber,
+                Balance = bankAccount.AccountBalance,
+            };
+        }
+
+        private bool? ProcessCheckForReportsUpdate(int? ownerId)
+        {
+            if (ownerId == null)
+            {
+                return null;
+            }
+            return logicLayer.CheckForReportsUpdates(ownerId.Value);
         }
 
         #endregion private

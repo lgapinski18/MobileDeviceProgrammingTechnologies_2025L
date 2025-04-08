@@ -5,19 +5,17 @@ using System.Text;
 
 namespace ProjectLayerClassServerLibrary.Presentation
 {
-    public partial class WebSocketServer
+    internal class ServerWebSocketConnection : WebSocketConnection
     {
-        private class ServerWebSocketConnection : WebSocketConnection
+        private Task webSocketServerLoop;
+        public ServerWebSocketConnection(WebSocket webSocket, IPEndPoint remoteEndPoint)
         {
-            private Task webSocketServerLoop;
-            public ServerWebSocketConnection(WebSocket webSocket, IPEndPoint remoteEndPoint)
-            {
-                this.webSocket = webSocket;
-                this.remoteEndPoint = remoteEndPoint;
-                webSocketServerLoop = Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
-            }
-
-            #region WebSocketConnection
+            this.webSocket = webSocket;
+            this.remoteEndPoint = remoteEndPoint;
+            webSocketServerLoop = Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
+        }
+    
+        #region WebSocketConnection
 
             protected override Task SendTask(byte[] header, string message)
             {
@@ -30,8 +28,8 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
 
             #endregion WebSocketConnection
-
-            #region Object
+    
+        #region Object
 
             public override string ToString()
             {
@@ -39,42 +37,39 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
 
             #endregion Object
-
-            private WebSocket webSocket = null;
-            private IPEndPoint remoteEndPoint;
-
-            private void ServerMessageLoop(WebSocket ws)
+    
+        private WebSocket webSocket = null;
+        private IPEndPoint remoteEndPoint;
+    
+        private void ServerMessageLoop(WebSocket ws)
+        {
+            byte[] buffer = new byte[1024];
+            while (true)
             {
-                byte[] buffer = new byte[1024];
-                while (true)
+                ArraySegment<byte> _segments = new ArraySegment<byte>(buffer);
+                WebSocketReceiveResult _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
+                if (_receiveResult.MessageType == WebSocketMessageType.Close)
                 {
-                    ArraySegment<byte> _segments = new ArraySegment<byte>(buffer);
-                    WebSocketReceiveResult _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                    if (_receiveResult.MessageType == WebSocketMessageType.Close)
+                    onClose?.Invoke();
+                    ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None);
+                    return;
+                }
+                int count = _receiveResult.Count;
+                while (!_receiveResult.EndOfMessage)
+                {
+                    if (count >= buffer.Length)
                     {
                         onClose?.Invoke();
-                        ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None);
+                        ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None);
                         return;
                     }
-                    int count = _receiveResult.Count;
-                    while (!_receiveResult.EndOfMessage)
-                    {
-                        if (count >= buffer.Length)
-                        {
-                            onClose?.Invoke();
-                            ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None);
-                            return;
-                        }
-                        _segments = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                        _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                        count += _receiveResult.Count;
-                    }
-                    string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                    onMessage?.Invoke(_message);
+                    _segments = new ArraySegment<byte>(buffer, count, buffer.Length - count);
+                    _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
+                    count += _receiveResult.Count;
                 }
+                string _message = Encoding.UTF8.GetString(buffer, 0, count);
+                onMessage?.Invoke(_message);
             }
         }
-
-        #endregion private
     }
 }

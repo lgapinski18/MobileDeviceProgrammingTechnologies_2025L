@@ -3,7 +3,7 @@
 namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [XmlRoot("AccountOwnerCreationData")]
-    public class AccountOwnerCreationData
+    internal class AccountOwnerCreationData
     {
         [XmlElement("Name")]
         public string Name { get; set; }
