@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static ProjectLayerClassLibrary.DataLayer.ADataLayer;
 
 namespace ProjectLayerClassLibraryTest.DataLayerTest
 {
@@ -16,7 +17,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         public void shouldCreateCorrectAccountOwnerAndCorrectlySave(string name, string surname, string email, string password)
         {
             ADataLayer dataLayer = new BasicDataLayer(false);
-            AAccountOwner accountOwner = dataLayer.CreateAccountOwner(name, surname, email, password);
+            AAccountOwner accountOwner = dataLayer.CreateAccountOwner(name, surname, email, password, out CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags);
             Assert.IsNotNull(accountOwner);
             Assert.AreEqual(name, accountOwner.OwnerName);
             Assert.AreEqual(surname, accountOwner.OwnerSurname);
@@ -41,7 +42,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         public void shouldCreateCorrectBankAccountAndCorrectlySave(string name, string surname, string email, string password)
         {
             ADataLayer dataLayer = new BasicDataLayer(false);
-            AAccountOwner accountOwner = dataLayer.CreateAccountOwner(name, surname, email, password);
+            AAccountOwner accountOwner = dataLayer.CreateAccountOwner(name, surname, email, password, out CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags);
             ABankAccount bankAccount = dataLayer.CreateBankAccount(accountOwner.GetId());
 
             Assert.IsNotNull(bankAccount);
