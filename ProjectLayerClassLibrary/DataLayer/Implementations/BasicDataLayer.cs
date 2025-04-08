@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Security.Cryptography;
 using System.IO;
+using ProjectLayerClassLibrary.LogicLayer.Exceptions;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -198,6 +199,31 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 client.GetAccountOwner(ownerLogin);
                 return accountOwnerRepository.GetByOwnerLogin(ownerLogin);
+            }
+        }
+
+        public override bool AuthenticateAccountOwner(string login, string password)
+        {
+            lock (accountOwnerLock)
+            {
+                AAccountOwner? accountOwner = GetAccountOwner(login);
+
+                if (login == null)
+                {
+                    throw new ArgumentNullException("Podany obiekt string loginu jest null");
+                }
+
+                if (password == null)
+                {
+                    throw new ArgumentNullException("Podany obiekt string hasła jest null");
+                }
+
+                if (accountOwner == null)
+                {
+                    throw new ThereIsNoSuchOwnerDataLayerException($"Nie znaleziono właściciela konta z podanym loginem: {login}");
+                }
+
+                return password == accountOwner.OwnerPassword;
             }
         }
     }
