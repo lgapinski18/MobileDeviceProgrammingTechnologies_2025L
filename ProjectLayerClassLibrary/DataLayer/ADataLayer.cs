@@ -9,14 +9,36 @@ namespace ProjectLayerClassLibrary.DataLayer
 {
     public abstract class ADataLayer
     {
-        public static ADataLayer CreateDataLayerInstance()
+        [Flags]
+        public enum CreationAccountOwnerDataLayerFlags
         {
-            return new Implementations.BasicDataLayer();
+            EMPTY = 0,
+            SUCCESS = 1,
+            INCORRECT_NAME = 2,
+            INCORRECT_SURNAME = 4,
+            INCORRECT_EMAIL = 8,
+            INCORRECT_PASSWORD = 16,
+        }
+        public enum TransferDataLayerCodes
+        {
+            SUCCESS,
+            OWNER_ACCOUNT_DOESNT_EXISTS,
+            TARGET_BANK_ACCOUNT_DOESNT_EXISTS,
+            INSUFICIENT_BANK_ACCOUNT_FUNDS,
+            TIMEOUT,
+            TRANSFER_HAS_BEEN_INTERUPTED
         }
 
-        public abstract AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword);
+        public delegate void TransferDataLayerCallback(TransferDataLayerCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
-        public abstract ABankAccount CreateBankAccount(int ownerId);
+        public static ADataLayer CreateDataLayerInstance()
+        {
+            return new Implementations.ServerComunicatingDataLayer();
+        }
+
+        public abstract AAccountOwner? CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword, out CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags);
+
+        public abstract ABankAccount? CreateBankAccount(int ownerId);
 
         public abstract bool AuthenticateAccountOwner(string login, string password);
 
@@ -27,5 +49,8 @@ namespace ProjectLayerClassLibrary.DataLayer
         public abstract ICollection<ABankAccount> GetBankAccounts(int ownerId);
         public abstract ICollection<AAccountOwner> GetAllAccountOwners();
         public abstract ICollection<ABankAccount> GetAllBankAccounts();
+
+        public abstract void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferDataLayerCallback transferCallback);
+        public abstract bool CheckForReportsUpdates(int ownerId);
     }
 }

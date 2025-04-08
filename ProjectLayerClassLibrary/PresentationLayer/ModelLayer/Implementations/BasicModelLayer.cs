@@ -31,7 +31,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             reportUpdateChackingTimer = new Timer(new TimeSpan(0, 1, 0));
             reportUpdateChackingTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
             {
-                if (logicLayer.CheckForReportsUpdates())
+                if (logicLayer.CheckForReportsUpdates(userContext.Id))
                 {
                     OnPropertyChanged("ReportMessages");
                 }

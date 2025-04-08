@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Timers;
+using static ProjectLayerClassLibrary.DataLayer.ADataLayer;
 using Timer = System.Timers.Timer;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
@@ -112,7 +113,10 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
                 creationAccountOwnerFlags = CreationAccountOwnerFlags.SUCCESS;
                 lock (accountOwnersLock)
                 {
-                    return AAccountOwner.CreateAccountOwner(dataLayer.CreateAccountOwner(name, surname, email, password));
+                    CreationAccountOwnerDataLayerFlags creationAccountOwnerDataLayerFlags = CreationAccountOwnerDataLayerFlags.EMPTY;
+                    DataLayer.AAccountOwner? aAccountOwner = dataLayer.CreateAccountOwner(name, surname, email, password, out creationAccountOwnerDataLayerFlags);
+                    creationAccountOwnerFlags |= (CreationAccountOwnerFlags)creationAccountOwnerDataLayerFlags;
+                    return AAccountOwner.CreateAccountOwner(aAccountOwner);
                 }
             }
 
@@ -206,7 +210,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             return thread;
         }
 
-        public override bool CheckForReportsUpdates()
+        public override bool CheckForReportsUpdates(int ownerId)
         {
             bool temp = reportsHasBeenUpdatedRecently;
             reportsHasBeenUpdatedRecently = false;

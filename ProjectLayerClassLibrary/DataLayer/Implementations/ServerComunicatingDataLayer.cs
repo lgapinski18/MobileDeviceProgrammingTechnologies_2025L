@@ -10,6 +10,7 @@ using System.Net.WebSockets;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using ProjectLayerClassLibrary.PresentationLayer.ViewLayer;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -190,7 +191,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object createAccountOwnerMonitorLock = new object();
         private static int createAccountOwnerLockSequenceNoCounter = 0;
         private Dictionary<int, AAccountOwner> createAccountOwnerReponses = new Dictionary<int, AAccountOwner>();
-        public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
+        public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword, out CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags)
         {
             bool localIsConnected = false;
             lock (checkConnectionLock)
@@ -214,6 +215,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     Monitor.Wait(createAccountOwnerMonitorLock);
                     if (createAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
+                        creationAccountOwnerFlags = CreationAccountOwnerDataLayerFlags.SUCCESS;
                         return createAccountOwnerReponses[sequenceNo];
                     }
                 }
@@ -519,6 +521,83 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     if (authenticateAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
                         return authenticateAccountOwnerReponses[sequenceNo];
+                    }
+                }
+            }
+            else
+            {
+                throw new NotConnectedToAplicationServer();
+            }
+        }
+
+        private object performTransferLock = new object();
+        private object performTransferMonitorLock = new object();
+        private static int performTransferSequenceNoCounter = 0;
+        private Dictionary<int, TransferDataLayerCodes> performTransferReponses = new Dictionary<int, TransferDataLayerCodes>();
+        public override void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferDataLayerCallback transferCallback)
+        {
+            bool localIsConnected = false;
+            lock (checkConnectionLock)
+            {
+                localIsConnected = isConnected;
+            }
+            if (localIsConnected)
+            {
+                int sequenceNo;
+                lock (performTransferLock)
+                {
+                    sequenceNo = performTransferSequenceNoCounter++;
+                }
+                byte[] sendBuffer = Encoding.UTF8.GetBytes($"{ownerAccountNumber};{targetAccountNumber}");
+                byte[] header = Encoding.ASCII.GetBytes(AUTHENTICATE_ACCOUNT_OWNER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                sendBuffer = header.Concat(sendBuffer).ToArray();
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+
+                while (true)
+                {
+                    Monitor.Wait(performTransferMonitorLock);
+                    if (performTransferReponses.ContainsKey(sequenceNo))
+                    {
+                        transferCallback(performTransferReponses[sequenceNo], ownerAccountNumber, targetAccountNumber, amount, description);
+                        //return performTransferReponses[sequenceNo];
+                    }
+                }
+            }
+            else
+            {
+                throw new NotConnectedToAplicationServer();
+            }
+        }
+
+        private object checkForReportsUpdatesLock = new object();
+        private object checkForReportsUpdatesMonitorLock = new object();
+        private static int checkForReportsUpdatesSequenceNoCounter = 0;
+        private Dictionary<int, bool> checkForReportsUpdatesReponses = new Dictionary<int, bool>();
+        public override bool CheckForReportsUpdates(int ownerId)
+        {
+            bool localIsConnected = false;
+            lock (checkConnectionLock)
+            {
+                localIsConnected = isConnected;
+            }
+            if (localIsConnected)
+            {
+                int sequenceNo;
+                lock (checkForReportsUpdatesLock)
+                {
+                    sequenceNo = checkForReportsUpdatesSequenceNoCounter++;
+                }
+                byte[] sendBuffer = BitConverter.GetBytes(ownerId);
+                byte[] header = Encoding.ASCII.GetBytes(AUTHENTICATE_ACCOUNT_OWNER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                sendBuffer = header.Concat(sendBuffer).ToArray();
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+
+                while (true)
+                {
+                    Monitor.Wait(checkForReportsUpdatesMonitorLock);
+                    if (checkForReportsUpdatesReponses.ContainsKey(sequenceNo))
+                    {
+                        return checkForReportsUpdatesReponses[sequenceNo];
                     }
                 }
             }

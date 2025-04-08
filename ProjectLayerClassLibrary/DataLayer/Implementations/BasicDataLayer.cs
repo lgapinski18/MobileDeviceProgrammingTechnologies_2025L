@@ -40,8 +40,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private void GenerateStartingContent()
         {
-            AAccountOwner accountOwner1 = CreateAccountOwner("Jan", "Kowalski", "jk@poczta.com", "12345678");
-            AAccountOwner accountOwner2 = CreateAccountOwner("Łukasz", "Gapiński", "lg@poczta.com", "12345678");
+            CreationAccountOwnerDataLayerFlags creationAccountOwnerDataLayerFlags = CreationAccountOwnerDataLayerFlags.EMPTY;
+            AAccountOwner accountOwner1 = CreateAccountOwner("Jan", "Kowalski", "jk@poczta.com", "12345678", out creationAccountOwnerDataLayerFlags);
+            AAccountOwner accountOwner2 = CreateAccountOwner("Łukasz", "Gapiński", "lg@poczta.com", "12345678", out creationAccountOwnerDataLayerFlags);
             List<string> lines = new List<string>();
             lines.Add($"{accountOwner1.GetId()}, {accountOwner1.OwnerLogin}, {accountOwner1.OwnerPassword}; {accountOwner1.OwnerName}, {accountOwner1.OwnerSurname}, {accountOwner1.OwnerEmail}");
             lines.Add($"{accountOwner2.GetId()}, {accountOwner2.OwnerLogin}, {accountOwner2.OwnerPassword}; {accountOwner2.OwnerName}, {accountOwner2.OwnerSurname}, {accountOwner2.OwnerEmail}");
@@ -52,7 +53,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             File.WriteAllLines("StartingDataCreationLog.txt", lines);
         }
 
-        public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
+        public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword, out CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags)
         {
             AAccountOwner accountOwner;
             lock (accountOwnerLock)
@@ -93,7 +94,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 CreateBankAccount(ownerId);
             }
-
+            creationAccountOwnerFlags = CreationAccountOwnerDataLayerFlags.SUCCESS;
             return accountOwner;
         }
 
@@ -225,6 +226,16 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 return password == accountOwner.OwnerPassword;
             }
+        }
+
+        public override void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferDataLayerCallback transferCallback)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool CheckForReportsUpdates(int ownerId)
+        {
+            return true;
         }
     }
 }

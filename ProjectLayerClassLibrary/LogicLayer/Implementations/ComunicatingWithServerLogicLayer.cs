@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using static ProjectLayerClassLibrary.DataLayer.ADataLayer;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -13,6 +14,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
     internal class ComunicatingWithServerLogicLayer : ALogicLayer
     {
         private ADataLayer dataLayer;
+
         public ComunicatingWithServerLogicLayer(ADataLayer? dataLayer = default)
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
@@ -20,42 +22,57 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 
         public override bool AuthenticateAccountOwner(string login, string password)
         {
-            throw new NotImplementedException();
+            return dataLayer.AuthenticateAccountOwner(login, password);
         }
 
-        public override bool CheckForReportsUpdates()
+        public override bool CheckForReportsUpdates(int ownerId)
         {
-            throw new NotImplementedException();
+            return dataLayer.CheckForReportsUpdates(ownerId);
         }
 
         public override AAccountOwner? CreateNewAccountOwner(string name, string surname, string email, string password, out CreationAccountOwnerFlags creationAccountOwnerFlags)
         {
-            throw new NotImplementedException();
+            CreationAccountOwnerDataLayerFlags creationAccountOwneDataLayerrFlags = CreationAccountOwnerDataLayerFlags.EMPTY;
+            DataLayer.AAccountOwner? accountOwner = dataLayer.CreateAccountOwner(name, surname, email, password, out creationAccountOwneDataLayerrFlags);
+            creationAccountOwnerFlags = (CreationAccountOwnerFlags)creationAccountOwneDataLayerrFlags;
+
+            return LogicLayer.AAccountOwner.CreateAccountOwner(accountOwner);
         }
 
         public override AAccountOwner? GetAccountOwner(int ownerId)
         {
-            throw new NotImplementedException();
+            return LogicLayer.AAccountOwner.CreateAccountOwner(dataLayer.GetAccountOwner(ownerId));
         }
 
         public override AAccountOwner? GetAccountOwner(string login)
         {
-            throw new NotImplementedException();
+            return LogicLayer.AAccountOwner.CreateAccountOwner(dataLayer.GetAccountOwner(login));
         }
 
         public override ICollection<ABankAccount> GetAccountOwnerBankAccounts(int ownerId)
         {
-            throw new NotImplementedException();
+            return dataLayer.GetBankAccounts(ownerId).Select(bankAccount => ABankAccount.CreateBankAccount(bankAccount)).ToArray();
         }
 
         public override ABankAccount? OpenNewBankAccount(int ownerId)
         {
-            throw new NotImplementedException();
+            return LogicLayer.ABankAccount.CreateBankAccount(dataLayer.CreateBankAccount(ownerId));
         }
 
         public override Thread PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback)
         {
-            throw new NotImplementedException();
+
+            Thread thread = new Thread(() =>
+            {
+                dataLayer.PerformTransfer(ownerAccountNumber, targetAccountNumber, amount, description, (transferDataLayerCodes, oAN, tAN, a, d) =>
+                {
+                    transferCallback((TransferCodes)transferDataLayerCodes, oAN, tAN, a, d);
+                });
+
+            }
+            );
+            thread.Start();
+            return thread;
         }
     }
 }

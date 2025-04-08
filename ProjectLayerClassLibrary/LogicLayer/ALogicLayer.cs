@@ -34,7 +34,7 @@ namespace ProjectLayerClassLibrary.LogicLayer
 
         public static ALogicLayer CreateLogicLayerInstance(ADataLayer? dataLayer = default)
         {
-            return new Implementations.BasicLogicLayer(dataLayer);
+            return new Implementations.ComunicatingWithServerLogicLayer(dataLayer);
         }
 
         public abstract AAccountOwner? CreateNewAccountOwner(string name, string surname, string email, string  password, out CreationAccountOwnerFlags creationAccountOwnerFlags);
@@ -47,6 +47,6 @@ namespace ProjectLayerClassLibrary.LogicLayer
 
         public abstract Thread PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback);
 
-        public abstract bool CheckForReportsUpdates();
+        public abstract bool CheckForReportsUpdates(int ownerId);
     }
 }
