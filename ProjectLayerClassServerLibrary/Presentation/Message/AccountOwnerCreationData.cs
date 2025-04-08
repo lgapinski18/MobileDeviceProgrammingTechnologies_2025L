@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace CommonsMessageLibrary
+namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [XmlRoot("AccountOwnerCreationData")]
     public class AccountOwnerCreationData

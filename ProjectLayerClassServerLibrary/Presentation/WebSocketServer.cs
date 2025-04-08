@@ -6,14 +6,14 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using CommonsMessageLibrary;
 using ProjectLayerClassServerLibrary.LogicLayer;
+using ProjectLayerClassServerLibrary.Presentation.Message;
 using System.Xml;
 
 
 namespace ProjectLayerClassServerLibrary.Presentation
 {
-    public class WebSocketServer
+    public partial class WebSocketServer
     {
         private Task serverLoopTask;
         private List<WebSocketConnection> connections = new();
@@ -85,36 +85,43 @@ namespace ProjectLayerClassServerLibrary.Presentation
             switch (messageType)
             {
                 case "_CAO":
+                    //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "_CBA":
+                    //_CBA - create bank account; Dane: int ownerId
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "_GAO":
+                    //_GAO - get account owner; Dane: int ownerId
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GAAO":
+                    //GAAO - get all account owners; 0 danych
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GBAN":
+                    //GBAN - get bank account; dane: "{accountNumber}"
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GBAS":
+                    //GBAS - get bank accounts for owner id; dane: int owner id;
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GABA":
+                    //GABA - get all accounts; 0 danych
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
@@ -137,19 +144,6 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
 
             connection.SendAsync(messageType, messageSequenceNo, responseCode, serializedMessage).Wait();
-            //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
-            //
-            //_CBA - create bank account; Dane: int ownerId
-            //
-            //_GAO - get account owner; Dane: int ownerId
-            //
-            //GAAO - get all account owners; 0 danych
-            //
-            //GBAN - get bank account; dane: "{accountNumber}"
-            //
-            //GBAS - get bank accounts for owner id; dane: int owner id;
-            //
-            //GABA - get all accounts; 0 danych
         }
 
         private static T? GetData<T>(string message) where T : class
@@ -207,74 +201,6 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
 
             return response;
-        }
-
-        private class ServerWebSocketConnection : WebSocketConnection
-        {
-            private Task webSocketServerLoop;
-            public ServerWebSocketConnection(WebSocket webSocket, IPEndPoint remoteEndPoint)
-            {
-                this.webSocket = webSocket;
-                this.remoteEndPoint = remoteEndPoint;
-                webSocketServerLoop = Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
-            }
-
-            #region WebSocketConnection
-
-            protected override Task SendTask(byte[] header, string message)
-            {
-                return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. Encoding.UTF8.GetBytes(message)]), WebSocketMessageType.Text, true, CancellationToken.None);
-            }
-
-            public override Task DisconnectAsync()
-            {
-                return webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutdown procedure started", CancellationToken.None);
-            }
-
-            #endregion WebSocketConnection
-
-            #region Object
-
-            public override string ToString()
-            {
-                return remoteEndPoint.ToString();
-            }
-
-            #endregion Object
-
-            private WebSocket webSocket = null;
-            private IPEndPoint remoteEndPoint;
-
-            private void ServerMessageLoop(WebSocket ws)
-            {
-                byte[] buffer = new byte[1024];
-                while (true)
-                {
-                    ArraySegment<byte> _segments = new ArraySegment<byte>(buffer);
-                    WebSocketReceiveResult _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                    if (_receiveResult.MessageType == WebSocketMessageType.Close)
-                    {
-                        onClose?.Invoke();
-                        ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None);
-                        return;
-                    }
-                    int count = _receiveResult.Count;
-                    while (!_receiveResult.EndOfMessage)
-                    {
-                        if (count >= buffer.Length)
-                        {
-                            onClose?.Invoke();
-                            ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None);
-                            return;
-                        }
-                        _segments = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                        _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                        count += _receiveResult.Count;
-                    }
-                    string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                    onMessage?.Invoke(_message);
-                }
-            }
         }
 
         #endregion private

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace CommonsMessageLibrary
+namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [XmlRoot("AccountOwner")]
     public class AccountOwnerDto
