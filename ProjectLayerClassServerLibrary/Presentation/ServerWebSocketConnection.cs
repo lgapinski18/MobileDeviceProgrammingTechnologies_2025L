@@ -19,7 +19,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
 
             protected override Task SendTask(byte[] header, string message)
             {
-                return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. Encoding.UTF8.GetBytes(message)]), WebSocketMessageType.Text, true, CancellationToken.None);
+                return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. Encoding.UTF8.GetBytes(message)]), WebSocketMessageType.Binary, true, CancellationToken.None);
             }
 
             public override Task DisconnectAsync()
@@ -43,32 +43,39 @@ namespace ProjectLayerClassServerLibrary.Presentation
     
         private void ServerMessageLoop(WebSocket ws)
         {
-            byte[] buffer = new byte[1024];
-            while (true)
+            try
             {
-                ArraySegment<byte> _segments = new ArraySegment<byte>(buffer);
-                WebSocketReceiveResult _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                if (_receiveResult.MessageType == WebSocketMessageType.Close)
+                byte[] buffer = new byte[4096];
+                while (true)
                 {
-                    onClose?.Invoke();
-                    ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None);
-                    return;
-                }
-                int count = _receiveResult.Count;
-                while (!_receiveResult.EndOfMessage)
-                {
-                    if (count >= buffer.Length)
+                    ArraySegment<byte> segments = new ArraySegment<byte>(buffer);
+                    WebSocketReceiveResult receiveResult = ws.ReceiveAsync(segments, CancellationToken.None).Result;
+                    if (receiveResult.MessageType == WebSocketMessageType.Close)
                     {
                         onClose?.Invoke();
-                        ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None);
+                        ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None);
                         return;
                     }
-                    _segments = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                    _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                    count += _receiveResult.Count;
+                    int count = receiveResult.Count;
+                    while (!receiveResult.EndOfMessage)
+                    {
+                        if (count >= buffer.Length)
+                        {
+                            onClose?.Invoke();
+                            ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None);
+                            return;
+                        }
+                        segments = new ArraySegment<byte>(buffer, count, buffer.Length - count);
+                        receiveResult = ws.ReceiveAsync(segments, CancellationToken.None).Result;
+                        count += receiveResult.Count;
+                    }
+                    onMessage?.Invoke(buffer);
                 }
-                string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                onMessage?.Invoke(_message);
+            }
+            catch (Exception _ex)
+            {
+                Console.WriteLine($"Connection has been broken because of an exception {_ex}");
+                ws.CloseAsync(WebSocketCloseStatus.InternalServerError, "Connection has been broken because of an exception", CancellationToken.None).Wait();
             }
         }
     }

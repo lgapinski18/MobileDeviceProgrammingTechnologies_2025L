@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures
 {
     [XmlRoot("BankAccount")]
-    internal class BankAccountDto
+    public class BankAccountDto
     {
         [XmlElement("Id")]
         public int Id { get; set; }

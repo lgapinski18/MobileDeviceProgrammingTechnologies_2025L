@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [XmlRoot("CreationAccountOwnerResponse")]
-    internal class CreationAccountOwnerResponse
+    public class CreationAccountOwnerResponse
     {
         [XmlElement("CreationFlags")]
         public CreationAccountOwnerDataLayerFlags CreationFlags { get; set; }

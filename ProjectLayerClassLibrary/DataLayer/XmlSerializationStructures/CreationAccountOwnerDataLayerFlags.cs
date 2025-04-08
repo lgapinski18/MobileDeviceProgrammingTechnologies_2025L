@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures
 {
     [Flags]
-    internal enum CreationAccountOwnerDataLayerFlags
+    public enum CreationAccountOwnerDataLayerFlags
     {
         EMPTY = 0,
         SUCCESS = 1,

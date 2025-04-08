@@ -8,13 +8,13 @@ namespace ProjectLayerClassServerLibrary.Presentation
 {
     public abstract class WebSocketConnection
     {
-        public virtual Action<string> onMessage { set; protected get; } = x => { };
+        public virtual Action<byte[]> onMessage { set; protected get; } = x => { };
         public virtual Action onClose { set; protected get; } = () => { };
         public virtual Action onError { set; protected get; } = () => { };
 
         public async Task SendAsync(string messageType, int messageSequenceNo, int responseCode, string message)
         {
-            byte[] header = Encoding.ASCII.GetBytes("_CAO")
+            byte[] header = Encoding.ASCII.GetBytes(messageType)
                                             .Concat(BitConverter.GetBytes(messageSequenceNo))
                                             .Concat(BitConverter.GetBytes(responseCode))
                                             .Concat(BitConverter.GetBytes(message.Length))

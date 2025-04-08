@@ -33,48 +33,57 @@ namespace ProjectLayerClassServerLibrary.Presentation
 
         private static async Task ServerLoop(Uri uri, Action<WebSocketConnection> onConnection)
         {
-            HttpListener server = new HttpListener();
-            server.Prefixes.Add(uri.ToString());
-            server.Start();
-            while (true)
+            try
             {
-                HttpListenerContext httpContext = await server.GetContextAsync();
-                if (!httpContext.Request.IsWebSocketRequest)
+                HttpListener server = new HttpListener();
+                server.Prefixes.Add(uri.ToString());
+                server.Start();
+                while (true)
                 {
-                    httpContext.Response.StatusCode = 400;
-                    httpContext.Response.Close();
+                    HttpListenerContext httpContext = await server.GetContextAsync();
+                    if (!httpContext.Request.IsWebSocketRequest)
+                    {
+                        httpContext.Response.StatusCode = 400;
+                        httpContext.Response.Close();
+                    }
+                    HttpListenerWebSocketContext wsContext = await httpContext.AcceptWebSocketAsync(null);
+                    WebSocketConnection ws = new ServerWebSocketConnection(wsContext.WebSocket, httpContext.Request.RemoteEndPoint);
+                    onConnection?.Invoke(ws);
                 }
-                HttpListenerWebSocketContext wsContext = await httpContext.AcceptWebSocketAsync(null);
-                WebSocketConnection ws = new ServerWebSocketConnection(wsContext.WebSocket, httpContext.Request.RemoteEndPoint);
-                onConnection?.Invoke(ws);
+            }
+            catch (Exception ex)
+            {
+                string? source = ex.Source;
             }
         }
 
         private void OnConnection(WebSocketConnection connection)
         {
+            Console.WriteLine($"Connection: {connection}");
             connections.Add(connection);
-            connection.onClose = () => connections.Remove(connection);
+            connection.onClose = () => {
+                Console.WriteLine($"Closing connection: {connection}");
+                connections.Remove(connection);
+            };
             connection.onError = () => Console.WriteLine("Error happened");
-            connection.onMessage = message => Task.Factory.StartNew(() => ProcessConnectionMessage(connection, message));
+            connection.onMessage = message => Task.Factory.StartNew(() => ProcessConnectionMessage(connection, message)).Wait();
         }
 
         const int MESSAGE_TYPE_POSITION = 0;
         const int MESSAGE_TYPE_LENGTH = 4;
         const int MESSAGE_SEQUENCE_NUMBER_POSITION = 4;
-        const int MESSAGE_SEQUENCE_NUMBER_LENGTH = 4;
         const int MESSAGE_SIZE_POSITION = 8;
-        const int MESSAGE_SIZE_LENGTH = 4;
         const int MESSAGE_CONTENT_POSITION = 12;
 
-        private void ProcessConnectionMessage(WebSocketConnection connection, string message)
+        private void ProcessConnectionMessage(WebSocketConnection connection, byte[] message)
         {
             Console.WriteLine(message);
 
 
-            string messageType = message.Substring(MESSAGE_TYPE_POSITION, MESSAGE_TYPE_LENGTH);
-            int messageSequenceNo = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SEQUENCE_NUMBER_POSITION, MESSAGE_SEQUENCE_NUMBER_LENGTH)));
-            int messageSize = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SIZE_POSITION, MESSAGE_SIZE_LENGTH)));
-            string messageContent = message.Substring(MESSAGE_CONTENT_POSITION, messageSize);
+            string messageType = Encoding.UTF8.GetString(message, MESSAGE_TYPE_POSITION, MESSAGE_TYPE_LENGTH);
+            int messageSequenceNo = BitConverter.ToInt32(message, MESSAGE_SEQUENCE_NUMBER_POSITION);
+            int messageSize = BitConverter.ToInt32(message, MESSAGE_SIZE_POSITION);
+            string messageContent = Encoding.UTF8.GetString(message, MESSAGE_CONTENT_POSITION, messageSize);
 
             Console.WriteLine($"MessageType: {messageType}, MessageSequenceNo: {messageSequenceNo}, MessageSize: {messageSize}\nMessageContent:\n{messageContent}\n");
 

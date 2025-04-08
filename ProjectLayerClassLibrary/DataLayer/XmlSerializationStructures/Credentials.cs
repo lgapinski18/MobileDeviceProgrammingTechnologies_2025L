@@ -5,10 +5,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures
+namespace ProjectLayerClassLibrary.DataLayer
 {
     [XmlRoot("Credentials")]
-    internal class Credentials
+    public class Credentials
     {
         [XmlElement("Login")]
         public string Login { get; set; }

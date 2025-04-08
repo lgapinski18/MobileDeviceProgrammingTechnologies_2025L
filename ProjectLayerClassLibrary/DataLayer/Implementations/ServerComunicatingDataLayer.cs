@@ -79,7 +79,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     isConnected = true;
                 }
 
-                receiveLoop = Task.Run(() => { ClientReceiveLoop(); });
+                receiveLoop = Task.Factory.StartNew(() => { ClientReceiveLoop(clientWebSocket); });
             }
         }
 
@@ -88,7 +88,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         }
 
-        private void ClientReceiveLoop()
+        private void ClientReceiveLoop(WebSocket clientWebSocket)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         count += result.Count;
                     }
                     string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                    processReceivedData((byte[])buffer.Clone(), count);
+                    processReceivedData((byte[])buffer.Clone());
                 }
             }
             catch (Exception _ex)
@@ -127,14 +127,14 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             }
         }
 
-        private void processReceivedData(byte[] data, int count)
+        private void processReceivedData(byte[] data)
         {
             string respondType = Encoding.UTF8.GetString(data, 0, 4);
             int sequenceNo = BitConverter.ToInt32(data, 4);
             int resultCode = BitConverter.ToInt32(data, 8);
-            //int dataSize = BitConverter.ToInt32(data, 12);
-            string dataMessage = Encoding.UTF8.GetString(data, 12, count);
-            myLogger.Log($"Data Message: {dataMessage}");
+            int dataSize = BitConverter.ToInt32(data, 12);
+            string dataMessage = Encoding.UTF8.GetString(data, 16, dataSize);
+            myLogger.Log($"ResponseType: {respondType}, SequenceNo: {sequenceNo}, resultCode: {resultCode}, dataSize: {dataSize},\nData Message: {dataMessage}");
 
             XmlSerializer serializer;
 
@@ -577,14 +577,15 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = authenticateAccountOwnerSequenceNoCounter++;
                 }
-                Credentials credentials = new Credentials();
+                Credentials credentials = new Credentials() { Login = login, Password = password };
                 XmlSerializer serializer = new XmlSerializer(typeof(Credentials));
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, credentials);
+                string payload = writer.ToString();
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = Encoding.ASCII.GetBytes(AUTHENTICATE_ACCOUNT_OWNER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {

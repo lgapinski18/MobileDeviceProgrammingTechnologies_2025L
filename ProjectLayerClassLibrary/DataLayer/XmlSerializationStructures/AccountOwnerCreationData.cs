@@ -3,7 +3,7 @@
 namespace ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures
 {
     [XmlRoot("AccountOwnerCreationData")]
-    internal class AccountOwnerCreationData
+    public class AccountOwnerCreationData
     {
         [XmlElement("Name")]
         public string Name { get; set; }

@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures
 {
     [XmlRoot("TransferData")]
-    internal class TransferData
+    public class TransferData
     {
         [XmlElement("SourceAccountNumber")]
         public string SourceAccountNumber { get; set; }

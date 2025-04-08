@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [Flags]
-    internal enum CreationAccountOwnerDataLayerFlags
+    public enum CreationAccountOwnerDataLayerFlags
     {
         EMPTY = 0,
         SUCCESS = 1,

@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [XmlRoot("Credentials")]
-    internal class Credentials
+    public class Credentials
     {
         [XmlElement("Login")]
         public string Login { get; set; }
