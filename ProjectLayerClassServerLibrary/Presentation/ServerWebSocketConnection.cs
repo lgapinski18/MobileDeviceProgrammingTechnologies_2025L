@@ -75,6 +75,5 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
         }
 
-        #endregion private
     }
 }

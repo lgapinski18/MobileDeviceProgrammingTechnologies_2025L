@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [XmlRoot("AccountOwner")]
-    public class AccountOwnerDto
+    internal class AccountOwnerDto
     {
         [XmlElement("Id")]
         public int Id { get; set; }

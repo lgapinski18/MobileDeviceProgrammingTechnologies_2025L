@@ -73,6 +73,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             string messageType = message.Substring(MESSAGE_TYPE_POSITION, MESSAGE_TYPE_LENGTH);
             int messageSequenceNo = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SEQUENCE_NUMBER_POSITION, MESSAGE_SEQUENCE_NUMBER_LENGTH)));
             int messageSize = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SIZE_POSITION, MESSAGE_SIZE_LENGTH)));
+            string messageContent = message.Substring(MESSAGE_CONTENT_POSITION, messageSize);
 
             Console.WriteLine($"MessageType: {messageType}, MessageSequenceNo: {messageSequenceNo}, MessageSize: {messageSize}");
 
@@ -86,44 +87,44 @@ namespace ProjectLayerClassServerLibrary.Presentation
             {
                 case "_CAO":
                     //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "_CBA":
                     //_CBA - create bank account; Dane: int ownerId
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessCreateBankAccount(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "_GAO":
                     //_GAO - get account owner; Dane: int ownerId
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessGetAccountOwner(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GAAO":
                     //GAAO - get all account owners; 0 danych
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    responseContent = ProcessGetAllAccountOwners();
+                    serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
                     break;
 
                 case "GBAN":
                     //GBAN - get bank account; dane: "{accountNumber}"
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessGetBankAccountByNumber(GetData<string>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GBAS":
                     //GBAS - get bank accounts for owner id; dane: int owner id;
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessGetBankAccounts(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
                 case "GABA":
                     //GABA - get all accounts; 0 danych
-                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    responseContent = ProcessGetAllBankAccounts();
+                    serializer = new XmlSerializer(typeof(List<BankAccountDto>));
                     break;
 
                 default:
@@ -153,6 +154,18 @@ namespace ProjectLayerClassServerLibrary.Presentation
             using (var reader = new StringReader(message))
             {
                 deserialized = (T?)serializer.Deserialize(reader);
+            }
+
+            return deserialized;
+        }
+
+        private static int? GetInt(string message) 
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(int));
+            int? deserialized = null;
+            using (var reader = new StringReader(message))
+            {
+                deserialized = (int?)serializer.Deserialize(reader);
             }
 
             return deserialized;
@@ -201,6 +214,108 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
 
             return response;
+        }
+
+        private List<AccountOwnerDto> ProcessGetAllAccountOwners()
+        {
+            return logicLayer.GetAllAccountsOwners()
+                                .Select(accountOwner => new  AccountOwnerDto() { 
+                                    Id = accountOwner.GetId(), 
+                                    Name = accountOwner.OwnerName, 
+                                    Surname = accountOwner.OwnerSurname,
+                                    Email = accountOwner.OwnerEmail 
+                                })
+                                .ToList();
+        }
+
+        private List<BankAccountDto> ProcessGetAllBankAccounts()
+        {
+            return logicLayer.GetAllBankAccounts()
+                                .Select(bankAccount => new BankAccountDto()
+                                {
+                                    Id = bankAccount.GetId(),
+                                    OwnerId = bankAccount.AccountOwner.GetId(),
+                                    AccountNumber = bankAccount.AccountNumber,
+                                    Balance = bankAccount.AccountBalance,
+                                })
+                                .ToList();
+        }
+
+        private AccountOwnerDto? ProcessGetAccountOwner(int? ownerId)
+        {
+            if (ownerId == null)
+            {
+                return null;
+            }
+            AAccountOwner? accountOwner = logicLayer.GetAccountOwner(ownerId.Value);
+            if (accountOwner == null)
+            {
+                return null;
+            }
+            return new AccountOwnerDto()
+            {
+                Id = accountOwner.GetId(),
+                Name = accountOwner.OwnerName,
+                Surname = accountOwner.OwnerSurname,
+                Email = accountOwner.OwnerEmail
+            };
+        }
+
+        private BankAccountDto? ProcessCreateBankAccount(int? ownerId)
+        {
+            if (ownerId == null)
+            {
+                return null;
+            }
+            ABankAccount? bankAccount = logicLayer.OpenNewBankAccount(ownerId.Value);
+            if (bankAccount == null)
+            {
+                return null;
+            }
+            return new BankAccountDto()
+            { 
+                Id = bankAccount.GetId(),
+                OwnerId = bankAccount.AccountOwner.GetId(),
+                AccountNumber = bankAccount.AccountNumber,
+                Balance = bankAccount.AccountBalance, 
+            };
+        }
+
+        private List<BankAccountDto> ProcessGetBankAccounts(int? ownerId)
+        {
+            if (ownerId == null)
+            {
+                return null;
+            }
+            return logicLayer.GetAccountOwnerBankAccounts(ownerId.Value)
+                                .Select(bankAccount => new BankAccountDto()
+                                {
+                                    Id = bankAccount.GetId(),
+                                    OwnerId = bankAccount.AccountOwner.GetId(),
+                                    AccountNumber = bankAccount.AccountNumber,
+                                    Balance = bankAccount.AccountBalance,
+                                })
+                                .ToList();
+        }
+
+        private BankAccountDto? ProcessGetBankAccountByNumber(string? accountNumber)
+        {
+            if (accountNumber == null)
+            {
+                return null;
+            }
+            ABankAccount? bankAccount = logicLayer.GetBankAccountByAccountNumber(accountNumber);
+            if (bankAccount == null)
+            {
+                return null;
+            }
+            return new BankAccountDto()
+            {
+                Id = bankAccount.GetId(),
+                OwnerId = bankAccount.AccountOwner.GetId(),
+                AccountNumber = bankAccount.AccountNumber,
+                Balance = bankAccount.AccountBalance,
+            };
         }
 
         #endregion private

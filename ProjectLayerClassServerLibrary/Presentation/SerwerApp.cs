@@ -21,21 +21,5 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
             Console.WriteLine("Closing serwer on port 8080");
         }
-
-        private static void OnConnection(WebSocketConnection connection)
-        {
-            Console.WriteLine($"New Connection: {connection}");
-            connections.Add(connection);
-            connection.onClose = () => connections.Remove(connection);
-            connection.onError = () =>
-            {
-                Console.WriteLine("Error happened");
-            };
-
-            connection.onMessage = message =>
-            {
-                Console.WriteLine(message);
-            };
-        }
     }
 }

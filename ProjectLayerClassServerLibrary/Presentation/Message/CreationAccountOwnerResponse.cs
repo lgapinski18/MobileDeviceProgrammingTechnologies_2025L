@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace ProjectLayerClassServerLibrary.Presentation.Message
 {
     [XmlRoot("CreationAccountOwnerResponse")]
-    public class CreationAccountOwnerResponse
+    internal class CreationAccountOwnerResponse
     {
         [XmlElement("ResponseCodes")]
         public List<string> ResponseCodes { get; set; }
