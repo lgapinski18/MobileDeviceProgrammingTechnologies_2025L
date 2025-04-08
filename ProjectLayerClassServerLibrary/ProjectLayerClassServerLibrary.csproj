@@ -13,4 +13,8 @@
     <None Remove="PresentationLayer\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CommonsMessageLibrary\CommonsMessageLibrary.csproj" />
+  </ItemGroup>
+
 </Project>

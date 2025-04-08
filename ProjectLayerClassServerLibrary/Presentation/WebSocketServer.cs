@@ -5,21 +5,28 @@ using System.Net.WebSockets;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using ProjectLayerClassServerLibrary.LogicLayer;
+using ProjectLayerClassServerLibrary.Presentation.Message;
+using System.Xml;
+
 
 namespace ProjectLayerClassServerLibrary.Presentation
 {
-
-    public static class WebSocketServer
+    public partial class WebSocketServer
     {
-        #region API
+        private Task serverLoopTask;
+        private List<WebSocketConnection> connections = new();
+        private ALogicLayer logicLayer;
 
-        public static async Task Server(int portNo, Action<WebSocketConnection> onConnection)
+        public bool IsRunning { get => !serverLoopTask.IsCompleted; }
+
+        public WebSocketServer(int portNo)
         {
+            logicLayer = ALogicLayer.CreateLogicLayerInstance();
             Uri _uri = new Uri($@"http://localhost:{portNo}/");
-            await ServerLoop(_uri, onConnection);
+            serverLoopTask = Task.Factory.StartNew(() => ServerLoop(_uri, OnConnection));
         }
-
-        #endregion API
 
         #region private
 
@@ -42,72 +49,158 @@ namespace ProjectLayerClassServerLibrary.Presentation
             }
         }
 
-        private class ServerWebSocketConnection : WebSocketConnection
+        private void OnConnection(WebSocketConnection connection)
         {
-            private Task webSocketServerLoop;
-            public ServerWebSocketConnection(WebSocket webSocket, IPEndPoint remoteEndPoint)
+            connections.Add(connection);
+            connection.onClose = () => connections.Remove(connection);
+            connection.onError = () => Console.WriteLine("Error happened");
+            connection.onMessage = message => Task.Factory.StartNew(() => ProcessConnectionMessage(connection, message));
+        }
+
+        const int MESSAGE_TYPE_POSITION = 0;
+        const int MESSAGE_TYPE_LENGTH = 4;
+        const int MESSAGE_SEQUENCE_NUMBER_POSITION = 4;
+        const int MESSAGE_SEQUENCE_NUMBER_LENGTH = 4;
+        const int MESSAGE_SIZE_POSITION = 8;
+        const int MESSAGE_SIZE_LENGTH = 4;
+        const int MESSAGE_CONTENT_POSITION = 12;
+
+        private void ProcessConnectionMessage(WebSocketConnection connection, string message)
+        {
+            Console.WriteLine(message);
+
+
+            string messageType = message.Substring(MESSAGE_TYPE_POSITION, MESSAGE_TYPE_LENGTH);
+            int messageSequenceNo = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SEQUENCE_NUMBER_POSITION, MESSAGE_SEQUENCE_NUMBER_LENGTH)));
+            int messageSize = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SIZE_POSITION, MESSAGE_SIZE_LENGTH)));
+
+            Console.WriteLine($"MessageType: {messageType}, MessageSequenceNo: {messageSequenceNo}, MessageSize: {messageSize}");
+
+
+            object? responseContent = null;
+            XmlSerializer? serializer = null;
+            string serializedMessage = "";
+            int responseCode = -1;
+
+            switch (messageType)
             {
-                this.webSocket = webSocket;
-                this.remoteEndPoint = remoteEndPoint;
-                webSocketServerLoop = Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
+                case "_CAO":
+                    //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "_CBA":
+                    //_CBA - create bank account; Dane: int ownerId
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "_GAO":
+                    //_GAO - get account owner; Dane: int ownerId
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GAAO":
+                    //GAAO - get all account owners; 0 danych
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GBAN":
+                    //GBAN - get bank account; dane: "{accountNumber}"
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GBAS":
+                    //GBAS - get bank accounts for owner id; dane: int owner id;
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GABA":
+                    //GABA - get all accounts; 0 danych
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                default:
+                    responseCode = 1;
+                    break;
             }
 
-            #region WebSocketConnection
-
-            protected override Task SendTask(string message)
+            if (responseContent != null && serializer != null)
             {
-                return webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
+                responseCode = 0;
+                StringWriter stringWriter = new StringWriter();
+                serializer.Serialize(stringWriter, responseContent);
+                serializedMessage = stringWriter.ToString();
+            }
+            else if (responseCode == -1)
+            {
+                responseCode = 2;
             }
 
-            public override Task DisconnectAsync()
+            connection.SendAsync(messageType, messageSequenceNo, responseCode, serializedMessage).Wait();
+        }
+
+        private static T? GetData<T>(string message) where T : class
+        {
+            XmlSerializer serializer = new XmlSerializer(typeof(T));
+            T?  deserialized = null;
+            using (var reader = new StringReader(message))
             {
-                return webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutdown procedure started", CancellationToken.None);
+                deserialized = (T?)serializer.Deserialize(reader);
             }
 
-            #endregion WebSocketConnection
+            return deserialized;
+        }
 
-            #region Object
-
-            public override string ToString()
+        private CreationAccountOwnerResponse? ProcessCreateAccountOwner(AccountOwnerCreationData? accountOwnerCreationData)
+        {
+            if (accountOwnerCreationData == null)
             {
-                return remoteEndPoint.ToString();
+                return null; 
             }
 
-            #endregion Object
+            AAccountOwner? accountOwner = logicLayer.CreateNewAccountOwner(accountOwnerCreationData.Name, accountOwnerCreationData.Surname, accountOwnerCreationData.Email, accountOwnerCreationData.Password, out ALogicLayer.CreationAccountOwnerFlags creationAccountOwnerFlags);
 
-            private WebSocket webSocket = null;
-            private IPEndPoint remoteEndPoint;
-
-            private void ServerMessageLoop(WebSocket ws)
+            CreationAccountOwnerResponse response = new();
+            if (creationAccountOwnerFlags == ALogicLayer.CreationAccountOwnerFlags.SUCCESS)
             {
-                byte[] buffer = new byte[1024];
-                while (true)
+                response.AccountOwner = new AccountOwnerDto() { Id = accountOwner.GetId(), Name = accountOwner.OwnerName, Surname = accountOwner.OwnerSurname, Email = accountOwner.OwnerEmail };
+                response.ResponseCodes = new() { ALogicLayer.CreationAccountOwnerFlags.SUCCESS.ToString() };
+            }
+            else
+            {
+                response.AccountOwner = null;
+                response.ResponseCodes = new()
+                    ;
+                if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.EMPTY) != 0)
                 {
-                    ArraySegment<byte> _segments = new ArraySegment<byte>(buffer);
-                    WebSocketReceiveResult _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                    if (_receiveResult.MessageType == WebSocketMessageType.Close)
-                    {
-                        onClose?.Invoke();
-                        ws.CloseAsync(WebSocketCloseStatus.NormalClosure, "I am closing", CancellationToken.None);
-                        return;
-                    }
-                    int count = _receiveResult.Count;
-                    while (!_receiveResult.EndOfMessage)
-                    {
-                        if (count >= buffer.Length)
-                        {
-                            onClose?.Invoke();
-                            ws.CloseAsync(WebSocketCloseStatus.InvalidPayloadData, "That's too long", CancellationToken.None);
-                            return;
-                        }
-                        _segments = new ArraySegment<byte>(buffer, count, buffer.Length - count);
-                        _receiveResult = ws.ReceiveAsync(_segments, CancellationToken.None).Result;
-                        count += _receiveResult.Count;
-                    }
-                    string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                    onMessage?.Invoke(_message);
+                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.EMPTY.ToString());
+                }
+                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_NAME) != 0)
+                {
+                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_NAME.ToString());
+                }
+                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_SURNAME) != 0)
+                {
+                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_SURNAME.ToString());
+                }
+                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_EMAIL) != 0)
+                {
+                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_EMAIL.ToString());
+                }
+                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_PASSWORD) != 0)
+                {
+                    response.ResponseCodes.Add(ALogicLayer.CreationAccountOwnerFlags.INCORRECT_PASSWORD.ToString());
                 }
             }
+
+            return response;
         }
 
         #endregion private
