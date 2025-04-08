@@ -19,6 +19,8 @@ namespace ProjectLayerClassServerLibrary.Presentation
         private List<WebSocketConnection> connections = new();
         private ALogicLayer logicLayer;
 
+        public bool IsRunning { get => !serverLoopTask.IsCompleted; }
+
         public WebSocketServer(int portNo)
         {
             logicLayer = ALogicLayer.CreateLogicLayerInstance();
@@ -75,26 +77,66 @@ namespace ProjectLayerClassServerLibrary.Presentation
             Console.WriteLine($"MessageType: {messageType}, MessageSequenceNo: {messageSequenceNo}, MessageSize: {messageSize}");
 
 
-            object? returnMessage = null;
+            object? responseContent = null;
             XmlSerializer? serializer = null;
             string serializedMessage = "";
+            int responseCode = -1;
 
             switch (messageType)
             {
                 case "_CAO":
-                    returnMessage = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "_CBA":
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "_GAO":
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GAAO":
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GBAN":
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GBAS":
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                case "GABA":
+                    responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(message.Substring(MESSAGE_CONTENT_POSITION, messageSize)));
+                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    break;
+
+                default:
+                    responseCode = 1;
                     break;
             }
 
-            if (returnMessage != null && serializer != null)
+            if (responseContent != null && serializer != null)
             {
+                responseCode = 0;
                 StringWriter stringWriter = new StringWriter();
-                serializer.Serialize(stringWriter, returnMessage);
+                serializer.Serialize(stringWriter, responseContent);
                 serializedMessage = stringWriter.ToString();
             }
+            else if (responseCode == -1)
+            {
+                responseCode = 2;
+            }
 
-            connection.SendAsync(serializedMessage).Wait();
+            connection.SendAsync(messageType, messageSequenceNo, responseCode, serializedMessage).Wait();
             //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
             //
             //_CBA - create bank account; Dane: int ownerId
@@ -179,9 +221,9 @@ namespace ProjectLayerClassServerLibrary.Presentation
 
             #region WebSocketConnection
 
-            protected override Task SendTask(string message)
+            protected override Task SendTask(byte[] header, string message)
             {
-                return webSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None);
+                return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. Encoding.UTF8.GetBytes(message)]), WebSocketMessageType.Text, true, CancellationToken.None);
             }
 
             public override Task DisconnectAsync()

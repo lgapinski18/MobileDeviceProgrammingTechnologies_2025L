@@ -13,9 +13,9 @@ namespace ProjectLayerClassServerLibrary.Presentation
         public static void Main(string[] args)
         {
             Console.WriteLine("Starting server on port 8080");
-            WebSocketServer task = new WebSocketServer(8080);
+            WebSocketServer server = new WebSocketServer(8080);
             Console.WriteLine("Server started on port 8080");
-            while (!task.IsCompleted)
+            while (server.IsRunning)
             {
 
             }

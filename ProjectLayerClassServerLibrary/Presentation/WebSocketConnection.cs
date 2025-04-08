@@ -12,13 +12,18 @@ namespace ProjectLayerClassServerLibrary.Presentation
         public virtual Action onClose { set; protected get; } = () => { };
         public virtual Action onError { set; protected get; } = () => { };
 
-        public async Task SendAsync(string message)
+        public async Task SendAsync(string messageType, int messageSequenceNo, int responseCode, string message)
         {
-            await SendTask(message);
+            byte[] header = Encoding.ASCII.GetBytes("_CAO")
+                                            .Concat(BitConverter.GetBytes(messageSequenceNo))
+                                            .Concat(BitConverter.GetBytes(responseCode))
+                                            .Concat(BitConverter.GetBytes(message.Length))
+                                            .ToArray();
+            await SendTask(header, message);
         }
 
         public abstract Task DisconnectAsync();
 
-        protected abstract Task SendTask(string message);
+        protected abstract Task SendTask(byte[] header, string message);
     }
 }
