@@ -26,7 +26,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations.Repositories
         public ICollection<ABankAccount> GetByAccountOwnerId(int ownerId)
         {
             ICollection<ABankAccount> bankAccounts = new List<ABankAccount>();
-            foreach (ABankAccount bankAccount in entities.Where(bankAccount => bankAccount.AccountOwner.GetId() == ownerId))
+            foreach (ABankAccount bankAccount in entities.Where(bankAccount => bankAccount.AccountOwnerId.GetId() == ownerId))
             {
                 bankAccounts.Add(bankAccount);
             }

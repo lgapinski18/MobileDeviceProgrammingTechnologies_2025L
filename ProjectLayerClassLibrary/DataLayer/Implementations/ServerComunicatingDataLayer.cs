@@ -10,10 +10,10 @@ using System.Net.WebSockets;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
-using ProjectLayerClassLibrary.PresentationLayer.ViewLayer;
-using ProjectLayerClassServerLibrary.Presentation.Message;
+using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
 using System.Xml.Serialization;
 using System.IO;
+using ProjectLayerClassLibrary.DataLayer.Additionals;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -24,6 +24,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private ClientWebSocket clientWebSocket;
         private CancellationTokenSource cts;
         private int portNo = 8080;
+        private Task receiveLoop;
+        private MyLogger myLogger;
 
         private object accountOwnerLock = new object();
         private object bankAccountLock = new object();
@@ -41,14 +43,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private const string GET_ALL_BANK_ACCOUNTS_CODE = "GABA";
         private const string GET_BANK_ACCOUNTS_CODE = "GBAS";
         private const string AUTHENTICATE_ACCOUNT_OWNER = "_AAO";
+        private const string CHECK_FOR_REPORTS_UPDATES = "CFRU";
+        private const string TRANSFER = "___T";
   
 
         public ServerComunicatingDataLayer()
         {
             clientWebSocket = new ClientWebSocket();
             cts = new CancellationTokenSource();
+            //myLogger = new MyLogger("C:\\Users\\lukas\\Desktop\\ServerComunicatingDataLayerLogger.txt");
+            myLogger = new MyLogger("ServerComunicatingDataLayerLog.txt");
 
-            SetUp();
+            _ = SetUp();
         }
 
         public void Dispose()
@@ -57,12 +63,13 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 isConnected = false;
             }
+            receiveLoop.Dispose();
             cts.Cancel();
             clientWebSocket.Dispose();
             cts.Dispose();
         }
 
-        public async void SetUp()
+        public async Task SetUp()
         {
             if (!isConnected)
             {
@@ -71,6 +78,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     isConnected = true;
                 }
+
+                receiveLoop = Task.Run(() => { ClientReceiveLoop(); });
             }
         }
 
@@ -78,26 +87,6 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
 
         }
-
-        //private async Task ReceiveLoopAsync()
-        //{
-        //    var buffer = new byte[1024 * 4];
-        //
-        //    while (clientWebSocket.State == WebSocketState.Open)
-        //    {
-        //        var result = await clientWebSocket.ReceiveAsync(new ArraySegment<byte>(buffer), cts.Token);
-        //
-        //        if (result.MessageType == WebSocketMessageType.Close)
-        //        {
-        //            await clientWebSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Closing", cts.Token);
-        //        }
-        //        else
-        //        {
-        //            string message = Encoding.UTF8.GetString(buffer, 0, result.Count);
-        //            //onMessage?.Invoke(message); // 🔔 Call your callback
-        //        }
-        //    }
-        //}
 
         private void ClientReceiveLoop()
         {
@@ -129,7 +118,6 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     }
                     string _message = Encoding.UTF8.GetString(buffer, 0, count);
                     processReceivedData((byte[])buffer.Clone(), count);
-                    //onMessage?.Invoke(_message);
                 }
             }
             catch (Exception _ex)
@@ -144,56 +132,100 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             string respondType = Encoding.UTF8.GetString(data, 0, 4);
             int sequenceNo = BitConverter.ToInt32(data, 4);
             int resultCode = BitConverter.ToInt32(data, 8);
-            int dataSize = BitConverter.ToInt32(data, 12);
+            //int dataSize = BitConverter.ToInt32(data, 12);
+            string dataMessage = Encoding.UTF8.GetString(data, 12, count);
+            myLogger.Log($"Data Message: {dataMessage}");
 
-            switch (respondType)
+            XmlSerializer serializer;
+
+            using (var reader = new StringReader(dataMessage))
             {
-                case CREATE_ACCOUNT_OWNER_CODE:
-                    //createAccountOwnerReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(createAccountOwnerMonitorLock);
-                    break;
-            
-                case CREATE_BANK_ACCOUNT_CODE:
-                    //createBankAccountReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(createBankAccountMonitorLock);
-                    break;
-            
-                case GET_ACCOUNT_OWNER_CODE:
-                    //getAccountOwnerReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(getAccountOwnerMonitorLock);
-                    break;
-            
-                case GET_ACCOUNT_OWNER_LOGIN_CODE:
-                    //getAccountOwnerLoginReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(getAccountOwnerLoginMonitorLock);
-                    break;
-            
-                case GET_ALL_ACCOUNT_OWNERS_CODE:
-                    //getAllAccountOwnersReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(getAllAccountOwnersMonitorLock);
-                    break;
-            
-                case GET_BANK_ACCOUNT_CODE:
-                    //gtBankAccountReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(gtBankAccountMonitorLock);
-                    break;
-            
-                case GET_ALL_BANK_ACCOUNTS_CODE:
-                    //getAllBankAccountsReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(getAllBankAccountsMonitorLock);
-                    break;
-            
-                case GET_BANK_ACCOUNTS_CODE:
-                    //getBankAccountsReponses.Add(sequenceNo, );
-                    Monitor.PulseAll(getBankAccountsMonitorLock);
-                    break;
+                switch (respondType)
+                {
+                    case CREATE_ACCOUNT_OWNER_CODE:
+                        myLogger.Log($"CREATE_ACCOUNT_OWNER");
+                        serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                        createAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
+                        Monitor.PulseAll(createAccountOwnerMonitorLock);
+                        break;
+
+                    case CREATE_BANK_ACCOUNT_CODE:
+                        myLogger.Log($"CREATE_BANK_ACCOUNT");
+                        serializer = new XmlSerializer(typeof(BankAccountDto));
+                        createBankAccountReponses.Add(sequenceNo, ABankAccount.CreateBankAccountFromXml((BankAccountDto?)serializer.Deserialize(reader)));
+                        Monitor.PulseAll(createBankAccountMonitorLock);
+                        break;
+
+                    case GET_ACCOUNT_OWNER_CODE:
+                        myLogger.Log($"GET_ACCOUNT_OWNER");
+                        serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                        getAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
+                        Monitor.PulseAll(getAccountOwnerMonitorLock);
+                        break;
+
+                    case GET_ACCOUNT_OWNER_LOGIN_CODE:
+                        myLogger.Log($"GET_ACCOUNT_OWNER_LOGIN");
+                        serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                        getAccountOwnerLoginReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
+                        Monitor.PulseAll(getAccountOwnerLoginMonitorLock);
+                        break;
+
+                    case GET_ALL_ACCOUNT_OWNERS_CODE:
+                        myLogger.Log($"GET_ALL_ACCOUNT_OWNERS");
+                        serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
+                        getAllAccountOwnersReponses.Add(sequenceNo, ((List<AccountOwnerDto>)serializer.Deserialize(reader)).Select((aODto) => AAccountOwner.CreateAcountOwnerFromXml(aODto)).ToList());
+                        Monitor.PulseAll(getAllAccountOwnersMonitorLock);
+                        break;
+
+                    case GET_BANK_ACCOUNT_CODE:
+                        myLogger.Log($"GET_BANK_ACCOUNT");
+                        serializer = new XmlSerializer(typeof(BankAccountDto));
+                        gtBankAccountReponses.Add(sequenceNo, ABankAccount.CreateBankAccountFromXml((BankAccountDto?)serializer.Deserialize(reader)));
+                        Monitor.PulseAll(gtBankAccountMonitorLock);
+                        break;
+
+                    case GET_ALL_BANK_ACCOUNTS_CODE:
+                        myLogger.Log($"GET_ALL_BANK_ACCOUNTS");
+                        serializer = new XmlSerializer(typeof(List<BankAccountDto>));
+                        getAllBankAccountsReponses.Add(sequenceNo, ((List<BankAccountDto>)serializer.Deserialize(reader)).Select((bADto) => ABankAccount.CreateBankAccountFromXml(bADto)).ToList());
+                        Monitor.PulseAll(getAllBankAccountsMonitorLock);
+                        break;
+
+                    case GET_BANK_ACCOUNTS_CODE:
+                        myLogger.Log($"GET_BANK_ACCOUNTS");
+                        serializer = new XmlSerializer(typeof(List<BankAccountDto>));
+                        getBankAccountsReponses.Add(sequenceNo, ((List<BankAccountDto>)serializer.Deserialize(reader)).Select((bADto) => ABankAccount.CreateBankAccountFromXml(bADto)).ToList());
+                        Monitor.PulseAll(getBankAccountsMonitorLock);
+                        break;
+
+                    case AUTHENTICATE_ACCOUNT_OWNER:
+                        myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER");
+                        serializer = new XmlSerializer(typeof(bool));
+                        authenticateAccountOwnerReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
+                        Monitor.PulseAll(authenticateAccountOwnerMonitorLock);
+                        break;
+
+                    case CHECK_FOR_REPORTS_UPDATES:
+                        myLogger.Log($"CHECK_FOR_REPORTS_UPDATES");
+                        serializer = new XmlSerializer(typeof(bool));
+                        checkForReportsUpdatesReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
+                        Monitor.PulseAll(checkForReportsUpdatesMonitorLock);
+                        break;
+
+                    case TRANSFER:
+                        myLogger.Log($"TRANSFER");
+                        serializer = new XmlSerializer(typeof(TransferDataLayerCodes));
+                        performTransferReponses.Add(sequenceNo, (TransferDataLayerCodes)serializer.Deserialize(reader));
+                        Monitor.PulseAll(performTransferMonitorLock);
+                        break;
+                }
             }
         }
 
         private object createAccountOwnerLock = new object();
         private object createAccountOwnerMonitorLock = new object();
         private static int createAccountOwnerLockSequenceNoCounter = 0;
-        private Dictionary<int, AAccountOwner> createAccountOwnerReponses = new Dictionary<int, AAccountOwner>();
+        private Dictionary<int, AAccountOwner?> createAccountOwnerReponses = new Dictionary<int, AAccountOwner?>();
         public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword, out CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags)
         {
             bool localIsConnected = false;
@@ -217,7 +249,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, accountOwnerCreationData);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes("_CAO").Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = Encoding.ASCII.GetBytes(CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
@@ -226,8 +258,16 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     Monitor.Wait(createAccountOwnerMonitorLock);
                     if (createAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
-                        creationAccountOwnerFlags = CreationAccountOwnerDataLayerFlags.SUCCESS;
-                        return createAccountOwnerReponses[sequenceNo];
+                        AAccountOwner? aAccountOwner = createAccountOwnerReponses[sequenceNo];
+                        if (aAccountOwner == null)
+                        {
+                            creationAccountOwnerFlags = CreationAccountOwnerDataLayerFlags.EMPTY;
+                        }
+                        else
+                        {
+                            creationAccountOwnerFlags = CreationAccountOwnerDataLayerFlags.SUCCESS;
+                        }
+                        return aAccountOwner;
                     }
                 }
             }
@@ -240,7 +280,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object createBankAccountLock = new object();
         private object createBankAccountMonitorLock = new object();
         private static int createBankAccountSequenceNoCounter = 0;
-        private Dictionary<int, ABankAccount> createBankAccountReponses = new Dictionary<int, ABankAccount>();
+        private Dictionary<int, ABankAccount?> createBankAccountReponses = new Dictionary<int, ABankAccount?>();
         public override ABankAccount CreateBankAccount(int ownerId)
         {
             bool localIsConnected = false;
@@ -259,7 +299,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerId);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = Encoding.ASCII.GetBytes(CREATE_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
@@ -584,7 +624,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 //StringWriter writer = new StringWriter();
                 //serializer.Serialize(writer, accountOwnerCreationData);
                 //byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(AUTHENTICATE_ACCOUNT_OWNER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = Encoding.ASCII.GetBytes(TRANSFER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
@@ -626,7 +666,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerId);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(AUTHENTICATE_ACCOUNT_OWNER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = Encoding.ASCII.GetBytes(CHECK_FOR_REPORTS_UPDATES).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 

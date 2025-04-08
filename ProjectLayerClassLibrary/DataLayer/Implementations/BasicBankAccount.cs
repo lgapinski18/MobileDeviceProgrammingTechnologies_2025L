@@ -15,11 +15,22 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object accountBalanceLock = new object();
         private object bankAccountReportsLock = new object();
 
+        public BasicBankAccount(int id, string accountNumber, int accountOwnerId)
+            : base(id, accountNumber, accountOwnerId)
+        {
+            //AccountNumber = accountNumber;
+            //AccountOwnerId = accountOwner;
+            bankAccountReports = new List<ABankAccountReport>();
+
+            //ABankAccountReport startingBankAccountReport = new BankAccountReportWithOwnerData(0.0f, 0.0f, accountOwner.OwnerName, accountOwner.OwnerSurname, accountOwner.OwnerEmail);
+            //bankAccountReports.Add(startingBankAccountReport);
+        }
+
         public BasicBankAccount(int id, string accountNumber, AAccountOwner accountOwner)
             : base(id, accountNumber, accountOwner)
         {
-            AccountNumber = accountNumber;
-            AccountOwner = accountOwner;
+            //AccountNumber = accountNumber;
+            //AccountOwnerId = accountOwner;
             bankAccountReports = new List<ABankAccountReport>();
 
             ABankAccountReport startingBankAccountReport = new BankAccountReportWithOwnerData(0.0f, 0.0f, accountOwner.OwnerName, accountOwner.OwnerSurname, accountOwner.OwnerEmail);
@@ -46,9 +57,16 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             lock (bankAccountReportsLock)
             {
-                ABankAccountReport bankAccountReport = new BankAccountReportWithOwnerData(bankAccountReports.Last().CurrentAccountBalance, AccountBalance, AccountOwner.OwnerName, AccountOwner.OwnerSurname, AccountOwner.OwnerEmail);
-                bankAccountReports.Add(bankAccountReport);
-                return bankAccountReport;
+                if (AccountOwner != null)
+                {
+                    ABankAccountReport bankAccountReport = new BankAccountReportWithOwnerData(bankAccountReports.Last().CurrentAccountBalance, AccountBalance, AccountOwner.OwnerName, AccountOwner.OwnerSurname, AccountOwner.OwnerEmail);
+                    bankAccountReports.Add(bankAccountReport);
+                    return bankAccountReport;
+                }
+                else
+                {
+                    return null;
+                }
             }
         }
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ProjectLayerClassLibrary.DataLayer.Implementations;
+using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +15,9 @@ namespace ProjectLayerClassLibrary.DataLayer
         private string accountNumber;
         public string AccountNumber { get { return accountNumber; } set { accountNumber = value; } }
 
+        private int accountOwnerId;
+        public int AccountOwnerId { get { return accountOwnerId; } set { accountOwnerId = value; } }
+
         private AAccountOwner accountOwner;
         public AAccountOwner AccountOwner { get { return accountOwner; } set { accountOwner = value; } }
 
@@ -21,12 +26,33 @@ namespace ProjectLayerClassLibrary.DataLayer
 
         protected ICollection<ABankAccountReport> bankAccountReports;
 
+        public ABankAccount(int id, string accountNumber, int accountOwnerId)
+        {
+            this.id = id;
+            AccountNumber = accountNumber;
+            AccountOwnerId = accountOwnerId;
+            AccountOwner = null;
+            AccountBalance = 0.0f;
+        }
+
         public ABankAccount(int id, string accountNumber, AAccountOwner accountOwner)
         {
             this.id = id;
             AccountNumber = accountNumber;
+            AccountOwnerId = accountOwner.GetId();
             AccountOwner = accountOwner;
             AccountBalance = 0.0f;
+        }
+
+        internal static ABankAccount? CreateBankAccountFromXml(BankAccountDto? bankAccountDto)
+        {
+            if (bankAccountDto == null)
+            {
+                return null;
+            }
+            ABankAccount bankAccount = new BasicBankAccount(bankAccountDto.Id, bankAccountDto.AccountNumber, bankAccountDto.OwnerId);
+            bankAccount.AccountBalance = bankAccountDto.Balance;
+            return bankAccount;
         }
 
         public abstract void IncreaseAccountBalance(float amount);
@@ -56,7 +82,7 @@ namespace ProjectLayerClassLibrary.DataLayer
             return id == other.id
                    && accountBalance == other.accountBalance
                    && accountNumber == other.accountNumber
-                   && accountOwner.Equals(other.accountOwner);
+                   && accountOwnerId.Equals(other.accountOwnerId);
         }
     }
 }

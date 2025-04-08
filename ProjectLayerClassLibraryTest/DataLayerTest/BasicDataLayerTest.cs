@@ -46,7 +46,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             ABankAccount bankAccount = dataLayer.CreateBankAccount(accountOwner.GetId());
 
             Assert.IsNotNull(bankAccount);
-            Assert.AreEqual(accountOwner, bankAccount.AccountOwner);
+            Assert.AreEqual(accountOwner, bankAccount.AccountOwnerId);
 
             ABankAccount? bankAccountGetByAccountNumber = dataLayer.GetBankAccount(bankAccount.AccountNumber);
             Assert.IsNotNull(bankAccountGetByAccountNumber);

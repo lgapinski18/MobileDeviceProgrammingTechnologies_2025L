@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ProjectLayerClassLibrary.DataLayer.Implementations;
+using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -35,6 +37,15 @@ namespace ProjectLayerClassLibrary.DataLayer
             this.ownerSurname = ownerSurname;
             this.ownerEmail = ownerEmail;
             this.ownerPassword = ownerPassword;
+        }
+
+        internal static AAccountOwner? CreateAcountOwnerFromXml(AccountOwnerDto? accountOwnerDto)
+        {
+            if (accountOwnerDto == null)
+            {
+                return null;
+            }
+            return new BasicAccountOwner(accountOwnerDto.Id, "", accountOwnerDto.Name, accountOwnerDto.Surname, accountOwnerDto.Email, "");
         }
 
         public int GetId()

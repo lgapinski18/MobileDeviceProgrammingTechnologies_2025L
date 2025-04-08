@@ -89,7 +89,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
                 case "_AAO":
                     //AAO - authethicate account owner, data: string login, string password
                     responseContent = ProcessAuthenthicateAccountOwner(GetData<Credentials>(messageContent));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    serializer = new XmlSerializer(typeof(bool)); //////////
                     break;
 
                 case "_CAO":
@@ -101,7 +101,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
                 case "_CBA":
                     //_CBA - create bank account; Dane: int ownerId
                     responseContent = ProcessCreateBankAccount(GetInt(messageContent));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    serializer = new XmlSerializer(typeof(BankAccountDto)); //////////
                     break;
 
                 case "_GAO":
@@ -119,19 +119,19 @@ namespace ProjectLayerClassServerLibrary.Presentation
                 case "GBAN":
                     //GBAN - get bank account; dane: "{accountNumber}"
                     responseContent = ProcessGetBankAccountByNumber(GetData<string>(messageContent));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    serializer = new XmlSerializer(typeof(BankAccountDto)); /////////
                     break;
 
                 case "GBAS":
                     //GBAS - get bank accounts for owner id; dane: int owner id;
                     responseContent = ProcessGetBankAccounts(GetInt(messageContent));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    serializer = new XmlSerializer(typeof(List<BankAccountDto>)); ////////
                     break;
 
                 case "GABA":
                     //GABA - get all accounts; 0 danych
                     responseContent = ProcessGetAllBankAccounts();
-                    serializer = new XmlSerializer(typeof(List<BankAccountDto>));
+                    serializer = new XmlSerializer(typeof(List<BankAccountDto>)); 
                     break;
 
                 case "GAOL":
@@ -143,7 +143,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
                 case "CFRU":
                     //CFRU - check for reports updates, data: int ownerId
                     responseContent = ProcessCheckForReportsUpdate(GetInt(messageContent));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    serializer = new XmlSerializer(typeof(bool)); ///////
                     break;
 
                 case "___T":

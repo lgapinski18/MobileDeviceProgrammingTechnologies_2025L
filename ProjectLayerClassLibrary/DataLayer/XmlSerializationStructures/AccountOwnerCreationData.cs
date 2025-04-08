@@ -1,6 +1,6 @@
 ﻿using System.Xml.Serialization;
 
-namespace ProjectLayerClassServerLibrary.Presentation.Message
+namespace ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures
 {
     [XmlRoot("AccountOwnerCreationData")]
     internal class AccountOwnerCreationData
