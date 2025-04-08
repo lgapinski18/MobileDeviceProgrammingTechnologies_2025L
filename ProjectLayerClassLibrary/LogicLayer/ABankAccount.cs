@@ -25,7 +25,7 @@ namespace ProjectLayerClassLibrary.LogicLayer
 
         public string AccountNumber { get { return dataLayerBankAccount.AccountNumber; } set { dataLayerBankAccount.AccountNumber = value; } }
 
-        public AAccountOwner AccountOwner { get { return AAccountOwner.CreateAccountOwner(dataLayerBankAccount.AccountOwnerId); } set { dataLayerBankAccount.AccountOwnerId = value.DataLayerAccountOwner; } }
+        public AAccountOwner AccountOwner { get { return AAccountOwner.CreateAccountOwner(dataLayerBankAccount.AccountOwner); } set { dataLayerBankAccount.AccountOwner = value.DataLayerAccountOwner; } }
 
         public float AccountBalance { get { return dataLayerBankAccount.AccountBalance; } set { dataLayerBankAccount.AccountBalance = value; } }
 

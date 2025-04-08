@@ -76,7 +76,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             int messageSize = BitConverter.ToInt32(Encoding.UTF8.GetBytes(message.Substring(MESSAGE_SIZE_POSITION, MESSAGE_SIZE_LENGTH)));
             string messageContent = message.Substring(MESSAGE_CONTENT_POSITION, messageSize);
 
-            Console.WriteLine($"MessageType: {messageType}, MessageSequenceNo: {messageSequenceNo}, MessageSize: {messageSize}");
+            Console.WriteLine($"MessageType: {messageType}, MessageSequenceNo: {messageSequenceNo}, MessageSize: {messageSize}\nMessageContent:\n{messageContent}\n");
 
 
             object? responseContent = null;

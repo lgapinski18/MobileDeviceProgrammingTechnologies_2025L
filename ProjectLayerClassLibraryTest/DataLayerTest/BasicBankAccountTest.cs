@@ -23,7 +23,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             Assert.AreEqual(id, bankAccount.GetId());
             Assert.AreEqual(accountNumber, bankAccount.AccountNumber);
             Assert.AreEqual(0.0f, bankAccount.AccountBalance);
-            Assert.AreEqual(accountOwner, bankAccount.AccountOwnerId);
+            Assert.AreEqual(accountOwner, bankAccount.AccountOwner);
         }
 
         [TestMethod]
@@ -34,12 +34,12 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             bankAccount.SetId(id2);
             bankAccount.AccountNumber = accountNumber2;
             bankAccount.AccountBalance = 100.0f;
-            bankAccount.AccountOwnerId = accountOwner2;
+            bankAccount.AccountOwner = accountOwner2;
 
             Assert.AreEqual(id2, bankAccount.GetId());
             Assert.AreEqual(accountNumber2, bankAccount.AccountNumber);
             Assert.AreEqual(accountBalance2, bankAccount.AccountBalance);
-            Assert.AreEqual(accountOwner2, bankAccount.AccountOwnerId);
+            Assert.AreEqual(accountOwner2, bankAccount.AccountOwner);
         }
 
         [TestMethod]
