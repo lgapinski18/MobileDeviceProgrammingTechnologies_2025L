@@ -146,6 +146,16 @@ namespace ProjectLayerClassServerLibrary.Presentation
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     break;
 
+                case "___T":
+                    //___T - string ownerAccountNumber, string targetAccountNumber, float amount, string description,
+                    TransferResultCodes? transferResponseCode = ProcessTransfer(GetData<TransferData>(messageContent));
+                    if (transferResponseCode != null)
+                    {
+                        responseContent = transferResponseCode.Value;
+                    }
+                    serializer = new XmlSerializer(typeof(TransferResultCodes));
+                    break;
+
                 default:
                     responseCode = 1;
                     break;
@@ -361,6 +371,18 @@ namespace ProjectLayerClassServerLibrary.Presentation
                 return null;
             }
             return logicLayer.CheckForReportsUpdates(ownerId.Value);
+        }
+
+        private TransferResultCodes? ProcessTransfer(TransferData? transferData)
+        {
+            if (transferData == null)
+            {
+                return null;
+            }
+            return (TransferResultCodes)(int)logicLayer.PerformTransfer(transferData.SourceAccountNumber, 
+                                                                        transferData.TargetAccountNumber, 
+                                                                        transferData.Amount, 
+                                                                        transferData.Description);
         }
 
         #endregion private
