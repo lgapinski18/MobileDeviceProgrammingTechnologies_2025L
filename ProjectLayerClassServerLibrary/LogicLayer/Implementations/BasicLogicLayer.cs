@@ -153,51 +153,42 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
             }
         }
 
-        public override Thread PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback)
+        public override TransferCodes PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description)
         {
-            Thread thread = new Thread(() =>
+            DataLayer.ABankAccount? ownerBankAccount = dataLayer.GetBankAccount(ownerAccountNumber);
+            if (ownerBankAccount == null)
             {
-                DataLayer.ABankAccount? ownerBankAccount = dataLayer.GetBankAccount(ownerAccountNumber);
-                if (ownerBankAccount == null)
-                {
-                    transferCallback(TransferCodes.OWNER_ACCOUNT_DOESNT_EXISTS, ownerAccountNumber, targetAccountNumber, amount, description);
-                    return;
-                }
-                if (ownerBankAccount.AccountBalance < amount)
-                {
-                    transferCallback(TransferCodes.INSUFICIENT_BANK_ACCOUNT_FUNDS, ownerAccountNumber, targetAccountNumber, amount, description);
-                    return;
-                }
-                DataLayer.ABankAccount? targetBankAccount = dataLayer.GetBankAccount(targetAccountNumber);
-                if (targetBankAccount == null)
-                {
-                    transferCallback(TransferCodes.TARGET_BANK_ACCOUNT_DOESNT_EXISTS, ownerAccountNumber, targetAccountNumber, amount, description);
-                    return;
-                }
-
-                object first = ownerBankAccount;
-                object second = targetBankAccount;
-                if (first.GetHashCode() > second.GetHashCode())
-                {
-                    object temp = first;
-                    first = second;
-                    second = temp;
-                }
-
-                lock (first)
-                {
-                    lock (second) 
-                    {
-                        ownerBankAccount.DecreaseAccountBalance(amount);
-                        targetBankAccount.IncreaseAccountBalance(amount);
-                    }
-                }
-
-                transferCallback(TransferCodes.SUCCESS, ownerAccountNumber, targetAccountNumber, amount, description);
+                return TransferCodes.OWNER_ACCOUNT_DOESNT_EXISTS;
             }
-            );
-            thread.Start();
-            return thread;
+            if (ownerBankAccount.AccountBalance < amount)
+            {
+                return TransferCodes.INSUFICIENT_BANK_ACCOUNT_FUNDS;
+            }
+            DataLayer.ABankAccount? targetBankAccount = dataLayer.GetBankAccount(targetAccountNumber);
+            if (targetBankAccount == null)
+            {
+                return TransferCodes.TARGET_BANK_ACCOUNT_DOESNT_EXISTS;
+            }
+
+            object first = ownerBankAccount;
+            object second = targetBankAccount;
+            if (first.GetHashCode() > second.GetHashCode())
+            {
+                object temp = first;
+                first = second;
+                second = temp;
+            }
+
+            lock (first)
+            {
+                lock (second) 
+                {
+                    ownerBankAccount.DecreaseAccountBalance(amount);
+                    targetBankAccount.IncreaseAccountBalance(amount);
+                }
+            }
+
+            return TransferCodes.SUCCESS;
         }
 
         public override bool CheckForReportsUpdates(int ownerId)
