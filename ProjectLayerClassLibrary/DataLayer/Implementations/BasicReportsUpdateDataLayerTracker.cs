@@ -8,14 +8,14 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 {
     public class BasicReportsUpdateDataLayerTracker : AReportsUpdateDataLayerTracker
     {
-        private List<IObserver<bool>> observers;
+        private List<IObserver<List<ABankAccountReport>>> observers;
 
         public BasicReportsUpdateDataLayerTracker()
         {
-            observers = new List<IObserver<bool>>();
+            observers = new List<IObserver<List<ABankAccountReport>>>();
         }
 
-        public override IDisposable Subscribe(IObserver<bool> observer)
+        public override IDisposable Subscribe(IObserver<List<ABankAccountReport>> observer)
         {
             if (!observers.Contains(observer))
                 observers.Add(observer);
@@ -24,10 +24,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private class Unsubscriber : IDisposable
         {
-            private List<IObserver<bool>> _observers;
-            private IObserver<bool> _observer;
+            private List<IObserver<List<ABankAccountReport>>> _observers;
+            private IObserver<List<ABankAccountReport>> _observer;
 
-            public Unsubscriber(List<IObserver<bool>> observers, IObserver<bool> observer)
+            public Unsubscriber(List<IObserver<List<ABankAccountReport>>> observers, IObserver<List<ABankAccountReport>> observer)
             {
                 this._observers = observers;
                 this._observer = observer;
@@ -40,7 +40,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             }
         }
 
-        public override void TrackWhetherReportsUpdatesChanged(bool doesChangesAppeared)
+        public override void TrackWhetherReportsUpdatesChanged(List<ABankAccountReport> doesChangesAppeared)
         {
             foreach (var observer in observers)
             {

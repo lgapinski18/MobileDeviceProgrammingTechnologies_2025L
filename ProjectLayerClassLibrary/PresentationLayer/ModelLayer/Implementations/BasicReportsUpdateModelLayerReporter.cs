@@ -9,7 +9,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
     internal class BasicReportsUpdateModelLayerReporter : AReportsUpdateModelLayerReporter
     {
         public delegate void OnObservationComplitionDelegate();
-        public delegate void OnReportsUpdateObservationDelegate(bool value);
+        public delegate void OnReportsUpdateObservationDelegate(List<LogicLayer.ABankAccountReport> value);
 
         private IDisposable? unsubscriber = null;
         private OnObservationComplitionDelegate onObservationComplitionDelegate;
@@ -21,7 +21,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             this.onReportsUpdateObservationDelegate = onReportsUpdateObservationDelegate;
         }
 
-        public override void Subscribe(IObservable<bool>? provider)
+        public override void Subscribe(IObservable<List<LogicLayer.ABankAccountReport>>? provider)
         {
             if (provider != null)
             {
@@ -40,7 +40,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             return;
         }
 
-        public override void OnNext(bool value)
+        public override void OnNext(List<LogicLayer.ABankAccountReport> value)
         {
             onReportsUpdateObservationDelegate(value);
         }

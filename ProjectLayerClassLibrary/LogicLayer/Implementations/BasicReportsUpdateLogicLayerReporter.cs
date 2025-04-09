@@ -16,7 +16,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             this.tracker = tracker;
         }
 
-        public override void Subscribe(IObservable<bool>? provider)
+        public override void Subscribe(IObservable<List<DataLayer.ABankAccountReport>>? provider)
         {
             if (provider != null)
             {
@@ -35,9 +35,9 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             return;
         }
 
-        public override void OnNext(bool value)
+        public override void OnNext(List<DataLayer.ABankAccountReport> value)
         {
-            tracker.TrackWhetherReportsUpdatesChanged(value);
+            tracker.TrackWhetherReportsUpdatesChanged(value.Select(report => LogicLayer.ABankAccountReport.CreateBankAccountReport(report)).ToList());
         }
 
         public override void Unsubscribe()

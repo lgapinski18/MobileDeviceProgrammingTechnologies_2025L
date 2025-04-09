@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace ProjectLayerClassLibrary.LogicLayer
 {
-    internal abstract class AReportsUpdateLogicLayerReporter : IObserver<bool>
+    internal abstract class AReportsUpdateLogicLayerReporter : IObserver<List<DataLayer.ABankAccountReport>>
     {
-        public abstract void Subscribe(IObservable<bool>? provider);
+        public abstract void Subscribe(IObservable<List<DataLayer.ABankAccountReport>>? provider);
 
         public abstract void OnCompleted();
 
         public abstract void OnError(Exception error);
 
-        public abstract void OnNext(bool value);
+        public abstract void OnNext(List<DataLayer.ABankAccountReport> value);
 
         public abstract void Unsubscribe();
     }
