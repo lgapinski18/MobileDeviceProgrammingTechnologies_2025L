@@ -16,32 +16,27 @@ namespace ProjectLayerClassServerLibrary.Presentation
             webSocketServerLoop = Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
         }
     
-        #region WebSocketConnection
+        protected override Task SendTask(byte[] header, string message)
+        {
+            return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. Encoding.UTF8.GetBytes(message)]), WebSocketMessageType.Binary, true, CancellationToken.None);
+        }
 
-            protected override Task SendTask(byte[] header, string message)
-            {
-                return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. Encoding.UTF8.GetBytes(message)]), WebSocketMessageType.Binary, true, CancellationToken.None);
-            }
+        public override Task DisconnectAsync()
+        {
+            return webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutdown procedure started", CancellationToken.None);
+        }
 
-            public override Task DisconnectAsync()
-            {
-                return webSocket.CloseAsync(WebSocketCloseStatus.NormalClosure, "Shutdown procedure started", CancellationToken.None);
-            }
-
-            #endregion WebSocketConnection
-    
-        #region Object
-
-            public override string ToString()
-            {
-                return remoteEndPoint.ToString();
-            }
-
-            #endregion Object
+        public override string ToString()
+        {
+            return remoteEndPoint.ToString();
+        }
     
         private WebSocket webSocket = null;
         private IPEndPoint remoteEndPoint;
-    
+        private int? loggedOwnerId = null;
+
+        public override int? LoggedOwnerId { get => loggedOwnerId; set => loggedOwnerId = value; }
+
         private void ServerMessageLoop(WebSocket ws)
         {
             try

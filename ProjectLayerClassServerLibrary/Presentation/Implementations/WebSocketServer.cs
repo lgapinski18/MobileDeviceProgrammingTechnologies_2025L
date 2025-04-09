@@ -94,13 +94,21 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             XmlSerializer? serializer = null;
             string serializedMessage = "";
             int responseCode = -1;
+            bool responde = true;
 
             switch (messageType)
             {
                 case "_AAO":
                     //AAO - authethicate account owner, data: string login, string password
-                    responseContent = ProcessAuthenthicateAccountOwner(GetData<Credentials>(messageContent));
+                    responseContent = ProcessAuthenthicateAccountOwner(GetData<Credentials>(messageContent), connection);
                     serializer = new XmlSerializer(typeof(bool)); //////////
+                    break;
+
+                case "LOAO":
+                    //AAO - authethicate account owner, data: string login, string password
+                    ProcessLogOutAccountOwner(connection);
+                    serializer = new XmlSerializer(typeof(bool)); //////////
+                    responde = false;
                     break;
 
                 case "_CAO":
@@ -172,19 +180,26 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                     break;
             }
 
-            if (responseContent != null && serializer != null)
+            if (responde)
             {
-                responseCode = 0;
-                StringWriter stringWriter = new StringWriter();
-                serializer.Serialize(stringWriter, responseContent);
-                serializedMessage = stringWriter.ToString();
-            }
-            else if (responseCode == -1)
-            {
-                responseCode = 2;
-            }
+                if (responseContent != null && serializer != null)
+                {
+                    responseCode = 0;
+                    StringWriter stringWriter = new StringWriter();
+                    serializer.Serialize(stringWriter, responseContent);
+                    serializedMessage = stringWriter.ToString();
+                }
+                else if (serializer != null)
+                {
+                    serializedMessage = "";
+                }
+                else if (responseCode == -1)
+                {
+                    responseCode = 2;
+                }
 
-            connection.SendAsync(messageType, messageSequenceNo, responseCode, serializedMessage).Wait();
+                connection.SendAsync(messageType, messageSequenceNo, responseCode, serializedMessage).Wait();
+            }
         }
 
         private static T? GetData<T>(string message) where T : class
@@ -211,13 +226,23 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             return deserialized;
         }
 
-        private bool? ProcessAuthenthicateAccountOwner(Credentials? credentials)
+        private bool? ProcessAuthenthicateAccountOwner(Credentials? credentials, WebSocketConnection connection)
         {
             if (credentials == null)
             {
                 return null;
             }
-            return logicLayer.AuthenticateAccountOwner(credentials.Login, credentials.Password);
+            bool? isLogged = logicLayer.AuthenticateAccountOwner(credentials.Login, credentials.Password);
+            if (isLogged == true)
+            {
+                connection.LoggedOwnerId = logicLayer.GetAccountOwner(credentials.Login)?.GetId();
+            }
+            return isLogged;
+        }
+
+        private void ProcessLogOutAccountOwner(WebSocketConnection connection)
+        {
+            connection.LoggedOwnerId = null;
         }
 
         private CreationAccountOwnerResponse? ProcessCreateAccountOwner(AccountOwnerCreationData? accountOwnerCreationData)
@@ -394,10 +419,25 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             {
                 return null;
             }
-            return (TransferResultCodes)(int)logicLayer.PerformTransfer(transferData.SourceAccountNumber, 
-                                                                        transferData.TargetAccountNumber, 
-                                                                        transferData.Amount, 
+            TransferResultCodes? result = (TransferResultCodes)(int)logicLayer.PerformTransfer(transferData.SourceAccountNumber,
+                                                                        transferData.TargetAccountNumber,
+                                                                        transferData.Amount,
                                                                         transferData.Description);
+
+            if (result == TransferResultCodes.SUCCESS)
+            {
+                HashSet<int> ids = new HashSet<int>()
+                {
+                    logicLayer.GetBankAccountByAccountNumber(transferData.SourceAccountNumber).AccountOwner.GetId(),
+                    logicLayer.GetBankAccountByAccountNumber(transferData.TargetAccountNumber).AccountOwner.GetId(),
+                };
+
+                foreach (WebSocketConnection connection in connections.Where(connection => connection.LoggedOwnerId != null && ids.Contains(connection.LoggedOwnerId.Value)))
+                {
+                    connection.SendAsync("_BAU", 0, 0, "");
+                }
+            }
+            return result;
         }
 
         #region REACTIVE_INTERACTION

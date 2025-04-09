@@ -31,8 +31,12 @@ namespace ProjectLayerClassLibrary.DataLayer
 
         public delegate void TransferDataLayerCallback(TransferResultCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
-        protected AReportsUpdateDataLayerTracker reportsUpdateTracker;
-        public AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+        #region EVENTS
+
+        public abstract AReportsUpdateDataLayerTracker ReportsUpdateTracker { get; }
+        public abstract event Action BankAccountsUpdate;
+
+        #endregion
 
         public static ADataLayer CreateDataLayerInstance()
         {

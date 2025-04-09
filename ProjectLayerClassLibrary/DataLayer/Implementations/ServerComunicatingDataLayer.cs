@@ -47,7 +47,20 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private const string CHECK_FOR_REPORTS_UPDATES = "CFRU";
         private const string TRANSFER = "___T";
         private const string REACTIVE_REPORTS_UPDATE = "_RRU";
-  
+        private const string BANK_ACCOUNTS_UPDATES = "_BAU";
+
+        #region EVENTS
+
+        protected AReportsUpdateDataLayerTracker reportsUpdateTracker;
+        public override AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+
+        public override event Action BankAccountsUpdate;
+        protected void CallBankAccountsUpdate()
+        {
+            BankAccountsUpdate?.Invoke();
+        }
+
+        #endregion
 
         public ServerComunicatingDataLayer(int portNo = 8080)
         {
@@ -313,6 +326,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                             //reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
                             reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(true);
                         }
+                        break;
+
+                    case BANK_ACCOUNTS_UPDATES:
+                        myLogger.Log($"BANK_ACCOUNTS_UPDATES");
+                        CallBankAccountsUpdate();
                         break;
                 }
             }

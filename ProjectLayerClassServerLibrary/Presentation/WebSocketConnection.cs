@@ -14,6 +14,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
 
         public async Task SendAsync(string messageType, int messageSequenceNo, int responseCode, string message)
         {
+            Console.WriteLine($"Sending:\nMessageType: {messageType}, messageSequenceNo {messageSequenceNo}, responseCode: {responseCode}\n{message}");
             byte[] header = Encoding.ASCII.GetBytes(messageType)
                                             .Concat(BitConverter.GetBytes(messageSequenceNo))
                                             .Concat(BitConverter.GetBytes(responseCode))
@@ -25,5 +26,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
         public abstract Task DisconnectAsync();
 
         protected abstract Task SendTask(byte[] header, string message);
+
+        public abstract int? LoggedOwnerId { get; set; }
     }
 }

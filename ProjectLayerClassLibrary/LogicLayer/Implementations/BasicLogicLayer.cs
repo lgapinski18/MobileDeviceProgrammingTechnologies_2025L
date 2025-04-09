@@ -26,6 +26,19 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         private bool reportsHasBeenUpdatedRecently = false;
         private AReportsUpdateLogicLayerReporter reportsUpdateReporter;
 
+        #region EVENTS
+
+
+        protected AReportsUpdateLogicLayerTracker reportsUpdateTracker;
+        public override AReportsUpdateLogicLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+        public override event Action BankAccountsUpdate;
+        protected void CallBankAccountsUpdate()
+        {
+            BankAccountsUpdate?.Invoke();
+        }
+
+        #endregion
+
         public ADataLayer DataLayer { get { return dataLayer; } }
 
         public BasicLogicLayer(ADataLayer? dataLayer = default)
@@ -50,7 +63,9 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 
             reportsUpdateTracker = new BasicReportsUpdateLogicLayerTracker();
             reportsUpdateReporter = new BasicReportsUpdateLogicLayerReporter(reportsUpdateTracker);
-            reportsUpdateReporter.Subscribe(dataLayer.ReportsUpdateTracker);
+            reportsUpdateReporter.Subscribe(this.dataLayer.ReportsUpdateTracker);
+
+            this.dataLayer.BankAccountsUpdate += CallBankAccountsUpdate;
         }
 
         private void Log(string message)

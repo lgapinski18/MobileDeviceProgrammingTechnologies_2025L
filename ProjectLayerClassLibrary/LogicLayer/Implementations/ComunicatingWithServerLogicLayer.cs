@@ -1,10 +1,5 @@
 ﻿using ProjectLayerClassLibrary.DataLayer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using static ProjectLayerClassLibrary.DataLayer.ADataLayer;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
@@ -16,6 +11,20 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         private ADataLayer dataLayer;
         private AReportsUpdateLogicLayerReporter reportsUpdateReporter;
 
+
+        #region EVENTS
+
+        protected AReportsUpdateLogicLayerTracker reportsUpdateTracker;
+        public override AReportsUpdateLogicLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+
+        public override event Action BankAccountsUpdate;
+        protected void CallBankAccountsUpdate()
+        {
+            BankAccountsUpdate?.Invoke();
+        }
+
+        #endregion
+
         public ComunicatingWithServerLogicLayer(ADataLayer? dataLayer = default)
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
@@ -23,6 +32,8 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             BasicReportsUpdateLogicLayerReporter reportsUpdateReporter = new BasicReportsUpdateLogicLayerReporter(reportsUpdateTracker);
             reportsUpdateReporter.Subscribe(this.dataLayer.ReportsUpdateTracker);
             this.reportsUpdateReporter = reportsUpdateReporter;
+
+            this.dataLayer.BankAccountsUpdate += CallBankAccountsUpdate;
         }
 
         public override bool AuthenticateAccountOwner(string login, string password)

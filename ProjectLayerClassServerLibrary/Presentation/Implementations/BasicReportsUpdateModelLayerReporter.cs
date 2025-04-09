@@ -44,7 +44,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 
         public override void OnNext(bool value)
         {
-            if (value)
+            if (value && connection.LoggedOwnerId != null)
             {
                 Console.WriteLine($"ReportsUpdate sending to: {connection}");
                 sendTask = connection.SendAsync("_RRU", 0, 0, "");

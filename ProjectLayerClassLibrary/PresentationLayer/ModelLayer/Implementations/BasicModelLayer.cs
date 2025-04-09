@@ -39,6 +39,8 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             reportUpdateChackingTimer.Enabled = true;
             reportUpdateChackingTimer.AutoReset = true;
             reportUpdateChackingTimer.Start();
+
+            logicLayer.BankAccountsUpdate += UpdateBankAccounts;
         }
 
         #region EVENTS
@@ -149,6 +151,12 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         public override void OpenNewBankAccount()
         {
             logicLayer.OpenNewBankAccount(UserContext.Id);
+            userContext = new UserContext(logicLayer.GetAccountOwner(UserContext.Id), logicLayer.GetAccountOwnerBankAccounts(UserContext.Id));
+            OnPropertyChanged("BankAccounts");
+        }
+
+        private void UpdateBankAccounts()
+        {
             userContext = new UserContext(logicLayer.GetAccountOwner(UserContext.Id), logicLayer.GetAccountOwnerBankAccounts(UserContext.Id));
             OnPropertyChanged("BankAccounts");
         }

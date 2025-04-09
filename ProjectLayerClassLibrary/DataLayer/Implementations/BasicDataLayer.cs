@@ -25,6 +25,19 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private ServerComunicatingDataLayer client;
 
+        #region EVENTS
+
+        protected AReportsUpdateDataLayerTracker reportsUpdateTracker = new BasicReportsUpdateDataLayerTracker();
+        public override AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+
+        public override event Action BankAccountsUpdate;
+        protected void CallBankAccountsUpdate()
+        {
+            BankAccountsUpdate?.Invoke();
+        }
+
+        #endregion
+
         public BasicDataLayer(bool generateDefaultContent = true)
         {
             accountOwnerRepository = RepositoryFactory.CreateAccountOwnerRepository();
