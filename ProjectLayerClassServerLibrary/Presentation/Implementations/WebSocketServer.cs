@@ -60,7 +60,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
         {
             Console.WriteLine($"Connection: {connection}");
             connections.Add(connection);
-            BasicReportsUpdateModelLayerReporter observer = new BasicReportsUpdateModelLayerReporter(connection, () => { });
+            BasicReportsUpdateModelLayerReporter observer = new BasicReportsUpdateModelLayerReporter(connection, logicLayer, () => { });
             observer.Subscribe(logicLayer.ReportsUpdateLogicLayerTracker);
             connection.onClose = () => {
                 Console.WriteLine($"Closing connection: {connection}");
