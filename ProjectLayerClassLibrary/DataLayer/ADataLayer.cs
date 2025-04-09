@@ -29,7 +29,7 @@ namespace ProjectLayerClassLibrary.DataLayer
             TRANSFER_HAS_BEEN_INTERUPTED
         }
 
-        public delegate void TransferDataLayerCallback(TransferResultCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
+        public delegate void TransferDataLayerCallback(ADataLayer.TransferResultCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
         protected AReportsUpdateDataLayerTracker reportsUpdateTracker;
         public AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }

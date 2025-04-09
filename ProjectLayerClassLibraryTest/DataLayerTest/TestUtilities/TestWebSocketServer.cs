@@ -55,7 +55,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest.TestUtilities
 
             protected override Task SendTask(byte[] message)
             {
-                return m_WebSocket.SendAsync(new ArraySegment<byte>(message), WebSocketMessageType.Text, true, CancellationToken.None);
+                return m_WebSocket.SendAsync(new ArraySegment<byte>(message), WebSocketMessageType.Binary, true, CancellationToken.None);
             }
 
             public override Task DisconnectAsync()
