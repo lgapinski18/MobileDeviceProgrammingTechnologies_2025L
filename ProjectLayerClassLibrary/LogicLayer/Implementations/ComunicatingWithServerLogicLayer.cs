@@ -21,7 +21,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
             reportsUpdateTracker = new BasicReportsUpdateLogicLayerTracker();
             BasicReportsUpdateLogicLayerReporter reportsUpdateReporter = new BasicReportsUpdateLogicLayerReporter(reportsUpdateTracker);
-            reportsUpdateReporter.Subscribe(dataLayer.ReportsUpdateTracker);
+            reportsUpdateReporter.Subscribe(this.dataLayer.ReportsUpdateTracker);
             this.reportsUpdateReporter = reportsUpdateReporter;
         }
 
