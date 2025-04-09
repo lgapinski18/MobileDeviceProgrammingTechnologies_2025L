@@ -105,7 +105,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             try
             {
-                byte[] buffer = new byte[1024];
+                byte[] buffer = new byte[4096];
                 while (true)
                 {
                     ArraySegment<byte> segment = new ArraySegment<byte>(buffer);
@@ -317,7 +317,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         lock (reportsUpdateTrackerLock)
                         {
                             //reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
-                            Task.Factory.StartNew(() => { reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(((List<BankAccountReportDto>)serializer.Deserialize(reader)).Select((bARDto) => ABankAccountReport.CreateBankAccountReportFromXml(bARDto)).ToList()); });
+                            List<ABankAccountReport> reports = ((List<BankAccountReportDto>)serializer.Deserialize(reader)).Select(bARDto => ABankAccountReport.CreateBankAccountReportFromXml(bARDto)).ToList();
+                            Task.Factory.StartNew(() => { reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(reports); });
                         }
                         break;
 

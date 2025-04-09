@@ -13,6 +13,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         private AAccountOwner owner;
         private ICollection<IBankAccount> bankAccounts;
         private string bankAccountNumberForTransfer;
+        ICollection<string> bankAccountsReports = [];
 
         public int Id => owner.GetId();
         public string Login => owner.OwnerLogin;
@@ -22,6 +23,23 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         public ICollection<IBankAccount> BankAccounts => bankAccounts;
 
         string IUserContext.BankAccountNumberForTransfer { get => bankAccountNumberForTransfer; set => bankAccountNumberForTransfer = value; }
+        ICollection<string> IUserContext.BankAccountsReports
+        {
+            get {
+                return bankAccountsReports;
+            }
+            set
+            {
+                lock (bankAccountsReports)
+                {
+                    foreach (string report in value)
+                    {
+                        bankAccountsReports.Add(report);
+                    }
+                }
+
+            }
+        }
 
         public UserContext(AAccountOwner owner, ICollection<ABankAccount> bankAccounts)
         {

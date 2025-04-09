@@ -16,7 +16,8 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer
         string UserEmail { get; }
 
         string BankAccountNumberForTransfer { get; internal set; }
-        public ICollection<IBankAccount> BankAccounts { get; }
+        ICollection<string> BankAccountsReports { get; internal set; }
+        ICollection<IBankAccount> BankAccounts { get; }
 
     }
 }

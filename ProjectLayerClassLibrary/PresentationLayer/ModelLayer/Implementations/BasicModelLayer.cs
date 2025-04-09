@@ -30,7 +30,11 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         {
             logicLayer = ALogicLayer.CreateLogicLayerInstance();
 
-            modelLayerReporter = new BasicReportsUpdateModelLayerReporter(() => { }, (value) => OnPropertyChanged("ReportMessages"));
+            modelLayerReporter = new BasicReportsUpdateModelLayerReporter(() => { },
+                (value) => { 
+                    UserContext.BankAccountsReports = value.Select(report => report.GetReportContent()).ToList();
+                    OnPropertyChanged("ReportMessages"); 
+                });
             modelLayerReporter.Subscribe(logicLayer.ReportsUpdateTracker);
             logicLayer.BankAccountsUpdate += UpdateBankAccounts;
         }

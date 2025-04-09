@@ -50,7 +50,7 @@
         </StackPanel>
         <StackPanel HorizontalAlignment="Right" Width="300">
             <Label Content="Reports"/>
-            <ItemsControl ItemsSource="{Binding ReportMessages}">
+            <ItemsControl ItemsSource="{Binding ReportMessages, Mode=OneWay}">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
                         <WrapPanel />

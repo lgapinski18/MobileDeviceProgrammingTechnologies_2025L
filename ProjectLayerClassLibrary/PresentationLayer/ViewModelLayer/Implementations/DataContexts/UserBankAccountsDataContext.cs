@@ -13,17 +13,13 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
     {
         #region DATA
 
-        //private IUserContext userContext;
-        //private ICollection<IBankAccount> bankAccounts;
-
         public string Login => viewModelLayer.ModelLayer.UserContext.Login;
         public string UserName => viewModelLayer.ModelLayer.UserContext.UserName;
         public string UserSurname => viewModelLayer.ModelLayer.UserContext.UserSurname;
         public ICollection<IBankAccount> BankAccounts =>
             viewModelLayer.ModelLayer.UserContext.BankAccounts.Select(bankAccount => new BankAccount(bankAccount, CreateTransferForBankAccount)).ToArray<IBankAccount>();
 
-        public ICollection<string> ReportMessages => 
-            viewModelLayer.ModelLayer.UserContext.BankAccounts.SelectMany(bankAccount => bankAccount.Reports).ToArray();
+        public ICollection<string> ReportMessages => viewModelLayer.ModelLayer.UserContext.BankAccountsReports.ToArray<string>();
 
         #endregion
 

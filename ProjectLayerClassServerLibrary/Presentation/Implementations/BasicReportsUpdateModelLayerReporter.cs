@@ -56,7 +56,8 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
                 List<BankAccountReportDto> reports = new();
                 foreach (ABankAccount bankAccount in logicLayer.GetAccountOwnerBankAccounts(connection.LoggedOwnerId.Value))
                 {
-                    reports.AddRange(bankAccount.GetBankAccountReports().Select(report => new BankAccountReportDto()
+                    ABankAccountReport report = bankAccount.GetBankAccountReports().Last();
+                    BankAccountReportDto reportDto = new BankAccountReportDto()
                     {
                         TimeOfReportCreation = report.TimeOfReportCreation,
                         CurrentAccountBalance = report.CurrentAccountBalance,
@@ -64,7 +65,8 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
                         OwnerName = report.OwnerName,
                         OwnerSurname = report.OwnerSurname,
                         OwnerEmail = report.OwnerEmail,
-                    }).ToList());
+                    };
+                    reports.Add(reportDto);
                 }
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, reports);
