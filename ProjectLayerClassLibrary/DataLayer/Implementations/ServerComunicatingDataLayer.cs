@@ -1,19 +1,11 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Repositories;
+﻿using ProjectLayerClassLibrary.DataLayer.Additionals;
 using ProjectLayerClassLibrary.DataLayer.Exceptions;
-using ProjectLayerClassLibrary.DataLayer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.WebSockets;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
-using System.Xml.Serialization;
 using System.IO;
-using ProjectLayerClassLibrary.DataLayer.Additionals;
+using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Xml.Serialization;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -70,6 +62,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 isConnected = false;
             }
+            reportsUpdateTracker.EndAllObservations();
             receiveLoopTask.Dispose();
             cts.Cancel();
             clientWebSocket.Dispose();
@@ -307,10 +300,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case REACTIVE_REPORTS_UPDATE:
                         myLogger.Log($"REACTIVE_REPORTS_UPDATE");
-                        serializer = new XmlSerializer(typeof(bool));
+                        //serializer = new XmlSerializer(typeof(bool));
                         lock (reportsUpdateTrackerLock)
                         {
-                            reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
+                            //reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
+                            reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(true);
                         }
                         break;
                 }
