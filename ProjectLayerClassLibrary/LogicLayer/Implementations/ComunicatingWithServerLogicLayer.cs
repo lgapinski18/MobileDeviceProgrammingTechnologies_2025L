@@ -75,20 +75,12 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             return LogicLayer.ABankAccount.CreateBankAccount(dataLayer.CreateBankAccount(ownerId));
         }
 
-        public override Thread PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback)
+        public override void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferCallback transferCallback)
         {
-
-            Thread thread = new Thread(() =>
+            dataLayer.PerformTransfer(ownerAccountNumber, targetAccountNumber, amount, description, (transferDataLayerCodes, oAN, tAN, a, d) =>
             {
-                dataLayer.PerformTransfer(ownerAccountNumber, targetAccountNumber, amount, description, (transferDataLayerCodes, oAN, tAN, a, d) =>
-                {
-                    transferCallback((TransferCodes)transferDataLayerCodes, oAN, tAN, a, d);
-                });
-
-            }
-            );
-            thread.Start();
-            return thread;
+                transferCallback((TransferCodes)transferDataLayerCodes, oAN, tAN, a, d);
+            });
         }
     }
 }
