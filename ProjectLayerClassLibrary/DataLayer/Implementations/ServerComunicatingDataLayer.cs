@@ -317,13 +317,13 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         lock (reportsUpdateTrackerLock)
                         {
                             //reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
-                            reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(true);
+                            Task.Factory.StartNew(() => { reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(true); });
                         }
                         break;
 
                     case BANK_ACCOUNTS_UPDATES:
                         myLogger.Log($"BANK_ACCOUNTS_UPDATES");
-                        CallBankAccountsUpdate();
+                        Task.Factory.StartNew(() => { CallBankAccountsUpdate(); });
                         break;
                 }
             }

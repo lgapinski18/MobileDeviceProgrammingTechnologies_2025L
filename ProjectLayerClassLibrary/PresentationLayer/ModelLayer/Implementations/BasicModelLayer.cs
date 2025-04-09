@@ -145,7 +145,9 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 
         private void UpdateBankAccounts()
         {
-            //userContext = new UserContext(logicLayer.GetAccountOwner(UserContext.Id), logicLayer.GetAccountOwnerBankAccounts(UserContext.Id));
+            AAccountOwner accountOwner = logicLayer.GetAccountOwner(UserContext.Id);
+            ICollection<ABankAccount> bankAccounts = logicLayer.GetAccountOwnerBankAccounts(UserContext.Id);
+            userContext = new UserContext(accountOwner, bankAccounts);
             OnPropertyChanged("BankAccounts");
         }
     }
