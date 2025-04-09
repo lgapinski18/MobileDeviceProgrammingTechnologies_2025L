@@ -1,9 +1,12 @@
-﻿using ProjectLayerClassServerLibrary.Presentation;
+﻿using ProjectLayerClassServerLibrary.LogicLayer;
+using ProjectLayerClassServerLibrary.Presentation;
+using ProjectLayerClassServerLibrary.Presentation.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 {
@@ -15,11 +18,13 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         private IDisposable? unsubscriber = null;
         private OnObservationComplitionDelegate onObservationComplitionDelegate;
         private WebSocketConnection connection;
+        private ALogicLayer logicLayer;
         private Task? sendTask = null;
 
-        public BasicReportsUpdateModelLayerReporter(WebSocketConnection connection, OnObservationComplitionDelegate onObservationComplitionDelegate)
+        public BasicReportsUpdateModelLayerReporter(WebSocketConnection connection, ALogicLayer logicLayer, OnObservationComplitionDelegate onObservationComplitionDelegate)
         {
             this.connection = connection;
+            this.logicLayer = logicLayer;
             this.onObservationComplitionDelegate = onObservationComplitionDelegate;
         }
 
@@ -47,7 +52,23 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             if (value && connection.LoggedOwnerId != null)
             {
                 Console.WriteLine($"ReportsUpdate sending to: {connection}");
-                sendTask = connection.SendAsync("_RRU", 0, 0, "");
+                XmlSerializer serializer = new XmlSerializer(typeof(List<BankAccountReportDto>));
+                List<BankAccountReportDto> reports = new();
+                foreach (ABankAccount bankAccount in logicLayer.GetAccountOwnerBankAccounts(connection.LoggedOwnerId.Value))
+                {
+                    reports.AddRange(bankAccount.GetBankAccountReports().Select(report => new BankAccountReportDto()
+                    {
+                        TimeOfReportCreation = report.TimeOfReportCreation,
+                        CurrentAccountBalance = report.CurrentAccountBalance,
+                        PreviousAccountBalance = report.PreviousAccountBalance,
+                        OwnerName = report.OwnerName,
+                        OwnerSurname = report.OwnerSurname,
+                        OwnerEmail = report.OwnerEmail,
+                    }).ToList());
+                }
+                StringWriter writer = new StringWriter();
+                serializer.Serialize(writer, reports);
+                sendTask = connection.SendAsync("_RRU", 0, 0, writer.ToString());
             }
         }
 
