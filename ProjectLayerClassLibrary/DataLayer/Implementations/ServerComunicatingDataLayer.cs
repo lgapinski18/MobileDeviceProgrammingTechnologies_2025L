@@ -24,7 +24,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private ClientWebSocket clientWebSocket;
         private CancellationTokenSource cts;
         private int portNo = 8080;
-        private Task receiveLoop;
+        private Task receiveLoopTask;
         private MyLogger myLogger;
 
         private object accountOwnerLock = new object();
@@ -33,6 +33,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private bool isConnected = false;
         private object checkConnectionLock = new object();
         private object awaitingConnectionLock = new object();
+        private object reportsUpdateTrackerLock = new object();
 
         private const string CREATE_ACCOUNT_OWNER_CODE = "_CAO";
         private const string CREATE_BANK_ACCOUNT_CODE = "_CBA";
@@ -45,12 +46,17 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private const string AUTHENTICATE_ACCOUNT_OWNER = "_AAO";
         private const string CHECK_FOR_REPORTS_UPDATES = "CFRU";
         private const string TRANSFER = "___T";
+        private const string REACTIVE_REPORTS_UPDATE = "_RRU";
   
 
-        public ServerComunicatingDataLayer()
+        public ServerComunicatingDataLayer(int portNo = 8080)
         {
+            this.portNo = portNo;
             clientWebSocket = new ClientWebSocket();
             cts = new CancellationTokenSource();
+            reportsUpdateTracker = new BasicReportsUpdateDataLayerTracker();
+
+
             //myLogger = new MyLogger("C:\\Users\\lukas\\Desktop\\ServerComunicatingDataLayerLogger.txt");
             myLogger = new MyLogger("ServerComunicatingDataLayerLog.txt");
             myLogger.Log("\t\tNEW RUN");
@@ -64,7 +70,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 isConnected = false;
             }
-            receiveLoop.Dispose();
+            receiveLoopTask.Dispose();
             cts.Cancel();
             clientWebSocket.Dispose();
             cts.Dispose();
@@ -80,7 +86,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     isConnected = true;
                 }
 
-                receiveLoop = Task.Factory.StartNew(() => { ClientReceiveLoop(clientWebSocket); });
+                receiveLoopTask = Task.Factory.StartNew(() => { ClientReceiveLoop(clientWebSocket); });
             }
         }
 
@@ -296,6 +302,15 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                             {
                                 performTransferAutoResetEvent.Set();
                             }
+                        }
+                        break;
+
+                    case REACTIVE_REPORTS_UPDATE:
+                        myLogger.Log($"REACTIVE_REPORTS_UPDATE");
+                        serializer = new XmlSerializer(typeof(bool));
+                        lock (reportsUpdateTrackerLock)
+                        {
+                            reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
                         }
                         break;
                 }

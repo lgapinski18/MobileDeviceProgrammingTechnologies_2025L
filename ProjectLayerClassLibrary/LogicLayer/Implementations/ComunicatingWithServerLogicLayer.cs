@@ -14,10 +14,15 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
     internal class ComunicatingWithServerLogicLayer : ALogicLayer
     {
         private ADataLayer dataLayer;
+        private AReportsUpdateLogicLayerReporter reportsUpdateReporter;
 
         public ComunicatingWithServerLogicLayer(ADataLayer? dataLayer = default)
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
+            reportsUpdateTracker = new BasicReportsUpdateLogicLayerTracker();
+            BasicReportsUpdateLogicLayerReporter reportsUpdateReporter = new BasicReportsUpdateLogicLayerReporter(reportsUpdateTracker);
+            reportsUpdateReporter.Subscribe(dataLayer.ReportsUpdateTracker);
+            this.reportsUpdateReporter = reportsUpdateReporter;
         }
 
         public override bool AuthenticateAccountOwner(string login, string password)

@@ -32,6 +32,9 @@ namespace ProjectLayerClassLibrary.LogicLayer
 
         public delegate void TransferCallback(TransferCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
+        protected AReportsUpdateLogicLayerTracker reportsUpdateTracker;
+        public AReportsUpdateLogicLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+
         public static ALogicLayer CreateLogicLayerInstance(ADataLayer? dataLayer = default)
         {
             return new Implementations.ComunicatingWithServerLogicLayer(dataLayer);

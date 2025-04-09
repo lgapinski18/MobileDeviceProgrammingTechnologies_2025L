@@ -29,6 +29,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             accountOwnerRepository = RepositoryFactory.CreateAccountOwnerRepository();
             bankAccountRepository = RepositoryFactory.CreateBankAccountRepository();
+            reportsUpdateTracker = new BasicReportsUpdateDataLayerTracker();
 
             if (generateDefaultContent)
             {

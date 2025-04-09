@@ -31,6 +31,9 @@ namespace ProjectLayerClassLibrary.DataLayer
 
         public delegate void TransferDataLayerCallback(TransferDataLayerCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
+        protected AReportsUpdateDataLayerTracker reportsUpdateTracker;
+        public AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+
         public static ADataLayer CreateDataLayerInstance()
         {
             return new Implementations.ServerComunicatingDataLayer();

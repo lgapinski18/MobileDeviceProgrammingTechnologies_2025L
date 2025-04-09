@@ -24,6 +24,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         private object bankAccountsLock = new object();
         private Timer bankAccountReportTimer;
         private bool reportsHasBeenUpdatedRecently = false;
+        private AReportsUpdateLogicLayerReporter reportsUpdateReporter;
 
         public ADataLayer DataLayer { get { return dataLayer; } }
 
@@ -46,6 +47,10 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             bankAccountReportTimer.Enabled = true;
             bankAccountReportTimer.AutoReset = true;
             bankAccountReportTimer.Start();
+
+            reportsUpdateTracker = new BasicReportsUpdateLogicLayerTracker();
+            reportsUpdateReporter = new BasicReportsUpdateLogicLayerReporter(reportsUpdateTracker);
+            reportsUpdateReporter.Subscribe(dataLayer.ReportsUpdateTracker);
         }
 
         private void Log(string message)
