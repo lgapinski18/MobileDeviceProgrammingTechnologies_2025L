@@ -286,8 +286,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case TRANSFER:
                         myLogger.Log($"TRANSFER");
-                        serializer = new XmlSerializer(typeof(TransferDataLayerCodes));
-                        performTransferReponses.Add(sequenceNo, (TransferDataLayerCodes)serializer.Deserialize(reader));
+                        serializer = new XmlSerializer(typeof(TransferResultCodes));
+                        performTransferReponses.Add(sequenceNo, (TransferResultCodes)serializer.Deserialize(reader));
                         //Monitor.PulseAll(performTransferMonitorLock);
                         lock (performTransferMonitorLock)
                         {
@@ -777,7 +777,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private readonly AutoResetEvent performTransferAutoResetEvent = new AutoResetEvent(false);
         private int performTransferWaitingThreadsCounter = 0;
         private static int performTransferSequenceNoCounter = 0;
-        private Dictionary<int, TransferDataLayerCodes> performTransferReponses = new Dictionary<int, TransferDataLayerCodes>();
+        private Dictionary<int, TransferResultCodes> performTransferReponses = new Dictionary<int, TransferResultCodes>();
         public override void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferDataLayerCallback transferCallback)
         {
             bool localIsConnected = false;
@@ -792,11 +792,17 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = performTransferSequenceNoCounter++;
                 }
-                byte[] sendBuffer = Encoding.UTF8.GetBytes($"{ownerAccountNumber};{targetAccountNumber}");
-                //XmlSerializer serializer = new XmlSerializer(typeof(AccountOwnerCreationData));
-                //StringWriter writer = new StringWriter();
-                //serializer.Serialize(writer, accountOwnerCreationData);
-                //byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
+                TransferData transferData = new TransferData()
+                { 
+                    SourceAccountNumber = ownerAccountNumber,
+                    TargetAccountNumber = targetAccountNumber,
+                    Amount = amount,
+                    Description = description 
+                };
+                XmlSerializer serializer = new XmlSerializer(typeof(TransferData));
+                StringWriter writer = new StringWriter();
+                serializer.Serialize(writer, transferData);
+                byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = Encoding.ASCII.GetBytes(TRANSFER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);

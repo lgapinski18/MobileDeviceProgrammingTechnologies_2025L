@@ -30,6 +30,8 @@ namespace ProjectLayerClassServerLibrary.LogicLayer
             INCORRECT_PASSWORD = 16,
         }
 
+        public abstract AReportsUpdateLogicLayerTracker  ReportsUpdateLogicLayerTracker { get; }
+
         public delegate void TransferCallback(TransferCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
         public static ALogicLayer CreateLogicLayerInstance(ADataLayer? dataLayer = default)

@@ -10,9 +10,10 @@ using ProjectLayerClassServerLibrary.LogicLayer;
 using ProjectLayerClassServerLibrary.Presentation.Message;
 using System.Xml;
 using System.Security.Principal;
+using ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations;
 
 
-namespace ProjectLayerClassServerLibrary.Presentation
+namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 {
     internal class WebSocketServer : IWebSocketServer
     {
@@ -28,8 +29,6 @@ namespace ProjectLayerClassServerLibrary.Presentation
             Uri _uri = new Uri($@"http://localhost:{portNo}/");
             serverLoopTask = Task.Factory.StartNew(() => ServerLoop(_uri, OnConnection));
         }
-
-        #region private
 
         private static async Task ServerLoop(Uri uri, Action<WebSocketConnection> onConnection)
         {
@@ -61,8 +60,11 @@ namespace ProjectLayerClassServerLibrary.Presentation
         {
             Console.WriteLine($"Connection: {connection}");
             connections.Add(connection);
+            BasicReportsUpdateModelLayerReporter observer = new BasicReportsUpdateModelLayerReporter(connection, () => { });
+            observer.Subscribe(logicLayer.ReportsUpdateLogicLayerTracker);
             connection.onClose = () => {
                 Console.WriteLine($"Closing connection: {connection}");
+                observer.Unsubscribe();
                 connections.Remove(connection);
             };
             connection.onError = () => Console.WriteLine("Error happened");
@@ -238,6 +240,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             {
                 response.AccountOwner = new AccountOwnerDto() { 
                     Id = accountOwner.GetId(), 
+                    Login = accountOwner.OwnerLogin,
                     Name = accountOwner.OwnerName, 
                     Surname = accountOwner.OwnerSurname,
                     Email = accountOwner.OwnerEmail 
@@ -255,7 +258,8 @@ namespace ProjectLayerClassServerLibrary.Presentation
         {
             return logicLayer.GetAllAccountsOwners()
                                 .Select(accountOwner => new  AccountOwnerDto() { 
-                                    Id = accountOwner.GetId(), 
+                                    Id = accountOwner.GetId(),
+                                    Login = accountOwner.OwnerLogin,
                                     Name = accountOwner.OwnerName, 
                                     Surname = accountOwner.OwnerSurname,
                                     Email = accountOwner.OwnerEmail 
@@ -290,6 +294,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             return new AccountOwnerDto()
             {
                 Id = accountOwner.GetId(),
+                Login = accountOwner.OwnerLogin,
                 Name = accountOwner.OwnerName,
                 Surname = accountOwner.OwnerSurname,
                 Email = accountOwner.OwnerEmail
@@ -310,6 +315,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             return new AccountOwnerDto()
             {
                 Id = accountOwner.GetId(),
+                Login = accountOwner.OwnerLogin,
                 Name = accountOwner.OwnerName,
                 Surname = accountOwner.OwnerSurname,
                 Email = accountOwner.OwnerEmail
@@ -394,6 +400,13 @@ namespace ProjectLayerClassServerLibrary.Presentation
                                                                         transferData.Description);
         }
 
-        #endregion private
+        #region REACTIVE_INTERACTION
+
+        private static void NotifyClientAboutReportsUpdate()
+        {
+
+        }
+
+        #endregion
     }
 }

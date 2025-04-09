@@ -12,10 +12,16 @@ namespace ProjectLayerClassServerLibrary.Presentation.Message
     {
         [XmlElement("Id")]
         public int Id { get; set; }
+
+        [XmlElement("Login")]
+        public string Login { get; set; }
+
         [XmlElement("Name")]
         public string Name { get; set; }
+
         [XmlElement("Surname")]
         public string Surname { get; set; }
+
         [XmlElement("Email")]
         public string Email { get; set; }
     }
