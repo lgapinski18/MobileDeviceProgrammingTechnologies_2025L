@@ -29,8 +29,6 @@ namespace ProjectLayerClassServerLibrary.Presentation
             serverLoopTask = Task.Factory.StartNew(() => ServerLoop(_uri, OnConnection));
         }
 
-        #region private
-
         private static async Task ServerLoop(Uri uri, Action<WebSocketConnection> onConnection)
         {
             try
@@ -238,6 +236,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             {
                 response.AccountOwner = new AccountOwnerDto() { 
                     Id = accountOwner.GetId(), 
+                    Login = accountOwner.OwnerLogin,
                     Name = accountOwner.OwnerName, 
                     Surname = accountOwner.OwnerSurname,
                     Email = accountOwner.OwnerEmail 
@@ -255,7 +254,8 @@ namespace ProjectLayerClassServerLibrary.Presentation
         {
             return logicLayer.GetAllAccountsOwners()
                                 .Select(accountOwner => new  AccountOwnerDto() { 
-                                    Id = accountOwner.GetId(), 
+                                    Id = accountOwner.GetId(),
+                                    Login = accountOwner.OwnerLogin,
                                     Name = accountOwner.OwnerName, 
                                     Surname = accountOwner.OwnerSurname,
                                     Email = accountOwner.OwnerEmail 
@@ -290,6 +290,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             return new AccountOwnerDto()
             {
                 Id = accountOwner.GetId(),
+                Login = accountOwner.OwnerLogin,
                 Name = accountOwner.OwnerName,
                 Surname = accountOwner.OwnerSurname,
                 Email = accountOwner.OwnerEmail
@@ -310,6 +311,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             return new AccountOwnerDto()
             {
                 Id = accountOwner.GetId(),
+                Login = accountOwner.OwnerLogin,
                 Name = accountOwner.OwnerName,
                 Surname = accountOwner.OwnerSurname,
                 Email = accountOwner.OwnerEmail
@@ -393,7 +395,5 @@ namespace ProjectLayerClassServerLibrary.Presentation
                                                                         transferData.Amount, 
                                                                         transferData.Description);
         }
-
-        #endregion private
     }
 }

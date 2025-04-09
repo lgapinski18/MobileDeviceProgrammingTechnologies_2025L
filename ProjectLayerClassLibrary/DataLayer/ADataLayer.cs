@@ -19,7 +19,7 @@ namespace ProjectLayerClassLibrary.DataLayer
             INCORRECT_EMAIL = 8,
             INCORRECT_PASSWORD = 16,
         }
-        public enum TransferDataLayerCodes
+        public enum TransferResultCodes
         {
             SUCCESS,
             OWNER_ACCOUNT_DOESNT_EXISTS,
@@ -29,7 +29,7 @@ namespace ProjectLayerClassLibrary.DataLayer
             TRANSFER_HAS_BEEN_INTERUPTED
         }
 
-        public delegate void TransferDataLayerCallback(TransferDataLayerCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
+        public delegate void TransferDataLayerCallback(TransferResultCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
         protected AReportsUpdateDataLayerTracker reportsUpdateTracker;
         public AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
