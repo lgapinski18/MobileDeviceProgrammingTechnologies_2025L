@@ -10,9 +10,10 @@ using ProjectLayerClassServerLibrary.LogicLayer;
 using ProjectLayerClassServerLibrary.Presentation.Message;
 using System.Xml;
 using System.Security.Principal;
+using ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations;
 
 
-namespace ProjectLayerClassServerLibrary.Presentation
+namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 {
     internal class WebSocketServer : IWebSocketServer
     {
@@ -59,8 +60,11 @@ namespace ProjectLayerClassServerLibrary.Presentation
         {
             Console.WriteLine($"Connection: {connection}");
             connections.Add(connection);
+            BasicReportsUpdateModelLayerReporter observer = new BasicReportsUpdateModelLayerReporter(connection, () => { });
+            observer.Subscribe(logicLayer.ReportsUpdateLogicLayerTracker);
             connection.onClose = () => {
                 Console.WriteLine($"Closing connection: {connection}");
+                observer.Unsubscribe();
                 connections.Remove(connection);
             };
             connection.onError = () => Console.WriteLine("Error happened");
@@ -395,5 +399,14 @@ namespace ProjectLayerClassServerLibrary.Presentation
                                                                         transferData.Amount, 
                                                                         transferData.Description);
         }
+
+        #region REACTIVE_INTERACTION
+
+        private static void NotifyClientAboutReportsUpdate()
+        {
+
+        }
+
+        #endregion
     }
 }

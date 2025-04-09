@@ -307,10 +307,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case REACTIVE_REPORTS_UPDATE:
                         myLogger.Log($"REACTIVE_REPORTS_UPDATE");
-                        serializer = new XmlSerializer(typeof(bool));
+                        //serializer = new XmlSerializer(typeof(bool));
                         lock (reportsUpdateTrackerLock)
                         {
-                            reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
+                            //reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
+                            reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(true);
                         }
                         break;
                 }

@@ -23,6 +23,11 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
         private Timer bankAccountReportTimer;
         private bool reportsHasBeenUpdatedRecently = false;
 
+        private readonly BasicReportsUpdateLogicLayerTracker reportsUpdateLogicLayerTracker = new BasicReportsUpdateLogicLayerTracker();
+
+        public override AReportsUpdateLogicLayerTracker ReportsUpdateLogicLayerTracker => reportsUpdateLogicLayerTracker;
+
+
         public ADataLayer DataLayer { get { return dataLayer; } }
 
         public BasicLogicLayer(ADataLayer? dataLayer = default)
@@ -39,6 +44,7 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
                     {
                         bankAccount.GenerateBankAccountReport();
                     }
+                    reportsUpdateLogicLayerTracker.TrackWhetherReportsUpdatesChanged(true);
                 }
             };
             bankAccountReportTimer.Enabled = true;
