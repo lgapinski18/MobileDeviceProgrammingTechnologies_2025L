@@ -12,6 +12,9 @@ namespace ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures
     {
         [XmlElement("Id")]
         public int Id { get; set; }
+
+        [XmlElement("Login")]
+        public string Login { get; set; }
         [XmlElement("Name")]
         public string Name { get; set; }
         [XmlElement("Surname")]

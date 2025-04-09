@@ -45,7 +45,7 @@ namespace ProjectLayerClassLibrary.DataLayer
             {
                 return null;
             }
-            return new BasicAccountOwner(accountOwnerDto.Id, "", accountOwnerDto.Name, accountOwnerDto.Surname, accountOwnerDto.Email, "");
+            return new BasicAccountOwner(accountOwnerDto.Id, accountOwnerDto.Login, accountOwnerDto.Name, accountOwnerDto.Surname, accountOwnerDto.Email, "");
         }
 
         public int GetId()

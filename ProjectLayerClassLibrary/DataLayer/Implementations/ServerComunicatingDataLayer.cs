@@ -1,19 +1,11 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Repositories;
+﻿using ProjectLayerClassLibrary.DataLayer.Additionals;
 using ProjectLayerClassLibrary.DataLayer.Exceptions;
-using ProjectLayerClassLibrary.DataLayer;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Net.WebSockets;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using System.Net.Sockets;
-using System.Runtime.CompilerServices;
 using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
-using System.Xml.Serialization;
 using System.IO;
-using ProjectLayerClassLibrary.DataLayer.Additionals;
+using System.Net.WebSockets;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Xml.Serialization;
 
 [assembly: InternalsVisibleTo("ProjectLayerClassLibraryTest")]
 
@@ -83,6 +75,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 isConnected = false;
             }
+            reportsUpdateTracker.EndAllObservations();
             receiveLoopTask.Dispose();
             cts.Cancel();
             clientWebSocket.Dispose();
@@ -136,7 +129,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         result = clientWebSocket.ReceiveAsync(segment, CancellationToken.None).Result;
                         count += result.Count;
                     }
-                    string _message = Encoding.UTF8.GetString(buffer, 0, count);
+                    //string _message = Encoding.UTF8.GetString(buffer, 0, count);
                     processReceivedData((byte[])buffer.Clone());
                 }
             }
@@ -255,7 +248,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         {
                             for (; getAllBankAccountsWaitingThreadsCounter > 0; --getAllBankAccountsWaitingThreadsCounter)
                             {
-                                getBankAccountsAutoResetEvent.Set();
+                                getAllBankAccountsAutoResetEvent.Set();
                             }
                         }
                         break;
@@ -306,8 +299,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case TRANSFER:
                         myLogger.Log($"TRANSFER");
-                        serializer = new XmlSerializer(typeof(TransferResultCodes));
-                        performTransferReponses.Add(sequenceNo, (TransferResultCodes)serializer.Deserialize(reader));
+                        serializer = new XmlSerializer(typeof(ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.TransferResultCodes));
+                        performTransferReponses.Add(sequenceNo, (ADataLayer.TransferResultCodes)serializer.Deserialize(reader));
                         //Monitor.PulseAll(performTransferMonitorLock);
                         lock (performTransferMonitorLock)
                         {
@@ -802,7 +795,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private readonly AutoResetEvent performTransferAutoResetEvent = new AutoResetEvent(false);
         private int performTransferWaitingThreadsCounter = 0;
         private static int performTransferSequenceNoCounter = 0;
-        private Dictionary<int, TransferResultCodes> performTransferReponses = new Dictionary<int, TransferResultCodes>();
+        private Dictionary<int, ADataLayer.TransferResultCodes> performTransferReponses = new Dictionary<int, ADataLayer.TransferResultCodes>();
         public override void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferDataLayerCallback transferCallback)
         {
             bool localIsConnected = false;
@@ -847,6 +840,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         //return performTransferReponses[sequenceNo];
                     }
                     myLogger.Log($"{TRANSFER}\t{sequenceNo}\tWill repeat loop");
+                    return;
                 }
             }
             else
