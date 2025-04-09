@@ -19,6 +19,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         private ALogicLayer logicLayer;
         private IUserContext? userContext = null;
         private object currentView;
+        private AReportsUpdateModelLayerReporter modelLayerReporter;
 
         public override object CurrentView => currentView;
         public override IUserContext UserContext => userContext;
@@ -28,18 +29,9 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         public BasicModelLayer()
         {
             logicLayer = ALogicLayer.CreateLogicLayerInstance();
-            reportUpdateChackingTimer = new Timer(new TimeSpan(0, 1, 0));
-            reportUpdateChackingTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
-            {
-                if (userContext != null && logicLayer.CheckForReportsUpdates(userContext.Id)) ///////
-                {
-                    OnPropertyChanged("ReportMessages");
-                }
-            };
-            reportUpdateChackingTimer.Enabled = true;
-            reportUpdateChackingTimer.AutoReset = true;
-            reportUpdateChackingTimer.Start();
 
+            modelLayerReporter = new BasicReportsUpdateModelLayerReporter(() => { }, (value) => OnPropertyChanged("ReportMessages"));
+            modelLayerReporter.Subscribe(logicLayer.ReportsUpdateTracker);
             logicLayer.BankAccountsUpdate += UpdateBankAccounts;
         }
 
@@ -54,11 +46,6 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 
         #endregion
 
-        #region JOBS
-
-        private Timer reportUpdateChackingTimer;
-
-        #endregion
 
         public override bool Login(string login, string password, Type? succesViewRedirection)
         {
@@ -134,6 +121,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
         public override void MakeTransfer(string sourceAccountNumber, string destinationAccountNumber, float transferAmount, string transferTitle, Type? userBankAccountsView)
         {
             logicLayer.PerformTransfer(sourceAccountNumber, destinationAccountNumber, transferAmount, transferTitle, TransferCallback);
+            userContext = new UserContext(logicLayer.GetAccountOwner(UserContext.Id), logicLayer.GetAccountOwnerBankAccounts(UserContext.Id));
             Redirect(userBankAccountsView);
         }
 
@@ -157,7 +145,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
 
         private void UpdateBankAccounts()
         {
-            userContext = new UserContext(logicLayer.GetAccountOwner(UserContext.Id), logicLayer.GetAccountOwnerBankAccounts(UserContext.Id));
+            //userContext = new UserContext(logicLayer.GetAccountOwner(UserContext.Id), logicLayer.GetAccountOwnerBankAccounts(UserContext.Id));
             OnPropertyChanged("BankAccounts");
         }
     }
