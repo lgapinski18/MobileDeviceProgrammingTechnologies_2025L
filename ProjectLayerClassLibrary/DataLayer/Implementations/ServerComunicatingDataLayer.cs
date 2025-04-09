@@ -53,6 +53,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             cts = new CancellationTokenSource();
             //myLogger = new MyLogger("C:\\Users\\lukas\\Desktop\\ServerComunicatingDataLayerLogger.txt");
             myLogger = new MyLogger("ServerComunicatingDataLayerLog.txt");
+            myLogger.Log("\t\tNEW RUN");
 
             _ = SetUp();
         }
@@ -146,77 +147,156 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         myLogger.Log($"CREATE_ACCOUNT_OWNER");
                         serializer = new XmlSerializer(typeof(AccountOwnerDto));
                         createAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
-                        Monitor.PulseAll(createAccountOwnerMonitorLock);
+                        //Monitor.PulseAll(createAccountOwnerMonitorLock);
+                        lock (createAccountOwnerMonitorLock)
+                        {
+                            for (; createAccountOwnerWaitingThreadsCounter > 0; --createAccountOwnerWaitingThreadsCounter)
+                            {
+                                createAccountOwnerAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case CREATE_BANK_ACCOUNT_CODE:
                         myLogger.Log($"CREATE_BANK_ACCOUNT");
                         serializer = new XmlSerializer(typeof(BankAccountDto));
                         createBankAccountReponses.Add(sequenceNo, ABankAccount.CreateBankAccountFromXml((BankAccountDto?)serializer.Deserialize(reader)));
-                        Monitor.PulseAll(createBankAccountMonitorLock);
+                        //Monitor.PulseAll(createBankAccountMonitorLock);
+                        lock (createBankAccountMonitorLock)
+                        {
+                            for (; createBankAccountWaitingThreadsCounter > 0; --createBankAccountWaitingThreadsCounter)
+                            {
+                                createBankAccountAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case GET_ACCOUNT_OWNER_CODE:
                         myLogger.Log($"GET_ACCOUNT_OWNER");
                         serializer = new XmlSerializer(typeof(AccountOwnerDto));
                         getAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
-                        Monitor.PulseAll(getAccountOwnerMonitorLock);
+                        //Monitor.PulseAll(getAccountOwnerMonitorLock);
+                        lock (getAccountOwnerMonitorLock)
+                        {
+                            for (; getAccountOwnerWaitingThreadsCounter > 0; --getAccountOwnerWaitingThreadsCounter)
+                            {
+                                getAccountOwnerAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case GET_ACCOUNT_OWNER_LOGIN_CODE:
                         myLogger.Log($"GET_ACCOUNT_OWNER_LOGIN");
                         serializer = new XmlSerializer(typeof(AccountOwnerDto));
                         getAccountOwnerLoginReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
-                        Monitor.PulseAll(getAccountOwnerLoginMonitorLock);
+                        //Monitor.PulseAll(getAccountOwnerLoginMonitorLock);
+                        lock (getAccountOwnerLoginMonitorLock)
+                        {
+                            for (; getAccountOwnerLoginWaitingThreadsCounter > 0; --getAccountOwnerLoginWaitingThreadsCounter)
+                            {
+                                getAccountOwnerLoginAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case GET_ALL_ACCOUNT_OWNERS_CODE:
                         myLogger.Log($"GET_ALL_ACCOUNT_OWNERS");
                         serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
                         getAllAccountOwnersReponses.Add(sequenceNo, ((List<AccountOwnerDto>)serializer.Deserialize(reader)).Select((aODto) => AAccountOwner.CreateAcountOwnerFromXml(aODto)).ToList());
-                        Monitor.PulseAll(getAllAccountOwnersMonitorLock);
+                        //Monitor.PulseAll(getAllAccountOwnersMonitorLock);
+                        lock (getAllAccountOwnersMonitorLock)
+                        {
+                            for (; getAllAccountOwnersWaitingThreadsCounter > 0; --getAllAccountOwnersWaitingThreadsCounter)
+                            {
+                                getAllAccountOwnersAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case GET_BANK_ACCOUNT_CODE:
                         myLogger.Log($"GET_BANK_ACCOUNT");
                         serializer = new XmlSerializer(typeof(BankAccountDto));
                         gtBankAccountReponses.Add(sequenceNo, ABankAccount.CreateBankAccountFromXml((BankAccountDto?)serializer.Deserialize(reader)));
-                        Monitor.PulseAll(gtBankAccountMonitorLock);
+                        //Monitor.PulseAll(gtBankAccountMonitorLock);
+                        lock (gtBankAccountMonitorLock)
+                        {
+                            for (; gtBankAccountWaitingThreadsCounter > 0; --gtBankAccountWaitingThreadsCounter)
+                            {
+                                gtBankAccountAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case GET_ALL_BANK_ACCOUNTS_CODE:
                         myLogger.Log($"GET_ALL_BANK_ACCOUNTS");
                         serializer = new XmlSerializer(typeof(List<BankAccountDto>));
                         getAllBankAccountsReponses.Add(sequenceNo, ((List<BankAccountDto>)serializer.Deserialize(reader)).Select((bADto) => ABankAccount.CreateBankAccountFromXml(bADto)).ToList());
-                        Monitor.PulseAll(getAllBankAccountsMonitorLock);
+                        //Monitor.PulseAll(getAllBankAccountsMonitorLock);
+                        lock (getAllBankAccountsMonitorLock)
+                        {
+                            for (; getAllBankAccountsWaitingThreadsCounter > 0; --getAllBankAccountsWaitingThreadsCounter)
+                            {
+                                getBankAccountsAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case GET_BANK_ACCOUNTS_CODE:
                         myLogger.Log($"GET_BANK_ACCOUNTS");
                         serializer = new XmlSerializer(typeof(List<BankAccountDto>));
                         getBankAccountsReponses.Add(sequenceNo, ((List<BankAccountDto>)serializer.Deserialize(reader)).Select((bADto) => ABankAccount.CreateBankAccountFromXml(bADto)).ToList());
-                        Monitor.PulseAll(getBankAccountsMonitorLock);
+                        //Monitor.PulseAll(getBankAccountsMonitorLock);
+                        lock (getBankAccountsMonitorLock)
+                        {
+                            for (; getBankAccountsWaitingThreadsCounter > 0; --getBankAccountsWaitingThreadsCounter)
+                            {
+                                getBankAccountsAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case AUTHENTICATE_ACCOUNT_OWNER:
                         myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER");
                         serializer = new XmlSerializer(typeof(bool));
                         authenticateAccountOwnerReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
-                        Monitor.PulseAll(authenticateAccountOwnerMonitorLock);
+                        //Monitor.PulseAll(authenticateAccountOwnerMonitorLock);
+                        myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER \nChecking Lock");
+                        lock (authenticateAccountOwnerMonitorLock)
+                        {
+                            myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER \nAwaiting Threads {authenticateAccountOwnerWaitingThreadsCounter}");
+                            for (; authenticateAccountOwnerWaitingThreadsCounter > 0; --authenticateAccountOwnerWaitingThreadsCounter)
+                            {
+                                authenticateAccountOwnerAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case CHECK_FOR_REPORTS_UPDATES:
                         myLogger.Log($"CHECK_FOR_REPORTS_UPDATES");
                         serializer = new XmlSerializer(typeof(bool));
                         checkForReportsUpdatesReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
-                        Monitor.PulseAll(checkForReportsUpdatesMonitorLock);
+                        //Monitor.PulseAll(checkForReportsUpdatesMonitorLock);
+                        lock (checkForReportsUpdatesMonitorLock)
+                        {
+                            for (; checkForReportsUpdatesWaitingThreadsCounter > 0; --checkForReportsUpdatesWaitingThreadsCounter)
+                            {
+                                checkForReportsUpdatesAutoResetEvent.Set();
+                            }
+                        }
                         break;
 
                     case TRANSFER:
                         myLogger.Log($"TRANSFER");
                         serializer = new XmlSerializer(typeof(TransferDataLayerCodes));
                         performTransferReponses.Add(sequenceNo, (TransferDataLayerCodes)serializer.Deserialize(reader));
-                        Monitor.PulseAll(performTransferMonitorLock);
+                        //Monitor.PulseAll(performTransferMonitorLock);
+                        lock (performTransferMonitorLock)
+                        {
+                            for (; performTransferWaitingThreadsCounter > 0; --performTransferWaitingThreadsCounter)
+                            {
+                                performTransferAutoResetEvent.Set();
+                            }
+                        }
                         break;
                 }
             }
@@ -224,6 +304,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object createAccountOwnerLock = new object();
         private object createAccountOwnerMonitorLock = new object();
+        private readonly AutoResetEvent createAccountOwnerAutoResetEvent = new AutoResetEvent(false);
+        private static int createAccountOwnerWaitingThreadsCounter = 0;
         private static int createAccountOwnerLockSequenceNoCounter = 0;
         private Dictionary<int, AAccountOwner?> createAccountOwnerReponses = new Dictionary<int, AAccountOwner?>();
         public override AAccountOwner CreateAccountOwner(string ownerName, string ownerSurname, string ownerEmail, string ownerPassword, out CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags)
@@ -255,7 +337,13 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(createAccountOwnerMonitorLock);
+                    myLogger.Log($"{CREATE_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (createAccountOwnerMonitorLock)
+                    {
+                        createAccountOwnerWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{CREATE_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tNow {createAccountOwnerWaitingThreadsCounter} threads awaitng!");
+                    createAccountOwnerAutoResetEvent.WaitOne();
                     if (createAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
                         AAccountOwner? aAccountOwner = createAccountOwnerReponses[sequenceNo];
@@ -269,6 +357,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         return aAccountOwner;
                     }
+                    myLogger.Log($"{CREATE_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -279,6 +368,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object createBankAccountLock = new object();
         private object createBankAccountMonitorLock = new object();
+        private readonly AutoResetEvent createBankAccountAutoResetEvent = new AutoResetEvent(false);
+        private int createBankAccountWaitingThreadsCounter = 0;
         private static int createBankAccountSequenceNoCounter = 0;
         private Dictionary<int, ABankAccount?> createBankAccountReponses = new Dictionary<int, ABankAccount?>();
         public override ABankAccount CreateBankAccount(int ownerId)
@@ -305,11 +396,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(createBankAccountMonitorLock);
+                    myLogger.Log($"{CREATE_BANK_ACCOUNT_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (createBankAccountMonitorLock)
+                    {
+                        createBankAccountWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{CREATE_BANK_ACCOUNT_CODE}\t{sequenceNo}\tNow {createBankAccountWaitingThreadsCounter} threads awaitng!");
+                    createBankAccountAutoResetEvent.WaitOne();
                     if (createBankAccountReponses.ContainsKey(sequenceNo))
                     {
                         return createBankAccountReponses[sequenceNo];
                     }
+                    myLogger.Log($"{CREATE_BANK_ACCOUNT_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -320,6 +418,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object getAccountOwnerLock = new object();
         private object getAccountOwnerMonitorLock = new object();
+        private readonly AutoResetEvent getAccountOwnerAutoResetEvent = new AutoResetEvent(false);
+        private int getAccountOwnerWaitingThreadsCounter = 0;
         private static int getAccountOwnerSequenceNoCounter = 0;
         private Dictionary<int, AAccountOwner?> getAccountOwnerReponses = new Dictionary<int, AAccountOwner?>();
         public override AAccountOwner? GetAccountOwner(int ownerId)
@@ -346,11 +446,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(getAccountOwnerMonitorLock);
+                    myLogger.Log($"{GET_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (getAccountOwnerMonitorLock)
+                    {
+                        getAccountOwnerWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{GET_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tNow {getAccountOwnerWaitingThreadsCounter} threads awaitng!");
+                    getAccountOwnerAutoResetEvent.WaitOne();
                     if (getAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
                         return getAccountOwnerReponses[sequenceNo];
                     }
+                    myLogger.Log($"{GET_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -361,6 +468,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object getAccountOwnerLoginLock = new object();
         private object getAccountOwnerLoginMonitorLock = new object();
+        private readonly AutoResetEvent getAccountOwnerLoginAutoResetEvent = new AutoResetEvent(false);
+        private int getAccountOwnerLoginWaitingThreadsCounter = 0;
         private static int getAccountOwnerLoginSequenceNoCounter = 0;
         private Dictionary<int, AAccountOwner?> getAccountOwnerLoginReponses = new Dictionary<int, AAccountOwner?>();
         public override AAccountOwner? GetAccountOwner(string ownerLogin)
@@ -387,11 +496,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(getAccountOwnerLoginMonitorLock);
+                    myLogger.Log($"{GET_ACCOUNT_OWNER_LOGIN_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (getAccountOwnerLoginMonitorLock)
+                    {
+                        getAccountOwnerLoginWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{GET_ACCOUNT_OWNER_LOGIN_CODE}\t{sequenceNo}\tNow {getAccountOwnerLoginWaitingThreadsCounter} threads awaitng!");
+                    getAccountOwnerLoginAutoResetEvent.WaitOne();
                     if (getAccountOwnerLoginReponses.ContainsKey(sequenceNo))
                     {
                         return getAccountOwnerLoginReponses[sequenceNo];
                     }
+                    myLogger.Log($"{GET_ACCOUNT_OWNER_LOGIN_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -402,6 +518,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object getAllAccountOwnersLock = new object();
         private object getAllAccountOwnersMonitorLock = new object();
+        private readonly AutoResetEvent getAllAccountOwnersAutoResetEvent = new AutoResetEvent(false);
+        private int getAllAccountOwnersWaitingThreadsCounter = 0;
         private static int getAllAccountOwnersSequenceNoCounter = 0;
         private Dictionary<int, ICollection<AAccountOwner>> getAllAccountOwnersReponses = new Dictionary<int, ICollection<AAccountOwner>>();
         public override ICollection<AAccountOwner> GetAllAccountOwners()
@@ -425,11 +543,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(getAllAccountOwnersMonitorLock);
+                    myLogger.Log($"{GET_ALL_ACCOUNT_OWNERS_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (getAllAccountOwnersMonitorLock)
+                    {
+                        getAllAccountOwnersWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{GET_ALL_ACCOUNT_OWNERS_CODE}\t{sequenceNo}\tNow {getAllAccountOwnersWaitingThreadsCounter} threads awaitng!");
+                    getAllAccountOwnersAutoResetEvent.WaitOne();
                     if (getAllAccountOwnersReponses.ContainsKey(sequenceNo))
                     {
                         return getAllAccountOwnersReponses[sequenceNo];
                     }
+                    myLogger.Log($"{GET_ALL_ACCOUNT_OWNERS_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -440,6 +565,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object getAllBankAccountsLock = new object();
         private object getAllBankAccountsMonitorLock = new object();
+        private readonly AutoResetEvent getAllBankAccountsAutoResetEvent = new AutoResetEvent(false);
+        private int getAllBankAccountsWaitingThreadsCounter = 0;
         private static int getAllBankAccountsSequenceNoCounter = 0;
         private Dictionary<int, ICollection<ABankAccount>> getAllBankAccountsReponses = new Dictionary<int, ICollection<ABankAccount>>();
         public override ICollection<ABankAccount> GetAllBankAccounts()
@@ -463,11 +590,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(getAllBankAccountsMonitorLock);
+                    myLogger.Log($"{GET_ALL_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (getAllBankAccountsMonitorLock)
+                    {
+                        getAllBankAccountsWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{GET_ALL_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tNow {getAllBankAccountsWaitingThreadsCounter} threads awaitng!");
+                    getAllBankAccountsAutoResetEvent.WaitOne();
                     if (getAllBankAccountsReponses.ContainsKey(sequenceNo))
                     {
                         return getAllBankAccountsReponses[sequenceNo];
                     }
+                    myLogger.Log($"{GET_ALL_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -478,6 +612,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object gtBankAccountLock = new object();
         private object gtBankAccountMonitorLock = new object();
+        private readonly AutoResetEvent gtBankAccountAutoResetEvent = new AutoResetEvent(false);
+        private int gtBankAccountWaitingThreadsCounter = 0;
         private static int getBankAccountSequenceNoCounter = 0;
         private Dictionary<int, ABankAccount?> gtBankAccountReponses = new Dictionary<int, ABankAccount?>();
         public override ABankAccount? GetBankAccount(string accountNumber)
@@ -504,11 +640,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(gtBankAccountMonitorLock);
+                    myLogger.Log($"{GET_BANK_ACCOUNT_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (gtBankAccountMonitorLock)
+                    {
+                        gtBankAccountWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{GET_BANK_ACCOUNT_CODE}\t{sequenceNo}\tNow {gtBankAccountWaitingThreadsCounter} threads awaitng!");
+                    gtBankAccountAutoResetEvent.WaitOne();
                     if (gtBankAccountReponses.ContainsKey(sequenceNo))
                     {
                         return gtBankAccountReponses[sequenceNo];
                     }
+                    myLogger.Log($"{GET_BANK_ACCOUNT_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -519,6 +662,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object getBankAccountsLock = new object();
         private object getBankAccountsMonitorLock = new object();
+        private readonly AutoResetEvent getBankAccountsAutoResetEvent = new AutoResetEvent(false);
+        private int getBankAccountsWaitingThreadsCounter = 0;
         private static int getBankAccountsSequenceNoCounter = 0;
         private Dictionary<int, ICollection<ABankAccount>> getBankAccountsReponses = new Dictionary<int, ICollection<ABankAccount>>();
         public override ICollection<ABankAccount> GetBankAccounts(int ownerId)
@@ -546,11 +691,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(getBankAccountsMonitorLock);
+                    myLogger.Log($"{GET_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tRestart loop");
+                    lock (getBankAccountsMonitorLock)
+                    {
+                        getBankAccountsWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{GET_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tNow {getBankAccountsWaitingThreadsCounter} threads awaitng!");
+                    getBankAccountsAutoResetEvent.WaitOne();
                     if (getBankAccountsReponses.ContainsKey(sequenceNo))
                     {
                         return getBankAccountsReponses[sequenceNo];
                     }
+                    myLogger.Log($"{GET_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -561,6 +713,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object authenticateAccountOwnerLock = new object();
         private object authenticateAccountOwnerMonitorLock = new object();
+        private readonly AutoResetEvent authenticateAccountOwnerAutoResetEvent = new AutoResetEvent(false);
+        private int authenticateAccountOwnerWaitingThreadsCounter = 0;
         private static int authenticateAccountOwnerSequenceNoCounter = 0;
         private Dictionary<int, bool> authenticateAccountOwnerReponses = new Dictionary<int, bool>();
         public override bool AuthenticateAccountOwner(string login, string password)
@@ -589,11 +743,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(authenticateAccountOwnerMonitorLock);
+                    myLogger.Log($"{AUTHENTICATE_ACCOUNT_OWNER}\t{sequenceNo}\tRestart loop");
+                    lock (authenticateAccountOwnerMonitorLock)
+                    {
+                        authenticateAccountOwnerWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{AUTHENTICATE_ACCOUNT_OWNER}\t{sequenceNo}\tNow {authenticateAccountOwnerWaitingThreadsCounter} threads awaitng!");
+                    authenticateAccountOwnerAutoResetEvent.WaitOne();
                     if (authenticateAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
                         return authenticateAccountOwnerReponses[sequenceNo];
                     }
+                    myLogger.Log($"{AUTHENTICATE_ACCOUNT_OWNER}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -604,6 +765,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object performTransferLock = new object();
         private object performTransferMonitorLock = new object();
+        private readonly AutoResetEvent performTransferAutoResetEvent = new AutoResetEvent(false);
+        private int performTransferWaitingThreadsCounter = 0;
         private static int performTransferSequenceNoCounter = 0;
         private Dictionary<int, TransferDataLayerCodes> performTransferReponses = new Dictionary<int, TransferDataLayerCodes>();
         public override void PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description, TransferDataLayerCallback transferCallback)
@@ -631,12 +794,19 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(performTransferMonitorLock);
+                    myLogger.Log($"{TRANSFER}\t{sequenceNo}\tRestart loop");
+                    lock (performTransferMonitorLock)
+                    {
+                        performTransferWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{TRANSFER}\t{sequenceNo}\tNow {performTransferWaitingThreadsCounter} threads awaitng!");
+                    performTransferAutoResetEvent.WaitOne();
                     if (performTransferReponses.ContainsKey(sequenceNo))
                     {
                         transferCallback(performTransferReponses[sequenceNo], ownerAccountNumber, targetAccountNumber, amount, description);
                         //return performTransferReponses[sequenceNo];
                     }
+                    myLogger.Log($"{TRANSFER}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -647,6 +817,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private object checkForReportsUpdatesLock = new object();
         private object checkForReportsUpdatesMonitorLock = new object();
+        private readonly AutoResetEvent checkForReportsUpdatesAutoResetEvent = new AutoResetEvent(false);
+        private int checkForReportsUpdatesWaitingThreadsCounter = 0;
         private static int checkForReportsUpdatesSequenceNoCounter = 0;
         private Dictionary<int, bool> checkForReportsUpdatesReponses = new Dictionary<int, bool>();
         public override bool CheckForReportsUpdates(int ownerId)
@@ -673,11 +845,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                 while (true)
                 {
-                    Monitor.Wait(checkForReportsUpdatesMonitorLock);
+                    myLogger.Log($"{CHECK_FOR_REPORTS_UPDATES}\t{sequenceNo}\tRestart loop");
+                    lock (checkForReportsUpdatesMonitorLock)
+                    {
+                        checkForReportsUpdatesWaitingThreadsCounter += 1;
+                    }
+                    myLogger.Log($"{CHECK_FOR_REPORTS_UPDATES}\t{sequenceNo}\tNow {checkForReportsUpdatesWaitingThreadsCounter} threads awaitng!");
+                    checkForReportsUpdatesAutoResetEvent.WaitOne();
                     if (checkForReportsUpdatesReponses.ContainsKey(sequenceNo))
                     {
                         return checkForReportsUpdatesReponses[sequenceNo];
                     }
+                    myLogger.Log($"{CHECK_FOR_REPORTS_UPDATES}\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
