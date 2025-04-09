@@ -313,11 +313,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case REACTIVE_REPORTS_UPDATE:
                         myLogger.Log($"REACTIVE_REPORTS_UPDATE");
-                        //serializer = new XmlSerializer(typeof(bool));
+                        serializer = new XmlSerializer(typeof(List<BankAccountReportDto>));
                         lock (reportsUpdateTrackerLock)
                         {
                             //reportsUpdateTracker.TrackWhetherReportsUpdatesChanged((bool)serializer.Deserialize(reader));
-                            Task.Factory.StartNew(() => { reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(true); });
+                            Task.Factory.StartNew(() => { reportsUpdateTracker.TrackWhetherReportsUpdatesChanged(((List<BankAccountReportDto>)serializer.Deserialize(reader)).Select((bARDto) => ABankAccountReport.CreateBankAccountReportFromXml(bARDto)).ToList()); });
                         }
                         break;
 

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ProjectLayerClassLibrary.DataLayer.Implementations;
+using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +27,13 @@ namespace ProjectLayerClassLibrary.DataLayer
 
         private string ownerEmail;
         public string OwnerEmail { get { return ownerEmail; } }
+
+        internal static ABankAccountReport CreateBankAccountReportFromXml(BankAccountReportDto bankAccountReportDto)
+        {
+            ABankAccountReport bankAccountReport = new BankAccountReportWithOwnerData(bankAccountReportDto.PreviousAccountBalance, bankAccountReportDto.CurrentAccountBalance, bankAccountReportDto.OwnerName, bankAccountReportDto.OwnerSurname, bankAccountReportDto.OwnerEmail);
+            bankAccountReport.timeOfReportCreation = bankAccountReportDto.TimeOfReportCreation;
+            return bankAccountReport;
+        }
 
         public ABankAccountReport(float previousAccountBalance, float currentAccountBalance, string ownerName, string ownerSurname, string ownerEmail)
         {
