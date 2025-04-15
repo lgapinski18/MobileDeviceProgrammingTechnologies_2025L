@@ -70,7 +70,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
                 }
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, reports);
-                sendTask = connection.SendAsync("_RRU", 0, 0, writer.ToString());
+                sendTask = connection.SendAsync(WebSocketConnection.ComunicationCodeFromServer.REACTIVE_REPORTS_UPDATE_CODE, 0, 0, writer.ToString());
             }
         }
 

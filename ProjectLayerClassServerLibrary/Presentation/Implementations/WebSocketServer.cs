@@ -12,6 +12,7 @@ using System.Xml;
 using System.Security.Principal;
 using ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static ProjectLayerClassServerLibrary.Presentation.WebSocketConnection;
 
 
 namespace ProjectLayerClassServerLibrary.Presentation.Implementations
@@ -24,6 +25,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 
         private enum ComunicationCodeFromClient
         {
+            CODE_NOT_SELECTED,
             CREATE_ACCOUNT_OWNER_CODE,
             CREATE_BANK_ACCOUNT_CODE,
             GET_ACCOUNT_OWNER_CODE,
@@ -33,28 +35,9 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             GET_ALL_BANK_ACCOUNTS_CODE,
             GET_BANK_ACCOUNTS_CODE,
             AUTHENTICATE_ACCOUNT_OWNER_CODE,
-            CHECK_FOR_REPORTS_UPDATES_CODE,
+            LOGOUT_ACCOUNT_OWNER_CODE,
             PERFORM_TRANSFER_CODE,
             CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE
-        }
-
-        private enum ComunicationCodeFromServer
-        {
-            CREATE_ACCOUNT_OWNER_CODE,
-            CREATE_BANK_ACCOUNT_CODE,
-            GET_ACCOUNT_OWNER_CODE,
-            GET_ACCOUNT_OWNER_LOGIN_CODE,
-            GET_ALL_ACCOUNT_OWNERS_CODE,
-            GET_BANK_ACCOUNT_CODE,
-            GET_ALL_BANK_ACCOUNTS_CODE,
-            GET_BANK_ACCOUNTS_CODE,
-            AUTHENTICATE_ACCOUNT_OWNER_CODE,
-            CHECK_FOR_REPORTS_UPDATES_CODE,
-            PERFORM_TRANSFER_CODE,
-            REACTIVE_REPORTS_UPDATE_CODE,
-            REACTIVE_CURRENCY_UPDATE_CODE,
-            CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE,
-            BANK_ACCOUNTS_UPDATES_CODE
         }
 
         public bool IsRunning { get => !serverLoopTask.IsCompleted; }
@@ -132,6 +115,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             string serializedMessage = "";
             int responseCode = -1;
             bool responde = true;
+            ComunicationCodeFromServer responseType = ComunicationCodeFromServer.CODE_NOT_SELECTED;
 
             switch (messageType)
             {
@@ -139,70 +123,80 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                     //AAO - authethicate account owner, data: string login, string password
                     responseContent = ProcessAuthenthicateAccountOwner(GetData<Credentials>(messageContent), connection);
                     serializer = new XmlSerializer(typeof(bool)); //////////
+                    responseType = ComunicationCodeFromServer.AUTHENTICATE_ACCOUNT_OWNER_CODE;
                     break;
 
-                case "LOAO":
+                case ComunicationCodeFromClient.LOGOUT_ACCOUNT_OWNER_CODE:
                     //AAO - authethicate account owner, data: string login, string password
                     ProcessLogOutAccountOwner(connection);
                     serializer = new XmlSerializer(typeof(bool)); //////////
                     responde = false;
                     break;
 
-                case "_CAO":
+                case ComunicationCodeFromClient.CREATE_ACCOUNT_OWNER_CODE:
                     //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    responseType = ComunicationCodeFromServer.CREATE_ACCOUNT_OWNER_CODE;
                     break;
 
-                case "_CBA":
+                case ComunicationCodeFromClient.CREATE_BANK_ACCOUNT_CODE:
                     //_CBA - create bank account; Dane: int ownerId
                     responseContent = ProcessCreateBankAccount(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(BankAccountDto)); //////////
+                    responseType = ComunicationCodeFromServer.CREATE_BANK_ACCOUNT_CODE;
                     break;
 
-                case "_GAO":
+                case ComunicationCodeFromClient.GET_ACCOUNT_OWNER_CODE:
                     //_GAO - get account owner; Dane: int ownerId
                     responseContent = ProcessGetAccountOwner(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    responseType = ComunicationCodeFromServer.GET_ACCOUNT_OWNER_CODE;
                     break;
 
-                case "GAAO":
+                case ComunicationCodeFromClient.GET_ALL_ACCOUNT_OWNERS_CODE:
                     //GAAO - get all account owners; 0 danych
                     responseContent = ProcessGetAllAccountOwners();
                     serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
+                    responseType = ComunicationCodeFromServer.GET_ALL_ACCOUNT_OWNERS_CODE;
                     break;
 
-                case "GBAN":
+                case ComunicationCodeFromClient.GET_BANK_ACCOUNT_CODE:
                     //GBAN - get bank account; dane: "{accountNumber}"
                     responseContent = ProcessGetBankAccountByNumber(GetData<string>(messageContent));
                     serializer = new XmlSerializer(typeof(BankAccountDto)); /////////
+                    responseType = ComunicationCodeFromServer.GET_BANK_ACCOUNT_CODE;
                     break;
 
-                case "GBAS":
+                case ComunicationCodeFromClient.GET_BANK_ACCOUNTS_CODE:
                     //GBAS - get bank accounts for owner id; dane: int owner id;
                     responseContent = ProcessGetBankAccounts(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(List<BankAccountDto>)); ////////
+                    responseType = ComunicationCodeFromServer.GET_BANK_ACCOUNTS_CODE;
                     break;
 
-                case "GABA":
+                case ComunicationCodeFromClient.GET_ALL_BANK_ACCOUNTS_CODE:
                     //GABA - get all accounts; 0 danych
                     responseContent = ProcessGetAllBankAccounts();
-                    serializer = new XmlSerializer(typeof(List<BankAccountDto>)); 
+                    serializer = new XmlSerializer(typeof(List<BankAccountDto>));
+                    responseType = ComunicationCodeFromServer.GET_ALL_BANK_ACCOUNTS_CODE;
                     break;
 
-                case "GAOL":
+                case ComunicationCodeFromClient.GET_ACCOUNT_OWNER_LOGIN_CODE:
                     //GAOL - get account owner by login, data: string login
                     responseContent = ProcessGetAccountOwnerByLogin(GetData<string>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    responseType = ComunicationCodeFromServer.GET_ACCOUNT_OWNER_LOGIN_CODE;
                     break;
 
-                case "CFRU":
+                case ComunicationCodeFromClient.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE:
                     //CFRU - check for reports updates, data: int ownerId
                     responseContent = ProcessCheckForReportsUpdate(GetInt(messageContent));
                     serializer = new XmlSerializer(typeof(bool)); ///////
+                    responseType = ComunicationCodeFromServer.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE;
                     break;
 
-                case "___T":
+                case ComunicationCodeFromClient.PERFORM_TRANSFER_CODE:
                     //___T - string ownerAccountNumber, string targetAccountNumber, float amount, string description,
                     TransferResultCodes? transferResponseCode = ProcessTransfer(GetData<TransferData>(messageContent));
                     if (transferResponseCode != null)
@@ -210,6 +204,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                         responseContent = transferResponseCode.Value;
                     }
                     serializer = new XmlSerializer(typeof(TransferResultCodes));
+                    responseType = ComunicationCodeFromServer.PERFORM_TRANSFER_CODE;
                     break;
 
                 default:
@@ -235,7 +230,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                     responseCode = 2;
                 }
 
-                connection.SendAsync(messageType, messageSequenceNo, responseCode, serializedMessage).Wait();
+                connection.SendAsync(responseType, messageSequenceNo, responseCode, serializedMessage).Wait();
             }
         }
 
@@ -471,7 +466,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 
                 foreach (WebSocketConnection connection in connections.Where(connection => connection.LoggedOwnerId != null && ids.Contains(connection.LoggedOwnerId.Value)))
                 {
-                    connection.SendAsync("_BAU", 0, 0, "");
+                    connection.SendAsync(ComunicationCodeFromServer.BANK_ACCOUNTS_UPDATES_CODE, 0, 0, "");
                 }
             }
             return result;

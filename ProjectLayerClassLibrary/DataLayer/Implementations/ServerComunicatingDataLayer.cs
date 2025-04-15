@@ -29,6 +29,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private enum ComunicationCodeFromClient
         {
+            CODE_NOT_SELECTED,
             CREATE_ACCOUNT_OWNER_CODE,
             CREATE_BANK_ACCOUNT_CODE,
             GET_ACCOUNT_OWNER_CODE,
@@ -38,13 +39,14 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             GET_ALL_BANK_ACCOUNTS_CODE,
             GET_BANK_ACCOUNTS_CODE,
             AUTHENTICATE_ACCOUNT_OWNER_CODE,
-            CHECK_FOR_REPORTS_UPDATES_CODE,
+            LOGOUT_ACCOUNT_OWNER_CODE,
             PERFORM_TRANSFER_CODE,
             CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE
         }
 
         private enum ComunicationCodeFromServer
         {
+            CODE_NOT_SELECTED,
             CREATE_ACCOUNT_OWNER_CODE,
             CREATE_BANK_ACCOUNT_CODE,
             GET_ACCOUNT_OWNER_CODE,
@@ -54,10 +56,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             GET_ALL_BANK_ACCOUNTS_CODE,
             GET_BANK_ACCOUNTS_CODE,
             AUTHENTICATE_ACCOUNT_OWNER_CODE,
-            CHECK_FOR_REPORTS_UPDATES_CODE,
             PERFORM_TRANSFER_CODE,
             REACTIVE_REPORTS_UPDATE_CODE,
-            REACTIVE_CURRENCY_UPDATE_CODE,
+            REACTIVE_BROADCAST_TO_FILTER_CURRENCY_UPDATE_CODE,
             CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE,
             BANK_ACCOUNTS_UPDATES_CODE
         }
@@ -363,7 +364,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         Task.Factory.StartNew(() => { CallBankAccountsUpdate(); });
                         break;
 
-                    case ComunicationCodeFromServer.REACTIVE_CURRENCY_UPDATE_CODE:
+                    case ComunicationCodeFromServer.REACTIVE_BROADCAST_TO_FILTER_CURRENCY_UPDATE_CODE:
                         myLogger.Log($"BANK_ACCOUNTS_UPDATES");
                         myLogger.Log($"Not Implemented");
                         throw new NotImplementedException();
@@ -916,7 +917,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerId);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CHECK_FOR_REPORTS_UPDATES_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
