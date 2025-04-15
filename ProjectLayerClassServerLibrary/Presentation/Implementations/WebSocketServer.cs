@@ -11,6 +11,7 @@ using ProjectLayerClassServerLibrary.Presentation.Message;
 using System.Xml;
 using System.Security.Principal;
 using ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 
 namespace ProjectLayerClassServerLibrary.Presentation.Implementations
@@ -20,6 +21,41 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
         private Task serverLoopTask;
         private List<WebSocketConnection> connections = new();
         private ALogicLayer logicLayer;
+
+        private enum ComunicationCodeFromClient
+        {
+            CREATE_ACCOUNT_OWNER_CODE,
+            CREATE_BANK_ACCOUNT_CODE,
+            GET_ACCOUNT_OWNER_CODE,
+            GET_ACCOUNT_OWNER_LOGIN_CODE,
+            GET_ALL_ACCOUNT_OWNERS_CODE,
+            GET_BANK_ACCOUNT_CODE,
+            GET_ALL_BANK_ACCOUNTS_CODE,
+            GET_BANK_ACCOUNTS_CODE,
+            AUTHENTICATE_ACCOUNT_OWNER_CODE,
+            CHECK_FOR_REPORTS_UPDATES_CODE,
+            PERFORM_TRANSFER_CODE,
+            CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE
+        }
+
+        private enum ComunicationCodeFromServer
+        {
+            CREATE_ACCOUNT_OWNER_CODE,
+            CREATE_BANK_ACCOUNT_CODE,
+            GET_ACCOUNT_OWNER_CODE,
+            GET_ACCOUNT_OWNER_LOGIN_CODE,
+            GET_ALL_ACCOUNT_OWNERS_CODE,
+            GET_BANK_ACCOUNT_CODE,
+            GET_ALL_BANK_ACCOUNTS_CODE,
+            GET_BANK_ACCOUNTS_CODE,
+            AUTHENTICATE_ACCOUNT_OWNER_CODE,
+            CHECK_FOR_REPORTS_UPDATES_CODE,
+            PERFORM_TRANSFER_CODE,
+            REACTIVE_REPORTS_UPDATE_CODE,
+            REACTIVE_CURRENCY_UPDATE_CODE,
+            CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE,
+            BANK_ACCOUNTS_UPDATES_CODE
+        }
 
         public bool IsRunning { get => !serverLoopTask.IsCompleted; }
 
@@ -82,7 +118,8 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             Console.WriteLine(message);
 
 
-            string messageType = Encoding.UTF8.GetString(message, MESSAGE_TYPE_POSITION, MESSAGE_TYPE_LENGTH);
+            //string messageType = Encoding.UTF8.GetString(message, MESSAGE_TYPE_POSITION, MESSAGE_TYPE_LENGTH);
+            ComunicationCodeFromClient messageType = (ComunicationCodeFromClient)BitConverter.ToInt32(message, MESSAGE_TYPE_POSITION);
             int messageSequenceNo = BitConverter.ToInt32(message, MESSAGE_SEQUENCE_NUMBER_POSITION);
             int messageSize = BitConverter.ToInt32(message, MESSAGE_SIZE_POSITION);
             string messageContent = Encoding.UTF8.GetString(message, MESSAGE_CONTENT_POSITION, messageSize);
@@ -98,7 +135,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 
             switch (messageType)
             {
-                case "_AAO":
+                case ComunicationCodeFromClient.AUTHENTICATE_ACCOUNT_OWNER_CODE:
                     //AAO - authethicate account owner, data: string login, string password
                     responseContent = ProcessAuthenthicateAccountOwner(GetData<Credentials>(messageContent), connection);
                     serializer = new XmlSerializer(typeof(bool)); //////////

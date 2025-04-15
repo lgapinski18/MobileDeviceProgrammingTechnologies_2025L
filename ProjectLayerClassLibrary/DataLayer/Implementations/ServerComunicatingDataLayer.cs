@@ -19,27 +19,62 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private Task receiveLoopTask;
         private MyLogger myLogger;
 
-        private object accountOwnerLock = new object();
-        private object bankAccountLock = new object();
+        //private object accountOwnerLock = new object();
+        //private object bankAccountLock = new object();
 
         private bool isConnected = false;
-        private object checkConnectionLock = new object();
-        private object awaitingConnectionLock = new object();
-        private object reportsUpdateTrackerLock = new object();
+        private object checkConnectionLock = new();
+        private object awaitingConnectionLock = new();
+        private object reportsUpdateTrackerLock = new();
 
-        private const string CREATE_ACCOUNT_OWNER_CODE = "_CAO";
-        private const string CREATE_BANK_ACCOUNT_CODE = "_CBA";
-        private const string GET_ACCOUNT_OWNER_CODE = "_GAO";
-        private const string GET_ACCOUNT_OWNER_LOGIN_CODE = "GAOL";
-        private const string GET_ALL_ACCOUNT_OWNERS_CODE = "GAAO";
-        private const string GET_BANK_ACCOUNT_CODE = "GBAN";
-        private const string GET_ALL_BANK_ACCOUNTS_CODE = "GABA";
-        private const string GET_BANK_ACCOUNTS_CODE = "GBAS";
-        private const string AUTHENTICATE_ACCOUNT_OWNER = "_AAO";
-        private const string CHECK_FOR_REPORTS_UPDATES = "CFRU";
-        private const string TRANSFER = "___T";
-        private const string REACTIVE_REPORTS_UPDATE = "_RRU";
-        private const string BANK_ACCOUNTS_UPDATES = "_BAU";
+        private enum ComunicationCodeFromClient
+        {
+            CREATE_ACCOUNT_OWNER_CODE,
+            CREATE_BANK_ACCOUNT_CODE,
+            GET_ACCOUNT_OWNER_CODE,
+            GET_ACCOUNT_OWNER_LOGIN_CODE,
+            GET_ALL_ACCOUNT_OWNERS_CODE, 
+            GET_BANK_ACCOUNT_CODE,
+            GET_ALL_BANK_ACCOUNTS_CODE,
+            GET_BANK_ACCOUNTS_CODE,
+            AUTHENTICATE_ACCOUNT_OWNER_CODE,
+            CHECK_FOR_REPORTS_UPDATES_CODE,
+            PERFORM_TRANSFER_CODE,
+            CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE
+        }
+
+        private enum ComunicationCodeFromServer
+        {
+            CREATE_ACCOUNT_OWNER_CODE,
+            CREATE_BANK_ACCOUNT_CODE,
+            GET_ACCOUNT_OWNER_CODE,
+            GET_ACCOUNT_OWNER_LOGIN_CODE,
+            GET_ALL_ACCOUNT_OWNERS_CODE,
+            GET_BANK_ACCOUNT_CODE,
+            GET_ALL_BANK_ACCOUNTS_CODE,
+            GET_BANK_ACCOUNTS_CODE,
+            AUTHENTICATE_ACCOUNT_OWNER_CODE,
+            CHECK_FOR_REPORTS_UPDATES_CODE,
+            PERFORM_TRANSFER_CODE,
+            REACTIVE_REPORTS_UPDATE_CODE,
+            REACTIVE_CURRENCY_UPDATE_CODE,
+            CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE,
+            BANK_ACCOUNTS_UPDATES_CODE
+        }
+
+        //private const string CREATE_ACCOUNT_OWNER_CODE = "_CAO";
+        //private const string CREATE_BANK_ACCOUNT_CODE = "_CBA";
+        //private const string GET_ACCOUNT_OWNER_CODE = "_GAO";
+        //private const string GET_ACCOUNT_OWNER_LOGIN_CODE = "GAOL";
+        //private const string GET_ALL_ACCOUNT_OWNERS_CODE = "GAAO";
+        //private const string GET_BANK_ACCOUNT_CODE = "GBAN";
+        //private const string GET_ALL_BANK_ACCOUNTS_CODE = "GABA";
+        //private const string GET_BANK_ACCOUNTS_CODE = "GBAS";
+        //private const string AUTHENTICATE_ACCOUNT_OWNER = "_AAO";
+        //private const string CHECK_FOR_REPORTS_UPDATES = "CFRU";
+        //private const string TRANSFER = "___T";
+        //private const string REACTIVE_REPORTS_UPDATE = "_RRU";
+        //private const string BANK_ACCOUNTS_UPDATES = "_BAU";
 
         #region EVENTS
 
@@ -142,7 +177,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
         private void processReceivedData(byte[] data)
         {
-            string respondType = Encoding.UTF8.GetString(data, 0, 4);
+            //string respondType = Encoding.UTF8.GetString(data, 0, 4);
+            ComunicationCodeFromServer respondType = (ComunicationCodeFromServer)BitConverter.ToInt32(data, 0);
             int sequenceNo = BitConverter.ToInt32(data, 4);
             int resultCode = BitConverter.ToInt32(data, 8);
             int dataSize = BitConverter.ToInt32(data, 12);
@@ -155,7 +191,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             {
                 switch (respondType)
                 {
-                    case CREATE_ACCOUNT_OWNER_CODE:
+                    case ComunicationCodeFromServer.CREATE_ACCOUNT_OWNER_CODE:
                         myLogger.Log($"CREATE_ACCOUNT_OWNER");
                         serializer = new XmlSerializer(typeof(AccountOwnerDto));
                         createAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
@@ -169,7 +205,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case CREATE_BANK_ACCOUNT_CODE:
+                    case ComunicationCodeFromServer.CREATE_BANK_ACCOUNT_CODE:
                         myLogger.Log($"CREATE_BANK_ACCOUNT");
                         serializer = new XmlSerializer(typeof(BankAccountDto));
                         createBankAccountReponses.Add(sequenceNo, ABankAccount.CreateBankAccountFromXml((BankAccountDto?)serializer.Deserialize(reader)));
@@ -183,7 +219,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case GET_ACCOUNT_OWNER_CODE:
+                    case ComunicationCodeFromServer.GET_ACCOUNT_OWNER_CODE:
                         myLogger.Log($"GET_ACCOUNT_OWNER");
                         serializer = new XmlSerializer(typeof(AccountOwnerDto));
                         getAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
@@ -197,7 +233,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case GET_ACCOUNT_OWNER_LOGIN_CODE:
+                    case ComunicationCodeFromServer.GET_ACCOUNT_OWNER_LOGIN_CODE:
                         myLogger.Log($"GET_ACCOUNT_OWNER_LOGIN");
                         serializer = new XmlSerializer(typeof(AccountOwnerDto));
                         getAccountOwnerLoginReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
@@ -211,7 +247,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case GET_ALL_ACCOUNT_OWNERS_CODE:
+                    case ComunicationCodeFromServer.GET_ALL_ACCOUNT_OWNERS_CODE:
                         myLogger.Log($"GET_ALL_ACCOUNT_OWNERS");
                         serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
                         getAllAccountOwnersReponses.Add(sequenceNo, ((List<AccountOwnerDto>)serializer.Deserialize(reader)).Select((aODto) => AAccountOwner.CreateAcountOwnerFromXml(aODto)).ToList());
@@ -225,7 +261,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case GET_BANK_ACCOUNT_CODE:
+                    case ComunicationCodeFromServer.GET_BANK_ACCOUNT_CODE:
                         myLogger.Log($"GET_BANK_ACCOUNT");
                         serializer = new XmlSerializer(typeof(BankAccountDto));
                         gtBankAccountReponses.Add(sequenceNo, ABankAccount.CreateBankAccountFromXml((BankAccountDto?)serializer.Deserialize(reader)));
@@ -239,7 +275,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case GET_ALL_BANK_ACCOUNTS_CODE:
+                    case ComunicationCodeFromServer.GET_ALL_BANK_ACCOUNTS_CODE:
                         myLogger.Log($"GET_ALL_BANK_ACCOUNTS");
                         serializer = new XmlSerializer(typeof(List<BankAccountDto>));
                         getAllBankAccountsReponses.Add(sequenceNo, ((List<BankAccountDto>)serializer.Deserialize(reader)).Select((bADto) => ABankAccount.CreateBankAccountFromXml(bADto)).ToList());
@@ -253,7 +289,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case GET_BANK_ACCOUNTS_CODE:
+                    case ComunicationCodeFromServer.GET_BANK_ACCOUNTS_CODE:
                         myLogger.Log($"GET_BANK_ACCOUNTS");
                         serializer = new XmlSerializer(typeof(List<BankAccountDto>));
                         getBankAccountsReponses.Add(sequenceNo, ((List<BankAccountDto>)serializer.Deserialize(reader)).Select((bADto) => ABankAccount.CreateBankAccountFromXml(bADto)).ToList());
@@ -267,7 +303,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case AUTHENTICATE_ACCOUNT_OWNER:
+                    case ComunicationCodeFromServer.AUTHENTICATE_ACCOUNT_OWNER_CODE:
                         myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER");
                         serializer = new XmlSerializer(typeof(bool));
                         authenticateAccountOwnerReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
@@ -283,7 +319,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case CHECK_FOR_REPORTS_UPDATES:
+                    case ComunicationCodeFromServer.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE:
                         myLogger.Log($"CHECK_FOR_REPORTS_UPDATES");
                         serializer = new XmlSerializer(typeof(bool));
                         checkForReportsUpdatesReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
@@ -297,7 +333,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case TRANSFER:
+                    case ComunicationCodeFromServer.PERFORM_TRANSFER_CODE:
                         myLogger.Log($"TRANSFER");
                         serializer = new XmlSerializer(typeof(ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.TransferResultCodes));
                         performTransferReponses.Add(sequenceNo, (ADataLayer.TransferResultCodes)serializer.Deserialize(reader));
@@ -311,7 +347,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case REACTIVE_REPORTS_UPDATE:
+                    case ComunicationCodeFromServer.REACTIVE_REPORTS_UPDATE_CODE:
                         myLogger.Log($"REACTIVE_REPORTS_UPDATE");
                         serializer = new XmlSerializer(typeof(List<BankAccountReportDto>));
                         lock (reportsUpdateTrackerLock)
@@ -322,9 +358,15 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         break;
 
-                    case BANK_ACCOUNTS_UPDATES:
+                    case ComunicationCodeFromServer.BANK_ACCOUNTS_UPDATES_CODE:
                         myLogger.Log($"BANK_ACCOUNTS_UPDATES");
                         Task.Factory.StartNew(() => { CallBankAccountsUpdate(); });
+                        break;
+
+                    case ComunicationCodeFromServer.REACTIVE_CURRENCY_UPDATE_CODE:
+                        myLogger.Log($"BANK_ACCOUNTS_UPDATES");
+                        myLogger.Log($"Not Implemented");
+                        throw new NotImplementedException();
                         break;
                 }
             }
@@ -359,18 +401,18 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, accountOwnerCreationData);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{CREATE_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"CREATE_ACCOUNT_OWNER_CODE\t{sequenceNo}\tRestart loop");
                     lock (createAccountOwnerMonitorLock)
                     {
                         createAccountOwnerWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{CREATE_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tNow {createAccountOwnerWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"CREATE_ACCOUNT_OWNER_CODE\t{sequenceNo}\tNow {createAccountOwnerWaitingThreadsCounter} threads awaitng!");
                     createAccountOwnerAutoResetEvent.WaitOne();
                     if (createAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
@@ -385,7 +427,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         }
                         return aAccountOwner;
                     }
-                    myLogger.Log($"{CREATE_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"CREATE_ACCOUNT_OWNER_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -418,24 +460,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerId);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(CREATE_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CREATE_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{CREATE_BANK_ACCOUNT_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"CREATE_BANK_ACCOUNT_CODE\t{sequenceNo}\tRestart loop");
                     lock (createBankAccountMonitorLock)
                     {
                         createBankAccountWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{CREATE_BANK_ACCOUNT_CODE}\t{sequenceNo}\tNow {createBankAccountWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"CREATE_BANK_ACCOUNT_CODE\t{sequenceNo}\tNow {createBankAccountWaitingThreadsCounter} threads awaitng!");
                     createBankAccountAutoResetEvent.WaitOne();
                     if (createBankAccountReponses.ContainsKey(sequenceNo))
                     {
                         return createBankAccountReponses[sequenceNo];
                     }
-                    myLogger.Log($"{CREATE_BANK_ACCOUNT_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"CREATE_BANK_ACCOUNT_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -468,24 +510,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerId);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(GET_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{GET_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"GET_ACCOUNT_OWNER_CODE\t{sequenceNo}\tRestart loop");
                     lock (getAccountOwnerMonitorLock)
                     {
                         getAccountOwnerWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{GET_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tNow {getAccountOwnerWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"GET_ACCOUNT_OWNER_CODE\t{sequenceNo}\tNow {getAccountOwnerWaitingThreadsCounter} threads awaitng!");
                     getAccountOwnerAutoResetEvent.WaitOne();
                     if (getAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
                         return getAccountOwnerReponses[sequenceNo];
                     }
-                    myLogger.Log($"{GET_ACCOUNT_OWNER_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"GET_ACCOUNT_OWNER_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -518,24 +560,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerLogin);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(GET_ACCOUNT_OWNER_LOGIN_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ACCOUNT_OWNER_LOGIN_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{GET_ACCOUNT_OWNER_LOGIN_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"GET_ACCOUNT_OWNER_LOGIN_CODE\t{sequenceNo}\tRestart loop");
                     lock (getAccountOwnerLoginMonitorLock)
                     {
                         getAccountOwnerLoginWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{GET_ACCOUNT_OWNER_LOGIN_CODE}\t{sequenceNo}\tNow {getAccountOwnerLoginWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"GET_ACCOUNT_OWNER_LOGIN_CODE\t{sequenceNo}\tNow {getAccountOwnerLoginWaitingThreadsCounter} threads awaitng!");
                     getAccountOwnerLoginAutoResetEvent.WaitOne();
                     if (getAccountOwnerLoginReponses.ContainsKey(sequenceNo))
                     {
                         return getAccountOwnerLoginReponses[sequenceNo];
                     }
-                    myLogger.Log($"{GET_ACCOUNT_OWNER_LOGIN_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"GET_ACCOUNT_OWNER_LOGIN_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -565,24 +607,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     sequenceNo = getAllAccountOwnersSequenceNoCounter++;
                 }
                 byte[] sendBuffer = [];
-                byte[] header = Encoding.ASCII.GetBytes(GET_ALL_ACCOUNT_OWNERS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ALL_ACCOUNT_OWNERS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{GET_ALL_ACCOUNT_OWNERS_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"GET_ALL_ACCOUNT_OWNERS_CODE\t{sequenceNo}\tRestart loop");
                     lock (getAllAccountOwnersMonitorLock)
                     {
                         getAllAccountOwnersWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{GET_ALL_ACCOUNT_OWNERS_CODE}\t{sequenceNo}\tNow {getAllAccountOwnersWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"GET_ALL_ACCOUNT_OWNERS_CODE\t{sequenceNo}\tNow {getAllAccountOwnersWaitingThreadsCounter} threads awaitng!");
                     getAllAccountOwnersAutoResetEvent.WaitOne();
                     if (getAllAccountOwnersReponses.ContainsKey(sequenceNo))
                     {
                         return getAllAccountOwnersReponses[sequenceNo];
                     }
-                    myLogger.Log($"{GET_ALL_ACCOUNT_OWNERS_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"GET_ALL_ACCOUNT_OWNERS_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -612,24 +654,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     sequenceNo = getAllBankAccountsSequenceNoCounter++;
                 }
                 byte[] sendBuffer = [];
-                byte[] header = Encoding.ASCII.GetBytes(GET_ALL_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ALL_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{GET_ALL_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"GET_ALL_BANK_ACCOUNTS_CODE\t{sequenceNo}\tRestart loop");
                     lock (getAllBankAccountsMonitorLock)
                     {
                         getAllBankAccountsWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{GET_ALL_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tNow {getAllBankAccountsWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"GET_ALL_BANK_ACCOUNTS_CODE\t{sequenceNo}\tNow {getAllBankAccountsWaitingThreadsCounter} threads awaitng!");
                     getAllBankAccountsAutoResetEvent.WaitOne();
                     if (getAllBankAccountsReponses.ContainsKey(sequenceNo))
                     {
                         return getAllBankAccountsReponses[sequenceNo];
                     }
-                    myLogger.Log($"{GET_ALL_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"GET_ALL_BANK_ACCOUNTS_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -662,24 +704,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, accountNumber);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(GET_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{GET_BANK_ACCOUNT_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"GET_BANK_ACCOUNT_CODE\t{sequenceNo}\tRestart loop");
                     lock (gtBankAccountMonitorLock)
                     {
                         gtBankAccountWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{GET_BANK_ACCOUNT_CODE}\t{sequenceNo}\tNow {gtBankAccountWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"GET_BANK_ACCOUNT_CODE\t{sequenceNo}\tNow {gtBankAccountWaitingThreadsCounter} threads awaitng!");
                     gtBankAccountAutoResetEvent.WaitOne();
                     if (gtBankAccountReponses.ContainsKey(sequenceNo))
                     {
                         return gtBankAccountReponses[sequenceNo];
                     }
-                    myLogger.Log($"{GET_BANK_ACCOUNT_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"GET_BANK_ACCOUNT_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -713,24 +755,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerId);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(GET_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{GET_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"GET_BANK_ACCOUNTS_CODE\t{sequenceNo}\tRestart loop");
                     lock (getBankAccountsMonitorLock)
                     {
                         getBankAccountsWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{GET_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tNow {getBankAccountsWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"GET_BANK_ACCOUNTS_CODE\t{sequenceNo}\tNow {getBankAccountsWaitingThreadsCounter} threads awaitng!");
                     getBankAccountsAutoResetEvent.WaitOne();
                     if (getBankAccountsReponses.ContainsKey(sequenceNo))
                     {
                         return getBankAccountsReponses[sequenceNo];
                     }
-                    myLogger.Log($"{GET_BANK_ACCOUNTS_CODE}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"GET_BANK_ACCOUNTS_CODE\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -765,24 +807,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 serializer.Serialize(writer, credentials);
                 string payload = writer.ToString();
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(AUTHENTICATE_ACCOUNT_OWNER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.AUTHENTICATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{AUTHENTICATE_ACCOUNT_OWNER}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER\t{sequenceNo}\tRestart loop");
                     lock (authenticateAccountOwnerMonitorLock)
                     {
                         authenticateAccountOwnerWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{AUTHENTICATE_ACCOUNT_OWNER}\t{sequenceNo}\tNow {authenticateAccountOwnerWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER\t{sequenceNo}\tNow {authenticateAccountOwnerWaitingThreadsCounter} threads awaitng!");
                     authenticateAccountOwnerAutoResetEvent.WaitOne();
                     if (authenticateAccountOwnerReponses.ContainsKey(sequenceNo))
                     {
                         return authenticateAccountOwnerReponses[sequenceNo];
                     }
-                    myLogger.Log($"{AUTHENTICATE_ACCOUNT_OWNER}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
@@ -822,25 +864,25 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, transferData);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(TRANSFER).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.PERFORM_TRANSFER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{TRANSFER}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"TRANSFER\t{sequenceNo}\tRestart loop");
                     lock (performTransferMonitorLock)
                     {
                         performTransferWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{TRANSFER}\t{sequenceNo}\tNow {performTransferWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"TRANSFER\t{sequenceNo}\tNow {performTransferWaitingThreadsCounter} threads awaitng!");
                     performTransferAutoResetEvent.WaitOne();
                     if (performTransferReponses.ContainsKey(sequenceNo))
                     {
                         transferCallback(performTransferReponses[sequenceNo], ownerAccountNumber, targetAccountNumber, amount, description);
                         //return performTransferReponses[sequenceNo];
                     }
-                    myLogger.Log($"{TRANSFER}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"TRANSFER\t{sequenceNo}\tWill repeat loop");
                     return;
                 }
             }
@@ -874,24 +916,24 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 StringWriter writer = new StringWriter();
                 serializer.Serialize(writer, ownerId);
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-                byte[] header = Encoding.ASCII.GetBytes(CHECK_FOR_REPORTS_UPDATES).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
+                byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CHECK_FOR_REPORTS_UPDATES_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
                 clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
 
                 while (true)
                 {
-                    myLogger.Log($"{CHECK_FOR_REPORTS_UPDATES}\t{sequenceNo}\tRestart loop");
+                    myLogger.Log($"CHECK_FOR_REPORTS_UPDATES\t{sequenceNo}\tRestart loop");
                     lock (checkForReportsUpdatesMonitorLock)
                     {
                         checkForReportsUpdatesWaitingThreadsCounter += 1;
                     }
-                    myLogger.Log($"{CHECK_FOR_REPORTS_UPDATES}\t{sequenceNo}\tNow {checkForReportsUpdatesWaitingThreadsCounter} threads awaitng!");
+                    myLogger.Log($"CHECK_FOR_REPORTS_UPDATES\t{sequenceNo}\tNow {checkForReportsUpdatesWaitingThreadsCounter} threads awaitng!");
                     checkForReportsUpdatesAutoResetEvent.WaitOne();
                     if (checkForReportsUpdatesReponses.ContainsKey(sequenceNo))
                     {
                         return checkForReportsUpdatesReponses[sequenceNo];
                     }
-                    myLogger.Log($"{CHECK_FOR_REPORTS_UPDATES}\t{sequenceNo}\tWill repeat loop");
+                    myLogger.Log($"CHECK_FOR_REPORTS_UPDATES\t{sequenceNo}\tWill repeat loop");
                 }
             }
             else
