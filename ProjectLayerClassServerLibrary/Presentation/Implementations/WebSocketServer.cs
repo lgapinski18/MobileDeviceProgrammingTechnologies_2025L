@@ -205,7 +205,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                 case ComunicationCodeFromClient.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE:
                     //CFRU - check for reports updates, data: int ownerId
                     responseContent = ProcessCheckForReportsUpdate(GetData<Identificator>(messageContent));
-                    serializer = new XmlSerializer(typeof(bool)); ///////
+                    serializer = new XmlSerializer(typeof(Success)); ///////
                     responseType = ComunicationCodeFromServer.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE;
                     break;
 
@@ -449,13 +449,13 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             };
         }
 
-        private bool? ProcessCheckForReportsUpdate(Identificator? ownerId)
+        private Success? ProcessCheckForReportsUpdate(Identificator? ownerId)
         {
             if (ownerId == null)
             {
                 return null;
             }
-            return logicLayer.CheckForReportsUpdates(ownerId.Id);
+            return new Success() { IsSuccess = logicLayer.CheckForReportsUpdates(ownerId.Id) };
         }
 
         private TransferResultCodes? ProcessTransfer(TransferData? transferData)

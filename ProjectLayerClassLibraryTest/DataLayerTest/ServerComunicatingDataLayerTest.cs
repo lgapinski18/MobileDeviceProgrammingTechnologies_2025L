@@ -188,9 +188,9 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         [DataRow(5053, 1, "Jan", "IK123456", "Kowalski", "jk@poczta.com")]
         public async Task ShouldGetAccountOwnerByLoginSendCorrectComunicateANdReceiveCorectResponse(int portNo, int ownerId, string ownerName, string ownerLogin, string ownerSurname, string ownerEmail)
         {
-            XmlSerializer serializer = new XmlSerializer(typeof(string));
+            XmlSerializer serializer = new XmlSerializer(typeof(LoginDto));
             StringWriter writer = new StringWriter();
-            serializer.Serialize(writer, ownerLogin);
+            serializer.Serialize(writer, new LoginDto() { Login = ownerLogin } );
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
             clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_ACCOUNT_OWNER_LOGIN_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
@@ -330,9 +330,9 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         public async Task ShouldGetBankAccountSendCorrectComunicateANdReceiveCorectResponse(int portNo, int ownerId, int accountId, string accountNumber, float balance)
         {
             XmlSerializer serializer;
-            serializer = new XmlSerializer(typeof(string));
+            serializer = new XmlSerializer(typeof(AccountNumberDto));
             StringWriter writer = new StringWriter();
-            serializer.Serialize(writer, accountNumber);
+            serializer.Serialize(writer, new AccountNumberDto() { AccountNumber = accountNumber } );
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
             clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
