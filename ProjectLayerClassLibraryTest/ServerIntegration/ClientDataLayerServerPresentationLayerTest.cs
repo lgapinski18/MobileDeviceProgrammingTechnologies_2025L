@@ -17,7 +17,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
     public class ClientDataLayerServerPresentationLayerTest
     {
         [TestMethod]
-        [DataRow(5050, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        [DataRow(5070, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public async Task ShouldCreateAccountOwnerSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -37,7 +37,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5051, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        [DataRow(5071, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public async Task ShouldCreateBankAccountSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -58,7 +58,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5052, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        [DataRow(5072, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public async Task ShouldGetAccountOwnerSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -82,7 +82,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5053, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        [DataRow(5073, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public async Task ShouldGetAccountOwnerByLoginSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -106,7 +106,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5054)]
+        [DataRow(5074)]
         public async Task ShouldGetAllAccountOwnersSendCorrectComunicateANdReceiveCorectResponse(int portNo)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -123,7 +123,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5055)]
+        [DataRow(5075)]
         public async Task ShouldGetAllBankAccountsSendCorrectComunicateANdReceiveCorectResponse(int portNo)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -141,7 +141,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5056, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        [DataRow(5076, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public async Task ShouldGetBankAccountSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -165,7 +165,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5057, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        [DataRow(5077, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public async Task ShouldGetBankAccountsSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -186,7 +186,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5058, "IK123456", "12345678")]
+        [DataRow(5078, "IK123456", "12345678")]
         public async Task ShouldAuthenticateAccountOwnerSendCorrectComunicateANdReceiveCorectResponse(int portNo, string login, string password)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -203,7 +203,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5059, "asdasfasfasf", "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        [DataRow(5079, "asdasfasfasf", "Jan", "Kowalski", "jk@poczta.com", "12345678")]
         public async Task ShouldPerformTransferOwnerSendCorrectComunicate(int portNo,string description, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
@@ -227,7 +227,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5060, 1)]
+        [DataRow(5080, 1)]
         public async Task ShouldCheckForReportsUpdatesSendCorrectComunicateeANdReceiveCorectResponse(int portNo, int ownerId)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
