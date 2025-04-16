@@ -26,6 +26,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object checkConnectionLock = new();
         private object awaitingConnectionLock = new();
         private object reportsUpdateTrackerLock = new();
+        private object euroRateUpdateLock = new();
+        private object usdRateUpdateLock = new();
+        private object gbpRateUpdateLock = new();
+        private object chfRateUpdateLock = new();
 
         private CurrenciesOfInterest currenciesOfInterestFilter = (CurrenciesOfInterest)0;
         public override CurrenciesOfInterest CurrenciesOfInterestFilter { get => currenciesOfInterestFilter; set => currenciesOfInterestFilter = value; }
@@ -377,6 +381,35 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         serializer = new XmlSerializer(typeof(int));
                         Task.Factory.StartNew(() =>
                         {
+                            lock (euroRateUpdateLock)
+                            {
+                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.EURO) == CurrenciesOfInterest.EURO)
+                                {
+
+                                }
+                            }
+
+                            lock (usdRateUpdateLock)
+                            {
+                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.USD) == CurrenciesOfInterest.USD)
+                                {
+
+                                }
+                            }
+                            lock (gbpRateUpdateLock)
+                            {
+                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.GBP) == CurrenciesOfInterest.GBP)
+                                {
+
+                                }
+                            }
+                            lock (chfRateUpdateLock)
+                            {
+                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.CHF) == CurrenciesOfInterest.CHF)
+                                {
+
+                                }
+                            }
                         });
                         break;
                 }
