@@ -11,5 +11,9 @@
   <ItemGroup>
     <ApplicationDefinition Include="PresentationLayer\ViewLayer\App.xaml" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <ProjectReference Include="..\ComunicationApiXmlDto\ComunicationApiXmlDto.csproj" />
+  </ItemGroup>
 
 </Project>

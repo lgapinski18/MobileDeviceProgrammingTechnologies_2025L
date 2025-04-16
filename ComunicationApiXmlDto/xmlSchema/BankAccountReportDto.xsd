@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://banksystem.com/xml"
+           xmlns="http://banksystem.com/xml">
+  <xs:element name="BankAccountReport" nillable="true" type="BankAccountReportDto" />
+  <xs:complexType name="BankAccountReportDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="TimeOfReportCreation" type="xs:dateTime" />
+      <xs:element minOccurs="1" maxOccurs="1" name="CurrentAccountBalance" type="xs:float" />
+      <xs:element minOccurs="1" maxOccurs="1" name="PreviousAccountBalance" type="xs:float" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OwnerName" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OwnerSurname" type="xs:string" />
+      <xs:element minOccurs="0" maxOccurs="1" name="OwnerEmail" type="xs:string" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

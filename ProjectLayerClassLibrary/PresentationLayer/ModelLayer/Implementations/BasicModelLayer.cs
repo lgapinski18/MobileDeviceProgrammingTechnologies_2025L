@@ -85,23 +85,23 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             }
             else
             {
-                if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.EMPTY) != 0)
+                if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.EMPTY) != 0)
                 {
                     registerFailurePopup.DataContext = new PopupMessage("Empty field");
                 }
-                else if((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_NAME) != 0)
+                else if((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_NAME) != 0)
                 {
                     registerFailurePopup.DataContext = new PopupMessage("Incorrect Name");
                 }
-                else if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_SURNAME) != 0)
+                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_SURNAME) != 0)
                 {
                     registerFailurePopup.DataContext = new PopupMessage("Incorrect Surname");
                 }
-                else if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_EMAIL) != 0)
+                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_EMAIL) != 0)
                 {
                     registerFailurePopup.DataContext = new PopupMessage("Incorrect Email");
                 }
-                else if ((creationAccountOwnerFlags & CreationAccountOwnerFlags.INCORRECT_PASSWORD) != 0)
+                else if ((creationAccountOwnerFlags & ALogicLayer.CreationAccountOwnerFlags.INCORRECT_PASSWORD) != 0)
                 {
                     registerFailurePopup.DataContext = new PopupMessage("Incorrect Password");
                 }

@@ -1,6 +1,6 @@
-﻿using ProjectLayerClassLibrary.DataLayer;
+﻿using ComunicationApiXmlDto;
+using ProjectLayerClassLibrary.DataLayer;
 using ProjectLayerClassLibrary.DataLayer.Implementations;
-using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
 using ProjectLayerClassLibrary.PresentationLayer.ViewLayer;
 using ProjectLayerClassLibraryTest.DataLayerTest.TestUtilities;
 using System.Text;
@@ -487,9 +487,9 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
             clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.PERFORM_TRANSFER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
-            serializer = new XmlSerializer(typeof(ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.TransferResultCodes));
+            serializer = new XmlSerializer(typeof(ComunicationApiXmlDto.TransferResultCodes));
             StringWriter writer2 = new StringWriter();
-            serializer.Serialize(writer2, ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.TransferResultCodes.SUCCESS);
+            serializer.Serialize(writer2, ComunicationApiXmlDto.TransferResultCodes.SUCCESS);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
             serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.PERFORM_TRANSFER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 

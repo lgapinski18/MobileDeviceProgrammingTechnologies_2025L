@@ -1,6 +1,6 @@
-﻿using ProjectLayerClassServerLibrary.LogicLayer;
+﻿using ComunicationApiXmlDto;
+using ProjectLayerClassServerLibrary.LogicLayer;
 using ProjectLayerClassServerLibrary.Presentation;
-using ProjectLayerClassServerLibrary.Presentation.Message;
 using System;
 using System.Collections.Generic;
 using System.Linq;

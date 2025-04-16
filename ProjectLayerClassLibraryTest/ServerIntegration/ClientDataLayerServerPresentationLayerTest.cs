@@ -1,6 +1,6 @@
-﻿using ProjectLayerClassLibrary.DataLayer;
+﻿using ComunicationApiXmlDto;
+using ProjectLayerClassLibrary.DataLayer;
 using ProjectLayerClassLibrary.DataLayer.Implementations;
-using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
 using ProjectLayerClassLibraryTest.DataLayerTest.TestUtilities;
 using ProjectLayerClassServerLibrary.Presentation.Factory;
 using ProjectLayerClassServerLibrary.Presentation;

@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://banksystem.com/xml"
+           xmlns="http://banksystem.com/xml">
+	<xs:element name="Success" nillable="true" type="Success" />
+	<xs:complexType name="Success">
+		<xs:sequence>
+			<xs:element name="IsSuccess" type="xs:boolean"/>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
