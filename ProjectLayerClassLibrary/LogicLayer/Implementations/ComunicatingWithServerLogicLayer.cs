@@ -16,8 +16,14 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
 
         protected AReportsUpdateLogicLayerTracker reportsUpdateTracker;
         public override AReportsUpdateLogicLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
+        public override CurrenciesOfInterest CurrenciesOfInterestFilter { get => (ALogicLayer.CurrenciesOfInterest)dataLayer.CurrenciesOfInterestFilter; set => dataLayer.CurrenciesOfInterestFilter = (ADataLayer.CurrenciesOfInterest)value; }
 
         public override event Action BankAccountsUpdate;
+        public override event CurrencyRatesUpdateAction EuroRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction UsdRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction GbpRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction ChfRatesUpdateEvent;
+
         protected void CallBankAccountsUpdate()
         {
             BankAccountsUpdate?.Invoke();
@@ -34,6 +40,17 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
             this.reportsUpdateReporter = reportsUpdateReporter;
 
             this.dataLayer.BankAccountsUpdate += CallBankAccountsUpdate;
+            this.dataLayer.EuroRatesUpdateEvent += (rates) => { 
+                EuroRatesUpdateEvent?.Invoke(new LogicLayer.Implementations.SimpleCurrencyRateOfPurchaseAndSell(rates.CurrencyRateOfPurchase, rates.CurrencyRateOfSell)); };
+            this.dataLayer.UsdRatesUpdateEvent += (rates) => {
+                UsdRatesUpdateEvent?.Invoke(new LogicLayer.Implementations.SimpleCurrencyRateOfPurchaseAndSell(rates.CurrencyRateOfPurchase, rates.CurrencyRateOfSell));
+            };
+            this.dataLayer.GbpRatesUpdateEvent += (rates) => {
+                GbpRatesUpdateEvent?.Invoke(new LogicLayer.Implementations.SimpleCurrencyRateOfPurchaseAndSell(rates.CurrencyRateOfPurchase, rates.CurrencyRateOfSell));
+            };
+            this.dataLayer.ChfRatesUpdateEvent += (rates) => {
+                ChfRatesUpdateEvent?.Invoke(new LogicLayer.Implementations.SimpleCurrencyRateOfPurchaseAndSell(rates.CurrencyRateOfPurchase, rates.CurrencyRateOfSell));
+            };
         }
 
         public override bool AuthenticateAccountOwner(string login, string password)

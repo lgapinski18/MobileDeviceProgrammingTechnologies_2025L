@@ -35,8 +35,13 @@ namespace ProjectLayerClassServerLibrary.DataLayer.Implementations
 
         private void GenerateStartingContent()
         {
-            AAccountOwner accountOwner1 = CreateAccountOwner("Jan", "Kowalski", "jk@poczta.com", "12345678");
-            AAccountOwner accountOwner2 = CreateAccountOwner("Łukasz", "Gapiński", "lg@poczta.com", "12345678");
+
+            AAccountOwner accountOwner1 = new BasicAccountOwner(0, "IK123456", "Jan", "Kowalski", "jk@poczta.com", "12345678");
+            accountOwnerRepository.Save(accountOwner1);
+            AAccountOwner accountOwner2 = new BasicAccountOwner(1, "IK111111", "Łukasz", "Gapiński", "lg@poczta.com", "12345678");
+            accountOwnerRepository.Save(accountOwner2);
+            //AAccountOwner accountOwner1 = CreateAccountOwner("Jan", "Kowalski", "jk@poczta.com", "12345678");
+            //AAccountOwner accountOwner2 = CreateAccountOwner("Łukasz", "Gapiński", "lg@poczta.com", "12345678");
             List<string> lines = new List<string>();
             lines.Add($"{accountOwner1.GetId()}, {accountOwner1.OwnerLogin}, {accountOwner1.OwnerPassword}; {accountOwner1.OwnerName}, {accountOwner1.OwnerSurname}, {accountOwner1.OwnerEmail}");
             lines.Add($"{accountOwner2.GetId()}, {accountOwner2.OwnerLogin}, {accountOwner2.OwnerPassword}; {accountOwner2.OwnerName}, {accountOwner2.OwnerSurname}, {accountOwner2.OwnerEmail}");

@@ -19,6 +19,7 @@ namespace ProjectLayerClassLibrary.DataLayer
             INCORRECT_EMAIL = 8,
             INCORRECT_PASSWORD = 16,
         }
+
         public enum TransferResultCodes
         {
             SUCCESS,
@@ -29,12 +30,30 @@ namespace ProjectLayerClassLibrary.DataLayer
             TRANSFER_HAS_BEEN_INTERUPTED
         }
 
+        [Flags]
+        public enum CurrenciesOfInterest
+        {
+            GBP = 0,
+            EURO = 1,
+            USD = 2,
+            CHF = 4,
+        }
+
+        public abstract CurrenciesOfInterest CurrenciesOfInterestFilter { get; set; }
+
         public delegate void TransferDataLayerCallback(ADataLayer.TransferResultCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
         #region EVENTS
 
         public abstract AReportsUpdateDataLayerTracker ReportsUpdateTracker { get; }
         public abstract event Action BankAccountsUpdate;
+
+        public delegate void CurrencyRatesUpdateAction(DataLayer.ACurrencyRateOfPurchaseAndSell currencyRateOfPurchaseAndSell);
+        public abstract event CurrencyRatesUpdateAction EuroRatesUpdateEvent;
+        public abstract event CurrencyRatesUpdateAction UsdRatesUpdateEvent;
+        public abstract event CurrencyRatesUpdateAction GbpRatesUpdateEvent;
+        public abstract event CurrencyRatesUpdateAction ChfRatesUpdateEvent;
+
 
         #endregion
 

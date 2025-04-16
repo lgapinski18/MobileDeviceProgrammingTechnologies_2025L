@@ -23,6 +23,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object accountOwnerLock = new object();
         private object bankAccountLock = new object();
 
+        private CurrenciesOfInterest currenciesOfInterestFilter = (CurrenciesOfInterest)0;
+        public override CurrenciesOfInterest CurrenciesOfInterestFilter { get => currenciesOfInterestFilter; set => currenciesOfInterestFilter = value; }
+
 
         #region EVENTS
 
@@ -30,6 +33,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         public override AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
 
         public override event Action BankAccountsUpdate;
+        public override event CurrencyRatesUpdateAction EuroRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction UsdRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction GbpRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction ChfRatesUpdateEvent;
+
         protected void CallBankAccountsUpdate()
         {
             BankAccountsUpdate?.Invoke();

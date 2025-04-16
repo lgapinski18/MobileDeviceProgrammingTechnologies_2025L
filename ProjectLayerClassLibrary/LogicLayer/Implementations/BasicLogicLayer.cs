@@ -25,6 +25,7 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         private Timer bankAccountReportTimer;
         private bool reportsHasBeenUpdatedRecently = false;
         private AReportsUpdateLogicLayerReporter reportsUpdateReporter;
+        public override CurrenciesOfInterest CurrenciesOfInterestFilter { get => (ALogicLayer.CurrenciesOfInterest)dataLayer.CurrenciesOfInterestFilter; set => dataLayer.CurrenciesOfInterestFilter = (ADataLayer.CurrenciesOfInterest)value; }
 
         #region EVENTS
 
@@ -32,6 +33,11 @@ namespace ProjectLayerClassLibrary.LogicLayer.Implementations
         protected AReportsUpdateLogicLayerTracker reportsUpdateTracker;
         public override AReportsUpdateLogicLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
         public override event Action BankAccountsUpdate;
+        public override event CurrencyRatesUpdateAction EuroRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction UsdRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction GbpRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction ChfRatesUpdateEvent;
+
         protected void CallBankAccountsUpdate()
         {
             BankAccountsUpdate?.Invoke();

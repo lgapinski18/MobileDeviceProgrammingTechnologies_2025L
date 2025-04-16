@@ -27,6 +27,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object awaitingConnectionLock = new();
         private object reportsUpdateTrackerLock = new();
 
+        private CurrenciesOfInterest currenciesOfInterestFilter = (CurrenciesOfInterest)0;
+        public override CurrenciesOfInterest CurrenciesOfInterestFilter { get => currenciesOfInterestFilter; set => currenciesOfInterestFilter = value; }
+
         private enum ComunicationCodeFromClient
         {
             CODE_NOT_SELECTED,
@@ -83,6 +86,11 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         public override AReportsUpdateDataLayerTracker ReportsUpdateTracker { get { return reportsUpdateTracker; } }
 
         public override event Action BankAccountsUpdate;
+        public override event CurrencyRatesUpdateAction EuroRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction UsdRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction GbpRatesUpdateEvent;
+        public override event CurrencyRatesUpdateAction ChfRatesUpdateEvent;
+
         protected void CallBankAccountsUpdate()
         {
             BankAccountsUpdate?.Invoke();
@@ -366,8 +374,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case ComunicationCodeFromServer.REACTIVE_BROADCAST_TO_FILTER_CURRENCY_UPDATE_CODE:
                         myLogger.Log($"BANK_ACCOUNTS_UPDATES");
-                        myLogger.Log($"Not Implemented");
-                        throw new NotImplementedException();
+                        serializer = new XmlSerializer(typeof(int));
+                        Task.Factory.StartNew(() =>
+                        {
+                        });
                         break;
                 }
             }
