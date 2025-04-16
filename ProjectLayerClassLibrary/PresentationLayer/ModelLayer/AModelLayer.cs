@@ -32,6 +32,18 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer
         public abstract IUserContext UserContext { get; }
 
         public abstract object CurrentView { get; }
+        public abstract bool IsEuroShowed { get; set; }
+        public abstract bool IsUsdShowed { get; set; }
+        public abstract bool IsGbpShowed { get; set; }
+        public abstract bool IsChfShowed { get; set; }
+        public abstract float EuroPurchase { get; }
+        public abstract float EuroSell { get; }
+        public abstract float UsdPurchase { get; }
+        public abstract float UsdSell { get; }
+        public abstract float GbpPurchase { get; }
+        public abstract float GbpSell { get; }
+        public abstract float ChfPurchase { get; }
+        public abstract float ChfSell { get; }
 
         public abstract void Redirect(Type? viewType);
 

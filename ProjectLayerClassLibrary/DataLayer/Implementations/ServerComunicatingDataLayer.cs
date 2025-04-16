@@ -657,9 +657,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = getAccountOwnerLoginSequenceNoCounter++;
                 }
-                XmlSerializer serializer = new XmlSerializer(typeof(string));
+                XmlSerializer serializer = new XmlSerializer(typeof(LoginDto));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, ownerLogin);
+                serializer.Serialize(writer, new LoginDto() { Login = ownerLogin });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ACCOUNT_OWNER_LOGIN_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
@@ -819,9 +819,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = getBankAccountSequenceNoCounter++;
                 }
-                XmlSerializer serializer = new XmlSerializer(typeof(string));
+                XmlSerializer serializer = new XmlSerializer(typeof(AccountNumberDto));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, accountNumber);
+                serializer.Serialize(writer, new AccountNumberDto() { AccountNumber = accountNumber });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();

@@ -32,6 +32,27 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         public ICommand LogoutCommand => logoutCommand;
         public ICommand OpenNewBankAccountCommand => openNewBankAccountCommand;
 
+        public bool IsEuroShowed { get => viewModelLayer.ModelLayer.IsEuroShowed; set => viewModelLayer.ModelLayer.IsEuroShowed = value; }
+        public bool IsUsdShowed { get => viewModelLayer.ModelLayer.IsUsdShowed; set => viewModelLayer.ModelLayer.IsUsdShowed = value; }
+        public bool IsGbpShowed { get => viewModelLayer.ModelLayer.IsGbpShowed; set => viewModelLayer.ModelLayer.IsGbpShowed = value; }
+        public bool IsChfShowed { get => viewModelLayer.ModelLayer.IsChfShowed; set => viewModelLayer.ModelLayer.IsChfShowed = value; }
+
+        public float EuroPurchase => viewModelLayer.ModelLayer.EuroPurchase;
+
+        public float EuroSell => viewModelLayer.ModelLayer.EuroSell;
+
+        public float UsdPurchase => viewModelLayer.ModelLayer.UsdPurchase;
+
+        public float UsdSell => viewModelLayer.ModelLayer.UsdSell;
+
+        public float GbpPurchase => viewModelLayer.ModelLayer.GbpPurchase;
+
+        public float GbpSell => viewModelLayer.ModelLayer.GbpSell;
+
+        public float ChfPurchase => viewModelLayer.ModelLayer.ChfPurchase;
+
+        public float ChfSell => viewModelLayer.ModelLayer.ChfSell;
+
         #endregion
 
         public UserBankAccountsDataContext(AViewModelLayer viewModelLayer) : base(viewModelLayer)
