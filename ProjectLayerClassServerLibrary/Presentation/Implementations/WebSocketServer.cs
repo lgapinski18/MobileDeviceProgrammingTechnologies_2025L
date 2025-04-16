@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using ProjectLayerClassServerLibrary.LogicLayer;
-using ProjectLayerClassServerLibrary.Presentation.Message;
 using System.Xml;
 using System.Security.Principal;
 using ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations;
@@ -122,14 +121,14 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                 case ComunicationCodeFromClient.AUTHENTICATE_ACCOUNT_OWNER_CODE:
                     //AAO - authethicate account owner, data: string login, string password
                     responseContent = ProcessAuthenthicateAccountOwner(GetData<Credentials>(messageContent), connection);
-                    serializer = new XmlSerializer(typeof(bool)); //////////
+                    serializer = new XmlSerializer(typeof(Success)); //////////
                     responseType = ComunicationCodeFromServer.AUTHENTICATE_ACCOUNT_OWNER_CODE;
                     break;
 
                 case ComunicationCodeFromClient.LOGOUT_ACCOUNT_OWNER_CODE:
                     //AAO - authethicate account owner, data: string login, string password
                     ProcessLogOutAccountOwner(connection);
-                    serializer = new XmlSerializer(typeof(bool)); //////////
+                    serializer = new XmlSerializer(typeof(Success)); //////////
                     responde = false;
                     break;
 
@@ -142,14 +141,14 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 
                 case ComunicationCodeFromClient.CREATE_BANK_ACCOUNT_CODE:
                     //_CBA - create bank account; Dane: int ownerId
-                    responseContent = ProcessCreateBankAccount(GetInt(messageContent));
+                    responseContent = ProcessCreateBankAccount(GetData<Identificator>(messageContent));
                     serializer = new XmlSerializer(typeof(BankAccountDto)); //////////
                     responseType = ComunicationCodeFromServer.CREATE_BANK_ACCOUNT_CODE;
                     break;
 
                 case ComunicationCodeFromClient.GET_ACCOUNT_OWNER_CODE:
                     //_GAO - get account owner; Dane: int ownerId
-                    responseContent = ProcessGetAccountOwner(GetInt(messageContent));
+                    responseContent = ProcessGetAccountOwner(GetData<Identificator>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     responseType = ComunicationCodeFromServer.GET_ACCOUNT_OWNER_CODE;
                     break;
@@ -163,14 +162,14 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 
                 case ComunicationCodeFromClient.GET_BANK_ACCOUNT_CODE:
                     //GBAN - get bank account; dane: "{accountNumber}"
-                    responseContent = ProcessGetBankAccountByNumber(GetData<string>(messageContent));
+                    responseContent = ProcessGetBankAccountByNumber(GetData<AccountNumberDto>(messageContent));
                     serializer = new XmlSerializer(typeof(BankAccountDto)); /////////
                     responseType = ComunicationCodeFromServer.GET_BANK_ACCOUNT_CODE;
                     break;
 
                 case ComunicationCodeFromClient.GET_BANK_ACCOUNTS_CODE:
                     //GBAS - get bank accounts for owner id; dane: int owner id;
-                    responseContent = ProcessGetBankAccounts(GetInt(messageContent));
+                    responseContent = ProcessGetBankAccounts(GetData<Identificator>(messageContent));
                     serializer = new XmlSerializer(typeof(List<BankAccountDto>)); ////////
                     responseType = ComunicationCodeFromServer.GET_BANK_ACCOUNTS_CODE;
                     break;
@@ -184,14 +183,14 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
 
                 case ComunicationCodeFromClient.GET_ACCOUNT_OWNER_LOGIN_CODE:
                     //GAOL - get account owner by login, data: string login
-                    responseContent = ProcessGetAccountOwnerByLogin(GetData<string>(messageContent));
+                    responseContent = ProcessGetAccountOwnerByLogin(GetData<LoginDto>(messageContent));
                     serializer = new XmlSerializer(typeof(AccountOwnerDto));
                     responseType = ComunicationCodeFromServer.GET_ACCOUNT_OWNER_LOGIN_CODE;
                     break;
 
                 case ComunicationCodeFromClient.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE:
                     //CFRU - check for reports updates, data: int ownerId
-                    responseContent = ProcessCheckForReportsUpdate(GetInt(messageContent));
+                    responseContent = ProcessCheckForReportsUpdate(GetData<Identificator>(messageContent));
                     serializer = new XmlSerializer(typeof(bool)); ///////
                     responseType = ComunicationCodeFromServer.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE;
                     break;
@@ -258,7 +257,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             return deserialized;
         }
 
-        private bool? ProcessAuthenthicateAccountOwner(Credentials? credentials, WebSocketConnection connection)
+        private Success? ProcessAuthenthicateAccountOwner(Credentials? credentials, WebSocketConnection connection)
         {
             if (credentials == null)
             {
@@ -269,7 +268,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             {
                 connection.LoggedOwnerId = logicLayer.GetAccountOwner(credentials.Login)?.GetId();
             }
-            return isLogged;
+            return new Success() { IsSuccess = isLogged.Value };
         }
 
         private void ProcessLogOutAccountOwner(WebSocketConnection connection)
@@ -292,7 +291,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                                                  out ALogicLayer.CreationAccountOwnerFlags creationAccountOwnerFlags);
 
             CreationAccountOwnerResponse response = new();
-            response.CreationFlags = (CreationAccountOwnerDataLayerFlags)(int)creationAccountOwnerFlags;
+            response.CreationFlags = (CreationAccountOwnerFlags)(int)creationAccountOwnerFlags;
             if (accountOwner != null)
             {
                 response.AccountOwner = new AccountOwnerDto() { 
@@ -337,13 +336,13 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                                 .ToList();
         }
 
-        private AccountOwnerDto? ProcessGetAccountOwner(int? ownerId)
+        private AccountOwnerDto? ProcessGetAccountOwner(Identificator? ownerId)
         {
             if (ownerId == null)
             {
                 return null;
             }
-            AAccountOwner? accountOwner = logicLayer.GetAccountOwner(ownerId.Value);
+            AAccountOwner? accountOwner = logicLayer.GetAccountOwner(ownerId.Id);
             if (accountOwner == null)
             {
                 return null;
@@ -358,13 +357,13 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             };
         }
 
-        private AccountOwnerDto? ProcessGetAccountOwnerByLogin(string? login)
+        private AccountOwnerDto? ProcessGetAccountOwnerByLogin(LoginDto? login)
         {
             if (login == null)
             {
                 return null;
             }
-            AAccountOwner? accountOwner = logicLayer.GetAccountOwner(login);
+            AAccountOwner? accountOwner = logicLayer.GetAccountOwner(login.Login);
             if (accountOwner == null)
             {
                 return null;
@@ -379,13 +378,13 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             };
         }
 
-        private BankAccountDto? ProcessCreateBankAccount(int? ownerId)
+        private BankAccountDto? ProcessCreateBankAccount(Identificator? ownerId)
         {
             if (ownerId == null)
             {
                 return null;
             }
-            ABankAccount? bankAccount = logicLayer.OpenNewBankAccount(ownerId.Value);
+            ABankAccount? bankAccount = logicLayer.OpenNewBankAccount(ownerId.Id);
             if (bankAccount == null)
             {
                 return null;
@@ -399,13 +398,13 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             };
         }
 
-        private List<BankAccountDto> ProcessGetBankAccounts(int? ownerId)
+        private List<BankAccountDto> ProcessGetBankAccounts(Identificator? ownerId)
         {
             if (ownerId == null)
             {
                 return null;
             }
-            return logicLayer.GetAccountOwnerBankAccounts(ownerId.Value)
+            return logicLayer.GetAccountOwnerBankAccounts(ownerId.Id)
                                 .Select(bankAccount => new BankAccountDto()
                                 {
                                     Id = bankAccount.GetId(),
@@ -416,13 +415,13 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                                 .ToList();
         }
 
-        private BankAccountDto? ProcessGetBankAccountByNumber(string? accountNumber)
+        private BankAccountDto? ProcessGetBankAccountByNumber(AccountNumberDto? accountNumber)
         {
             if (accountNumber == null)
             {
                 return null;
             }
-            ABankAccount? bankAccount = logicLayer.GetBankAccountByAccountNumber(accountNumber);
+            ABankAccount? bankAccount = logicLayer.GetBankAccountByAccountNumber(accountNumber.AccountNumber);
             if (bankAccount == null)
             {
                 return null;
@@ -436,13 +435,13 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
             };
         }
 
-        private bool? ProcessCheckForReportsUpdate(int? ownerId)
+        private bool? ProcessCheckForReportsUpdate(Identificator? ownerId)
         {
             if (ownerId == null)
             {
                 return null;
             }
-            return logicLayer.CheckForReportsUpdates(ownerId.Value);
+            return logicLayer.CheckForReportsUpdates(ownerId.Id);
         }
 
         private TransferResultCodes? ProcessTransfer(TransferData? transferData)

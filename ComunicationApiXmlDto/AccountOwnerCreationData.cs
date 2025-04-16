@@ -1,7 +1,9 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 
-namespace ProjectLayerClassServerLibrary.Presentation.Message
+namespace ComunicationApiXmlDto
 {
+    [Serializable]
     [XmlRoot("AccountOwnerCreationData")]
     public class AccountOwnerCreationData
     {

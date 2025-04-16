@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="TransferResultCodes" type="TransferResultCodes" />
+  <xs:simpleType name="TransferResultCodes">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="SUCCESS" />
+      <xs:enumeration value="OWNER_ACCOUNT_DOESNT_EXISTS" />
+      <xs:enumeration value="TARGET_BANK_ACCOUNT_DOESNT_EXISTS" />
+      <xs:enumeration value="INSUFICIENT_BANK_ACCOUNT_FUNDS" />
+      <xs:enumeration value="TIMEOUT" />
+      <xs:enumeration value="TRANSFER_HAS_BEEN_INTERUPTED" />
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

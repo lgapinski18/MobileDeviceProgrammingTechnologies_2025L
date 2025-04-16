@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 
-namespace ProjectLayerClassServerLibrary.Presentation.Message
+namespace ComunicationApiXmlDto
 {
     [XmlRoot("TransferData")]
     public class TransferData

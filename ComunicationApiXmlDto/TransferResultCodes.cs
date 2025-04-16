@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ProjectLayerClassServerLibrary.Presentation.Message
+namespace ComunicationApiXmlDto
 {
     public enum TransferResultCodes
     {
