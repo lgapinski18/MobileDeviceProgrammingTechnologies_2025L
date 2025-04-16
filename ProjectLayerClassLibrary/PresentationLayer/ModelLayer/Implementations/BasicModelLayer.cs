@@ -43,7 +43,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             {
                 if (value)
                 {
-                    currenciesOfInterest &= CurrenciesOfInterest.EURO;
+                    currenciesOfInterest |= CurrenciesOfInterest.EURO;
                 }
                 else
                 {
@@ -57,7 +57,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             {
                 if (value)
                 {
-                    currenciesOfInterest &= CurrenciesOfInterest.USD;
+                    currenciesOfInterest |= CurrenciesOfInterest.USD;
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             {
                 if (value)
                 {
-                    currenciesOfInterest &= CurrenciesOfInterest.GBP;
+                    currenciesOfInterest |= CurrenciesOfInterest.GBP;
                 }
                 else
                 {
@@ -85,7 +85,7 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ModelLayer.Implementations
             {
                 if (value)
                 {
-                    currenciesOfInterest &= CurrenciesOfInterest.CHF;
+                    currenciesOfInterest |= CurrenciesOfInterest.CHF;
                 }
                 else
                 {

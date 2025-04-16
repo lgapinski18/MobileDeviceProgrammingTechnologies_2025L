@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementations.DataContexts
@@ -32,26 +33,62 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         public ICommand LogoutCommand => logoutCommand;
         public ICommand OpenNewBankAccountCommand => openNewBankAccountCommand;
 
-        public bool IsEuroShowed { get => viewModelLayer.ModelLayer.IsEuroShowed; set => viewModelLayer.ModelLayer.IsEuroShowed = value; }
-        public bool IsUsdShowed { get => viewModelLayer.ModelLayer.IsUsdShowed; set => viewModelLayer.ModelLayer.IsUsdShowed = value; }
-        public bool IsGbpShowed { get => viewModelLayer.ModelLayer.IsGbpShowed; set => viewModelLayer.ModelLayer.IsGbpShowed = value; }
-        public bool IsChfShowed { get => viewModelLayer.ModelLayer.IsChfShowed; set => viewModelLayer.ModelLayer.IsChfShowed = value; }
+        public bool IsEuroFiltered { get => viewModelLayer.ModelLayer.IsEuroShowed; 
+            set
+            { 
+                viewModelLayer.ModelLayer.IsEuroShowed = value; 
+                OnPropertyChanged(nameof(IsEuroFiltered));
+                OnPropertyChanged(nameof(IsEuroShowed));
+            }
+        }
+        public bool IsUsdFiltered { get => viewModelLayer.ModelLayer.IsUsdShowed;
+            set
+            {
+                viewModelLayer.ModelLayer.IsUsdShowed = value;
+                OnPropertyChanged(nameof(IsUsdFiltered));
+                OnPropertyChanged(nameof(IsUsdShowed));
+            }
+        }
+        public bool IsGbpFiltered { get => viewModelLayer.ModelLayer.IsGbpShowed;
+            set
+            {
+                viewModelLayer.ModelLayer.IsGbpShowed = value;
+                OnPropertyChanged(nameof(IsGbpFiltered));
+                OnPropertyChanged(nameof(IsGbpShowed));
+            }
+        }
+        public bool IsChfFiltered { get => viewModelLayer.ModelLayer.IsChfShowed;
+            set
+            {
+                viewModelLayer.ModelLayer.IsChfShowed = value;
+                OnPropertyChanged(nameof(IsChfFiltered));
+                OnPropertyChanged(nameof(IsChfShowed));
+            }
+        }
 
-        public float EuroPurchase => viewModelLayer.ModelLayer.EuroPurchase;
+        public string EuroPurchase => viewModelLayer.ModelLayer.EuroPurchase > 0.001f ? $"{viewModelLayer.ModelLayer.EuroPurchase} PLN" : "-- PLN";
 
-        public float EuroSell => viewModelLayer.ModelLayer.EuroSell;
+        public string EuroSell => viewModelLayer.ModelLayer.EuroSell != 0.0f ? $"{viewModelLayer.ModelLayer.EuroSell} PLN" : "-- PLN";
+               
+        public string UsdPurchase => viewModelLayer.ModelLayer.UsdPurchase != 0.0f ? $"{viewModelLayer.ModelLayer.UsdPurchase} PLN" : "-- PLN";
+               
+        public string UsdSell => viewModelLayer.ModelLayer.UsdSell != 0.0f ? $"{viewModelLayer.ModelLayer.UsdSell} PLN" : "-- PLN";
+               
+        public string GbpPurchase => viewModelLayer.ModelLayer.GbpPurchase != 0.0f ? $"{viewModelLayer.ModelLayer.GbpPurchase} PLN" : "-- PLN";
+               
+        public string GbpSell => viewModelLayer.ModelLayer.GbpSell != 0.0f ? $"{viewModelLayer.ModelLayer.GbpSell} PLN" : "-- PLN";
+               
+        public string ChfPurchase => viewModelLayer.ModelLayer.ChfPurchase != 0.0f ? $"{viewModelLayer.ModelLayer.ChfPurchase} PLN" : "-- PLN";
+               
+        public string ChfSell => viewModelLayer.ModelLayer.ChfSell != 0.0f ? $"{viewModelLayer.ModelLayer.ChfSell} PLN" : "-- PLN";
 
-        public float UsdPurchase => viewModelLayer.ModelLayer.UsdPurchase;
+        public Visibility IsEuroShowed => IsEuroFiltered ? Visibility.Visible : Visibility.Hidden;
 
-        public float UsdSell => viewModelLayer.ModelLayer.UsdSell;
+        public Visibility IsUsdShowed => IsUsdFiltered ? Visibility.Visible : Visibility.Hidden;
 
-        public float GbpPurchase => viewModelLayer.ModelLayer.GbpPurchase;
+        public Visibility IsGbpShowed => IsGbpFiltered ? Visibility.Visible : Visibility.Hidden;
 
-        public float GbpSell => viewModelLayer.ModelLayer.GbpSell;
-
-        public float ChfPurchase => viewModelLayer.ModelLayer.ChfPurchase;
-
-        public float ChfSell => viewModelLayer.ModelLayer.ChfSell;
+        public Visibility IsChfShowed => IsChfFiltered ? Visibility.Visible : Visibility.Hidden;
 
         #endregion
 

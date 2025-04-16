@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://banksystem.com/xml"
+           xmlns="http://banksystem.com/xml">
+  <xs:element name="CreationAccountOwnerFlags" type="CreationAccountOwnerFlags" />
+  <xs:simpleType name="CreationAccountOwnerFlags">
+  	<xs:list>
+  	  <xs:simpleType>
+  	  	<xs:restriction base="xs:string">
+  	  	  <xs:enumeration value="EMPTY" />
+  	  	  <xs:enumeration value="SUCCESS" />
+  	  	  <xs:enumeration value="INCORRECT_NAME" />
+  	  	  <xs:enumeration value="INCORRECT_SURNAME" />
+  	  	  <xs:enumeration value="INCORRECT_EMAIL" />
+  	  	  <xs:enumeration value="INCORRECT_PASSWORD" />
+  	  	</xs:restriction>
+  	  </xs:simpleType>
+  	</xs:list>
+  </xs:simpleType>
+</xs:schema>

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
@@ -14,18 +15,22 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
         string UserSurname { get; }
         ICollection<IBankAccount> BankAccounts { get; }
         ICollection<string> ReportMessages { get; }
-        bool IsEuroShowed { get; set; }
-        bool IsUsdShowed { get; set; }
-        bool IsGbpShowed { get; set; }
-        bool IsChfShowed { get; set; }
-        float EuroPurchase { get; }
-        float EuroSell { get; }
-        float UsdPurchase { get; }
-        float UsdSell { get; }
-        float GbpPurchase { get; }
-        float GbpSell { get; }
-        float ChfPurchase { get; }
-        float ChfSell { get; }
+        bool IsEuroFiltered { get; set; }
+        bool IsUsdFiltered { get; set; }
+        bool IsGbpFiltered { get; set; }
+        bool IsChfFiltered { get; set; }
+        Visibility IsEuroShowed { get; }
+        Visibility IsUsdShowed { get; }
+        Visibility IsGbpShowed { get; }
+        Visibility IsChfShowed { get; }
+        string EuroPurchase { get; }
+        string EuroSell { get; }
+        string UsdPurchase { get; }
+        string UsdSell { get; }
+        string GbpPurchase { get; }
+        string GbpSell { get; }
+        string ChfPurchase { get; }
+        string ChfSell { get; }
 
         ICommand LogoutCommand { get; }
         ICommand OpenNewBankAccountCommand { get; }
