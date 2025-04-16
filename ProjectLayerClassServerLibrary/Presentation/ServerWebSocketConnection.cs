@@ -16,9 +16,9 @@ namespace ProjectLayerClassServerLibrary.Presentation
             webSocketServerLoop = Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
         }
     
-        protected override Task SendTask(byte[] header, string message)
+        protected override Task SendTask(byte[] header, byte[] message)
         {
-            return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. Encoding.UTF8.GetBytes(message)]), WebSocketMessageType.Binary, true, CancellationToken.None);
+            return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. message]), WebSocketMessageType.Binary, true, CancellationToken.None);
         }
 
         public override Task DisconnectAsync()

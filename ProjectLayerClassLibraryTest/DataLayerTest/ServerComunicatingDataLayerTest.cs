@@ -26,15 +26,19 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
             clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
+            ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.CreationAccountOwnerDataLayerFlags creationAccountOwnerFlagsServer = ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.CreationAccountOwnerDataLayerFlags.SUCCESS;
             AccountOwnerDto accountOwnerDto = new AccountOwnerDto();
             accountOwnerDto.Id = id;
             accountOwnerDto.Name = ownerName;
             accountOwnerDto.Login = ownerLogin;
             accountOwnerDto.Surname = ownerSurname; 
             accountOwnerDto.Email = ownerEmail;
-            serializer = new XmlSerializer(typeof(AccountOwnerDto));
+            CreationAccountOwnerResponse creationAccountOwnerResponse = new CreationAccountOwnerResponse();
+            creationAccountOwnerResponse.AccountOwner = accountOwnerDto;
+            creationAccountOwnerResponse.CreationFlags = creationAccountOwnerFlagsServer;
+            serializer = new XmlSerializer(typeof(CreationAccountOwnerResponse));
             StringWriter writer2 = new StringWriter();
-            serializer.Serialize(writer2, accountOwnerDto);
+            serializer.Serialize(writer2, creationAccountOwnerResponse);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
             serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 

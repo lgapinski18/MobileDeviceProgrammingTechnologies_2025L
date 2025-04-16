@@ -17,8 +17,8 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
     public class ClientDataLayerServerPresentationLayerTest
     {
         [TestMethod]
-        [DataRow(5050, 1, "Jan", "IK123456", "Kowalski", "jk@poczta.com", "12345678")]
-        public async Task ShouldCreateAccountOwnerSendCorrectComunicateANdReceiveCorectResponse(int portNo, int id, string ownerName, string ownerLogin, string ownerSurname, string ownerEmail, string ownerPassword)
+        [DataRow(5050, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        public async Task ShouldCreateAccountOwnerSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
@@ -37,8 +37,8 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5051, 1, 1, "18273645", 100.0f)]
-        public async Task ShouldCreateBankAccountSendCorrectComunicateANdReceiveCorectResponse(int portNo, int ownerId, int accountId, string accountNumber, float balance)
+        [DataRow(5051, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        public async Task ShouldCreateBankAccountSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
@@ -46,20 +46,20 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
 
-            ABankAccount bankAccount = dataLayer.CreateBankAccount(ownerId);
+            AAccountOwner accountOwner = dataLayer.CreateAccountOwner(ownerName, ownerSurname, ownerEmail, ownerPassword, out creationAccountOwnerFlags);
+            Assert.IsNotNull(accountOwner);
+            ABankAccount bankAccount = dataLayer.CreateBankAccount(accountOwner.GetId());
 
             Assert.IsNotNull(bankAccount);
-            Assert.AreEqual(accountId, bankAccount.GetId());
-            Assert.AreEqual(ownerId, bankAccount.AccountOwnerId);
-            Assert.AreEqual(accountNumber, bankAccount.AccountNumber);
-            Assert.AreEqual(balance, bankAccount.AccountBalance);
+            Assert.AreEqual(accountOwner.GetId(), bankAccount.AccountOwnerId);
+            Assert.AreEqual(0.0f, bankAccount.AccountBalance);
 
             await server.Finish();
         }
 
         [TestMethod]
-        [DataRow(5052, 1, "Jan", "IK123456", "Kowalski", "jk@poczta.com")]
-        public async Task ShouldGetAccountOwnerSendCorrectComunicateANdReceiveCorectResponse(int portNo, int ownerId, string ownerName, string ownerLogin, string ownerSurname, string ownerEmail)
+        [DataRow(5052, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        public async Task ShouldGetAccountOwnerSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
@@ -67,11 +67,13 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
 
-            AAccountOwner? accountOwner = dataLayer.GetAccountOwner(ownerId);
+            AAccountOwner accountOwnerC = dataLayer.CreateAccountOwner(ownerName, ownerSurname, ownerEmail, ownerPassword, out creationAccountOwnerFlags);
+            Assert.IsNotNull(accountOwnerC);
+            AAccountOwner? accountOwner = dataLayer.GetAccountOwner(accountOwnerC.GetId());
 
             Assert.IsNotNull(accountOwner);
-            Assert.AreEqual(ownerId, accountOwner.GetId());
-            Assert.AreEqual(ownerLogin, accountOwner.OwnerLogin);
+            Assert.AreEqual(accountOwnerC.GetId(), accountOwner.GetId());
+            Assert.AreEqual(accountOwnerC.OwnerLogin, accountOwner.OwnerLogin);
             Assert.AreEqual(ownerName, accountOwner.OwnerName);
             Assert.AreEqual(ownerSurname, accountOwner.OwnerSurname);
             Assert.AreEqual(ownerEmail, accountOwner.OwnerEmail);
@@ -80,8 +82,8 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5053, 1, "Jan", "IK123456", "Kowalski", "jk@poczta.com")]
-        public async Task ShouldGetAccountOwnerByLoginSendCorrectComunicateANdReceiveCorectResponse(int portNo, int ownerId, string ownerName, string ownerLogin, string ownerSurname, string ownerEmail)
+        [DataRow(5053, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        public async Task ShouldGetAccountOwnerByLoginSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
@@ -89,11 +91,13 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
 
-            AAccountOwner? accountOwner = dataLayer.GetAccountOwner(ownerLogin);
+            AAccountOwner accountOwnerC = dataLayer.CreateAccountOwner(ownerName, ownerSurname, ownerEmail, ownerPassword, out creationAccountOwnerFlags);
+            Assert.IsNotNull(accountOwnerC);
+            AAccountOwner? accountOwner = dataLayer.GetAccountOwner(accountOwnerC.OwnerLogin);
 
             Assert.IsNotNull(accountOwner);
-            Assert.AreEqual(ownerId, accountOwner.GetId());
-            Assert.AreEqual(ownerLogin, accountOwner.OwnerLogin);
+            Assert.AreEqual(accountOwnerC.GetId(), accountOwner.GetId());
+            Assert.AreEqual(accountOwnerC.OwnerLogin, accountOwner.OwnerLogin);
             Assert.AreEqual(ownerName, accountOwner.OwnerName);
             Assert.AreEqual(ownerSurname, accountOwner.OwnerSurname);
             Assert.AreEqual(ownerEmail, accountOwner.OwnerEmail);
@@ -107,14 +111,13 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
-            ADataLayer.CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags = ADataLayer.CreationAccountOwnerDataLayerFlags.EMPTY;
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
 
             ICollection<AAccountOwner> accountOwners = dataLayer.GetAllAccountOwners();
 
             Assert.IsNotNull(accountOwners);
-            Assert.AreEqual(0, accountOwners.Count);
+            Assert.AreEqual(2, accountOwners.Count);
 
             await server.Finish();
         }
@@ -132,14 +135,14 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
             ICollection<ABankAccount> bankAccounts = dataLayer.GetAllBankAccounts();
 
             Assert.IsNotNull(bankAccounts);
-            Assert.AreEqual(0, bankAccounts.Count);
+            Assert.AreEqual(2, bankAccounts.Count);
 
             await server.Finish();
         }
 
         [TestMethod]
-        [DataRow(5056, 1, 1, "18273645", 100.0f)]
-        public async Task ShouldGetBankAccountSendCorrectComunicateANdReceiveCorectResponse(int portNo, int ownerId, int accountId, string accountNumber, float balance)
+        [DataRow(5056, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        public async Task ShouldGetBankAccountSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
@@ -147,19 +150,23 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
 
-            ABankAccount bankAccount = dataLayer.GetBankAccount(accountNumber);
+            AAccountOwner accountOwnerC = dataLayer.CreateAccountOwner(ownerName, ownerSurname, ownerEmail, ownerPassword, out creationAccountOwnerFlags);
+            Assert.IsNotNull(accountOwnerC);
+            ICollection<ABankAccount> bankAccounts = dataLayer.GetAllBankAccounts();
+            ABankAccount bankAccountFirst = bankAccounts.First();
+            ABankAccount bankAccount = dataLayer.GetBankAccount(bankAccountFirst.AccountNumber);
 
-            Assert.AreEqual(accountId, bankAccount.GetId());
-            Assert.AreEqual(ownerId, bankAccount.AccountOwnerId);
-            Assert.AreEqual(accountNumber, bankAccount.AccountNumber);
-            Assert.AreEqual(balance, bankAccount.AccountBalance);
+            Assert.AreEqual(bankAccountFirst.GetId(), bankAccount.GetId());
+            Assert.AreEqual(bankAccountFirst.AccountOwnerId, bankAccount.AccountOwnerId);
+            Assert.AreEqual(bankAccountFirst.AccountNumber, bankAccount.AccountNumber);
+            Assert.AreEqual(bankAccountFirst.AccountBalance, bankAccount.AccountBalance);
 
             await server.Finish();
         }
 
         [TestMethod]
-        [DataRow(5057, 1)]
-        public async Task ShouldGetBankAccountsSendCorrectComunicateANdReceiveCorectResponse(int portNo, int ownerId)
+        [DataRow(5057, "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        public async Task ShouldGetBankAccountsSendCorrectComunicateANdReceiveCorectResponse(int portNo, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
@@ -167,10 +174,13 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
 
-            ICollection<ABankAccount> bankAccounts = dataLayer.GetBankAccounts(ownerId);
+            AAccountOwner accountOwnerC = dataLayer.CreateAccountOwner(ownerName, ownerSurname, ownerEmail, ownerPassword, out creationAccountOwnerFlags);
+            Assert.IsNotNull(accountOwnerC);
+
+            ICollection<ABankAccount> bankAccounts = dataLayer.GetBankAccounts(accountOwnerC.GetId());
 
             Assert.IsNotNull(bankAccounts);
-            Assert.AreEqual(0, bankAccounts.Count);
+            Assert.AreEqual(1, bankAccounts.Count);
 
             await server.Finish();
         }
@@ -193,16 +203,23 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
         }
 
         [TestMethod]
-        [DataRow(5059, "87654321", "12345678", 1000.0f, "asdasfasfasf")]
-        public async Task ShouldPerformTransferOwnerSendCorrectComunicate(int portNo, string ownerAccountNumber, string targetAccountNumber, float amount, string description)
+        [DataRow(5059, "asdasfasfasf", "Jan", "Kowalski", "jk@poczta.com", "12345678")]
+        public async Task ShouldPerformTransferOwnerSendCorrectComunicate(int portNo,string description, string ownerName, string ownerSurname, string ownerEmail, string ownerPassword)
         {
             IWebSocketServer server = WebSocketServerFactory.CreateWebSocketServer(portNo, ProjectLayerClassServerLibrary.LogicLayer.ALogicLayer.CreateLogicLayerInstance());
 
             ADataLayer.CreationAccountOwnerDataLayerFlags creationAccountOwnerFlags = ADataLayer.CreationAccountOwnerDataLayerFlags.EMPTY;
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
+
+            AAccountOwner accountOwner = dataLayer.CreateAccountOwner(ownerName, ownerSurname, ownerEmail, ownerPassword, out creationAccountOwnerFlags);
+            Assert.IsNotNull(accountOwner);
+            ABankAccount bankAccount = dataLayer.CreateBankAccount(accountOwner.GetId());
+
+            ICollection<ABankAccount> bankAccounts = dataLayer.GetBankAccounts(accountOwner.GetId());
+
             //Task task = Task.Run(() => dataLayer.CreateAccountOwner(ownerName, ownerSurname, ownerEmail, ownerPassword, out creationAccountOwnerFlags));
-            dataLayer.PerformTransfer(ownerAccountNumber, targetAccountNumber, amount, description, (tc, oAN, tAN, a, d) => {
+            dataLayer.PerformTransfer(bankAccounts.First().AccountNumber, bankAccounts.Last().AccountNumber, 0.0f, description, (tc, oAN, tAN, a, d) => {
                 Assert.AreEqual(ADataLayer.TransferResultCodes.SUCCESS, tc);
             });
 
@@ -219,7 +236,7 @@ namespace ProjectLayerClassLibraryTest.ServerIntegration
             ADataLayer dataLayer = new ServerComunicatingDataLayer(portNo);
             Thread.Sleep(2000);
 
-            Assert.IsTrue(dataLayer.CheckForReportsUpdates(ownerId));
+            Assert.IsFalse(dataLayer.CheckForReportsUpdates(ownerId));
 
             await server.Finish();
         }

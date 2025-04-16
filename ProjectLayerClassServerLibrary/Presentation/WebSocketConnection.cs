@@ -33,18 +33,19 @@ namespace ProjectLayerClassServerLibrary.Presentation
 
         public async Task SendAsync(ComunicationCodeFromServer messageType, int messageSequenceNo, int responseCode, string message)
         {
+            byte[] messagesBytes = Encoding.UTF8.GetBytes(message);
             Console.WriteLine($"Sending:\nMessageType: {messageType}, messageSequenceNo {messageSequenceNo}, responseCode: {responseCode}\n{message}");
             byte[] header = BitConverter.GetBytes((int)messageType)
                                         .Concat(BitConverter.GetBytes(messageSequenceNo))
                                         .Concat(BitConverter.GetBytes(responseCode))
-                                        .Concat(BitConverter.GetBytes(message.Length))
+                                        .Concat(BitConverter.GetBytes(messagesBytes.Length))
                                         .ToArray();
-            await SendTask(header, message);
+            await SendTask(header, messagesBytes);
         }
 
         public abstract Task DisconnectAsync();
 
-        protected abstract Task SendTask(byte[] header, string message);
+        protected abstract Task SendTask(byte[] header, byte[] message);
 
         public abstract int? LoggedOwnerId { get; set; }
     }

@@ -153,7 +153,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         {
             try
             {
-                byte[] buffer = new byte[4096];
+                byte[] buffer = new byte[8192];
                 while (true)
                 {
                     ArraySegment<byte> segment = new ArraySegment<byte>(buffer);
@@ -178,7 +178,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         count += result.Count;
                     }
                     //string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                    processReceivedData((byte[])buffer.Clone());
+                    processReceivedData((byte[])buffer.Clone(), count);
                 }
             }
             catch (Exception _ex)
@@ -188,7 +188,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
             }
         }
 
-        private void processReceivedData(byte[] data)
+        private void processReceivedData(byte[] data, int numberOfReceived)
         {
             //string respondType = Encoding.UTF8.GetString(data, 0, 4);
             ComunicationCodeFromServer respondType = (ComunicationCodeFromServer)BitConverter.ToInt32(data, 0);
@@ -277,7 +277,8 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
                         lock (getAllAccountOwnersResponseLock)
                         {
-                            getAllAccountOwnersReponses.Add(sequenceNo, ((List<AccountOwnerDto>)serializer.Deserialize(reader)).Select((aODto) => AAccountOwner.CreateAcountOwnerFromXml(aODto)).ToList());
+                            List<AccountOwnerDto> accountOwnerDtos = (List<AccountOwnerDto>)serializer.Deserialize(reader);
+                            getAllAccountOwnersReponses.Add(sequenceNo, accountOwnerDtos.Select((aODto) => AAccountOwner.CreateAcountOwnerFromXml(aODto)).ToList());
                         }
                         //Monitor.PulseAll(getAllAccountOwnersMonitorLock);
                         lock (getAllAccountOwnersMonitorLock)
