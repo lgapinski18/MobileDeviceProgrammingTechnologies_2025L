@@ -4,6 +4,7 @@
            targetNamespace="http://banksystem.com/xml">
 
   <xs:include schemaLocation="AccountOwnerDto.xsd"/>
+  <xs:include schemaLocation="CreationAccountOwnerFlags.xsd"/>
   <xs:element name="CreationAccountOwnerResponse" nillable="true" type="CreationAccountOwnerResponse" />
   <xs:complexType name="CreationAccountOwnerResponse">
     <xs:sequence>
@@ -11,18 +12,4 @@
       <xs:element minOccurs="0" maxOccurs="1" name="AccountOwner" type="AccountOwnerDto" />
     </xs:sequence>
   </xs:complexType>
-  <xs:simpleType name="CreationAccountOwnerFlags">
-    <xs:list>
-      <xs:simpleType>
-        <xs:restriction base="xs:string">
-          <xs:enumeration value="EMPTY" />
-          <xs:enumeration value="SUCCESS" />
-          <xs:enumeration value="INCORRECT_NAME" />
-          <xs:enumeration value="INCORRECT_SURNAME" />
-          <xs:enumeration value="INCORRECT_EMAIL" />
-          <xs:enumeration value="INCORRECT_PASSWORD" />
-        </xs:restriction>
-      </xs:simpleType>
-    </xs:list>
-  </xs:simpleType>
 </xs:schema>
