@@ -379,7 +379,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case ComunicationCodeFromServer.PERFORM_TRANSFER_CODE:
                         myLogger.Log($"TRANSFER");
-                        serializer = new XmlSerializer(typeof(TransferResultCodes));
+                        serializer = new XmlSerializer(typeof(ComunicationApiXmlDto.TransferResultCodes));
                         lock (performTransferResponseLock)
                         {
                             performTransferReponses.Add(sequenceNo, (ADataLayer.TransferResultCodes)serializer.Deserialize(reader));
