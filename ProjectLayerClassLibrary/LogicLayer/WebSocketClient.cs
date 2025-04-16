@@ -45,7 +45,7 @@ namespace ProjectLayerClassLibrary.LogicLayer
 
             protected override Task SendTask(string message)
             {
-                return m_ClientWebSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(message)), WebSocketMessageType.Text, true, CancellationToken.None); ;
+                return m_ClientWebSocket.SendAsync(new ArraySegment<byte>(Encoding.UTF8.GetBytes(message)), WebSocketMessageType.Binary, true, CancellationToken.None); ;
             }
 
             public override Task DisconnectAsync()

@@ -362,7 +362,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case ComunicationCodeFromServer.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE:
                         myLogger.Log($"CHECK_FOR_REPORTS_UPDATES");
-                        serializer = new XmlSerializer(typeof(bool));
+                        serializer = new XmlSerializer(typeof(Success));
                         lock (checkForReportsUpdatesResponseLock)
                         {
                             checkForReportsUpdatesReponses.Add(sequenceNo, ((Success?)serializer.Deserialize(reader)).IsSuccess);
@@ -487,7 +487,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -551,7 +551,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CREATE_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -607,7 +607,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -657,13 +657,13 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = getAccountOwnerLoginSequenceNoCounter++;
                 }
-                XmlSerializer serializer = new XmlSerializer(typeof(string));
+                XmlSerializer serializer = new XmlSerializer(typeof(LoginDto));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, ownerLogin);
+                serializer.Serialize(writer, new LoginDto() { Login = ownerLogin });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ACCOUNT_OWNER_LOGIN_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -716,7 +716,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = [];
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ALL_ACCOUNT_OWNERS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -769,7 +769,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = [];
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ALL_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -819,13 +819,13 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = getBankAccountSequenceNoCounter++;
                 }
-                XmlSerializer serializer = new XmlSerializer(typeof(string));
+                XmlSerializer serializer = new XmlSerializer(typeof(AccountNumberDto));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, accountNumber);
+                serializer.Serialize(writer, new AccountNumberDto() { AccountNumber = accountNumber });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -882,7 +882,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -1003,7 +1003,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.PERFORM_TRANSFER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {
@@ -1061,7 +1061,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
-                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Text, true, CancellationToken.None);
+                clientWebSocket.SendAsync(new ArraySegment<byte>(sendBuffer), WebSocketMessageType.Binary, true, CancellationToken.None);
 
                 while (true)
                 {

@@ -32,26 +32,26 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         public ICommand LogoutCommand => logoutCommand;
         public ICommand OpenNewBankAccountCommand => openNewBankAccountCommand;
 
-        public bool IsEuroShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool IsUsdShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool IsGbpShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
-        public bool IsChfShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsEuroShowed { get => viewModelLayer.ModelLayer.IsEuroShowed; set => viewModelLayer.ModelLayer.IsEuroShowed = value; }
+        public bool IsUsdShowed { get => viewModelLayer.ModelLayer.IsUsdShowed; set => viewModelLayer.ModelLayer.IsUsdShowed = value; }
+        public bool IsGbpShowed { get => viewModelLayer.ModelLayer.IsGbpShowed; set => viewModelLayer.ModelLayer.IsGbpShowed = value; }
+        public bool IsChfShowed { get => viewModelLayer.ModelLayer.IsChfShowed; set => viewModelLayer.ModelLayer.IsChfShowed = value; }
 
-        public float EuroPurchase => throw new NotImplementedException();
+        public float EuroPurchase => viewModelLayer.ModelLayer.EuroPurchase;
 
-        public float EuroSell => throw new NotImplementedException();
+        public float EuroSell => viewModelLayer.ModelLayer.EuroSell;
 
-        public float UsdPurchase => throw new NotImplementedException();
+        public float UsdPurchase => viewModelLayer.ModelLayer.UsdPurchase;
 
-        public float UsdSell => throw new NotImplementedException();
+        public float UsdSell => viewModelLayer.ModelLayer.UsdSell;
 
-        public float GbpPurchase => throw new NotImplementedException();
+        public float GbpPurchase => viewModelLayer.ModelLayer.GbpPurchase;
 
-        public float GbpSell => throw new NotImplementedException();
+        public float GbpSell => viewModelLayer.ModelLayer.GbpSell;
 
-        public float ChfPurchase => throw new NotImplementedException();
+        public float ChfPurchase => viewModelLayer.ModelLayer.ChfPurchase;
 
-        public float ChfSell => throw new NotImplementedException();
+        public float ChfSell => viewModelLayer.ModelLayer.ChfSell;
 
         #endregion
 
