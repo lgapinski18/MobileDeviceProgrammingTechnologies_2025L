@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ProjectLayerClassServerLibrary.Presentation
 {
-    public abstract class WebSocketConnection
+    public abstract class WebSocketConnection : IDisposable
     {
         public enum ComunicationCodeFromServer
         {
@@ -46,6 +46,8 @@ namespace ProjectLayerClassServerLibrary.Presentation
         public abstract Task DisconnectAsync();
 
         protected abstract Task SendTask(byte[] header, byte[] message);
+
+        public abstract void Dispose();
 
         public abstract int? LoggedOwnerId { get; set; }
     }

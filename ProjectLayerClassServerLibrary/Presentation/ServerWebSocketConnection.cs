@@ -15,7 +15,7 @@ namespace ProjectLayerClassServerLibrary.Presentation
             this.remoteEndPoint = remoteEndPoint;
             webSocketServerLoop = Task.Factory.StartNew(() => ServerMessageLoop(webSocket));
         }
-    
+
         protected override Task SendTask(byte[] header, byte[] message)
         {
             return webSocket.SendAsync(new ArraySegment<byte>([.. header, .. message]), WebSocketMessageType.Binary, true, CancellationToken.None);
@@ -73,6 +73,11 @@ namespace ProjectLayerClassServerLibrary.Presentation
                 Console.WriteLine($"Connection has been broken because of an exception {_ex}");
                 ws.CloseAsync(WebSocketCloseStatus.InternalServerError, "Connection has been broken because of an exception", CancellationToken.None).Wait();
             }
+        }
+
+        public override void Dispose()
+        {
+            onClose?.Invoke();
         }
     }
 }

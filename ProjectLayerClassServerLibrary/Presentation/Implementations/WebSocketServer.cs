@@ -55,8 +55,9 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
         public async Task Finish()
         {
             serverLoopTaskCts.Cancel();
-            foreach (WebSocketConnection wsc in connections)
+            foreach (WebSocketConnection wsc in connections.ToList())
             {
+                wsc.Dispose();
                 await wsc.DisconnectAsync();
             }
         }
@@ -92,11 +93,18 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
         {
             Console.WriteLine($"Connection: {connection}");
             connections.Add(connection);
-            BasicReportsUpdateModelLayerReporter observer = new BasicReportsUpdateModelLayerReporter(connection, logicLayer, () => { });
-            observer.Subscribe(logicLayer.ReportsUpdateLogicLayerTracker);
+
+            // Observatros
+            BasicReportsUpdateModelLayerReporter raportsObserver = new BasicReportsUpdateModelLayerReporter(connection, logicLayer, () => { });
+            raportsObserver.Subscribe(logicLayer.ReportsUpdateLogicLayerTracker);
+
+            BasicCurrenciesRatesChangeReporter currenciesObserver = new BasicCurrenciesRatesChangeReporter(connection, logicLayer, () => { });
+            currenciesObserver.Subscribe(logicLayer.CurrenciesRatesChangeTracker);
+
             connection.onClose = () => {
                 Console.WriteLine($"Closing connection: {connection}");
-                observer.Unsubscribe();
+                raportsObserver.Unsubscribe();
+                currenciesObserver.Unsubscribe();
                 connections.Remove(connection);
             };
             connection.onError = () => Console.WriteLine("Error happened");
