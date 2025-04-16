@@ -33,10 +33,11 @@ namespace ProjectLayerClassLibrary.LogicLayer
         [Flags]
         public enum CurrenciesOfInterest
         {
-            GBP = 0,
+            EMPTY = 0,
             EURO = 1,
             USD = 2,
             CHF = 4,
+            GBP = 8,
         }
 
         public abstract CurrenciesOfInterest CurrenciesOfInterestFilter { get; set; }
