@@ -9,5 +9,6 @@ namespace ProjectLayerClassServerLibrary.Presentation
     public interface IWebSocketServer
     {
         public bool IsRunning { get; }
+        public Task Finish();
     }
 }

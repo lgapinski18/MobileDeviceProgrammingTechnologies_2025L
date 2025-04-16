@@ -37,9 +37,13 @@ namespace ProjectLayerClassServerLibrary.DataLayer.Implementations
         {
 
             AAccountOwner accountOwner1 = new BasicAccountOwner(0, "IK123456", "Jan", "Kowalski", "jk@poczta.com", "12345678");
+            ABankAccount bankAccount1 = new BasicBankAccount(0, "12345678", accountOwner1);
             accountOwnerRepository.Save(accountOwner1);
+            bankAccountRepository.Save(bankAccount1);
             AAccountOwner accountOwner2 = new BasicAccountOwner(1, "IK111111", "Łukasz", "Gapiński", "lg@poczta.com", "12345678");
+            ABankAccount bankAccount2 = new BasicBankAccount(0, "87654321", accountOwner2);
             accountOwnerRepository.Save(accountOwner2);
+            bankAccountRepository.Save(bankAccount2);
             //AAccountOwner accountOwner1 = CreateAccountOwner("Jan", "Kowalski", "jk@poczta.com", "12345678");
             //AAccountOwner accountOwner2 = CreateAccountOwner("Łukasz", "Gapiński", "lg@poczta.com", "12345678");
             List<string> lines = new List<string>();

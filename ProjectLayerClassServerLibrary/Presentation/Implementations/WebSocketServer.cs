@@ -20,6 +20,8 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
     internal class WebSocketServer : IWebSocketServer
     {
         private Task serverLoopTask;
+        private CancellationTokenSource serverLoopTaskCts = new();
+        private CancellationToken serverLoopTaskCtsToken;
         private List<WebSocketConnection> connections = new();
         private ALogicLayer logicLayer;
 
@@ -46,17 +48,28 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
         {
             this.logicLayer = logicLayer;
             Uri _uri = new Uri($@"http://localhost:{portNo}/");
-            serverLoopTask = Task.Factory.StartNew(() => ServerLoop(_uri, OnConnection));
+            serverLoopTaskCtsToken = serverLoopTaskCts.Token;
+            serverLoopTask = Task.Factory.StartNew(() => ServerLoop(_uri, OnConnection), serverLoopTaskCtsToken);
         }
 
-        private static async Task ServerLoop(Uri uri, Action<WebSocketConnection> onConnection)
+        public async Task Finish()
+        {
+            serverLoopTaskCts.Cancel();
+            foreach (WebSocketConnection wsc in connections)
+            {
+                await wsc.DisconnectAsync();
+            }
+        }
+
+        private async Task ServerLoop(Uri uri, Action<WebSocketConnection> onConnection)
         {
             try
             {
                 HttpListener server = new HttpListener();
                 server.Prefixes.Add(uri.ToString());
                 server.Start();
-                while (true)
+                
+                while (!serverLoopTaskCtsToken.IsCancellationRequested)
                 {
                     HttpListenerContext httpContext = await server.GetContextAsync();
                     if (!httpContext.Request.IsWebSocketRequest)
