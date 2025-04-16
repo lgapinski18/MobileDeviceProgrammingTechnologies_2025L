@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
@@ -14,10 +15,14 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
         string UserSurname { get; }
         ICollection<IBankAccount> BankAccounts { get; }
         ICollection<string> ReportMessages { get; }
-        bool IsEuroShowed { get; set; }
-        bool IsUsdShowed { get; set; }
-        bool IsGbpShowed { get; set; }
-        bool IsChfShowed { get; set; }
+        bool IsEuroFiltered { get; set; }
+        bool IsUsdFiltered { get; set; }
+        bool IsGbpFiltered { get; set; }
+        bool IsChfFiltered { get; set; }
+        Visibility IsEuroShowed { get; }
+        Visibility IsUsdShowed { get; }
+        Visibility IsGbpShowed { get; }
+        Visibility IsChfShowed { get; }
         float EuroPurchase { get; }
         float EuroSell { get; }
         float UsdPurchase { get; }

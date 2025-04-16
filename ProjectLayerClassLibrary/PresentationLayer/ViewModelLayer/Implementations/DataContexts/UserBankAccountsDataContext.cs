@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Input;
 
 namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementations.DataContexts
@@ -32,10 +33,38 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         public ICommand LogoutCommand => logoutCommand;
         public ICommand OpenNewBankAccountCommand => openNewBankAccountCommand;
 
-        public bool IsEuroShowed { get => viewModelLayer.ModelLayer.IsEuroShowed; set => viewModelLayer.ModelLayer.IsEuroShowed = value; }
-        public bool IsUsdShowed { get => viewModelLayer.ModelLayer.IsUsdShowed; set => viewModelLayer.ModelLayer.IsUsdShowed = value; }
-        public bool IsGbpShowed { get => viewModelLayer.ModelLayer.IsGbpShowed; set => viewModelLayer.ModelLayer.IsGbpShowed = value; }
-        public bool IsChfShowed { get => viewModelLayer.ModelLayer.IsChfShowed; set => viewModelLayer.ModelLayer.IsChfShowed = value; }
+        public bool IsEuroFiltered { get => viewModelLayer.ModelLayer.IsEuroShowed; 
+            set
+            { 
+                viewModelLayer.ModelLayer.IsEuroShowed = value; 
+                OnPropertyChanged(nameof(IsEuroFiltered));
+                OnPropertyChanged(nameof(IsEuroShowed));
+            }
+        }
+        public bool IsUsdFiltered { get => viewModelLayer.ModelLayer.IsUsdShowed;
+            set
+            {
+                viewModelLayer.ModelLayer.IsUsdShowed = value;
+                OnPropertyChanged(nameof(IsUsdFiltered));
+                OnPropertyChanged(nameof(IsUsdShowed));
+            }
+        }
+        public bool IsGbpFiltered { get => viewModelLayer.ModelLayer.IsGbpShowed;
+            set
+            {
+                viewModelLayer.ModelLayer.IsGbpShowed = value;
+                OnPropertyChanged(nameof(IsGbpFiltered));
+                OnPropertyChanged(nameof(IsGbpShowed));
+            }
+        }
+        public bool IsChfFiltered { get => viewModelLayer.ModelLayer.IsChfShowed;
+            set
+            {
+                viewModelLayer.ModelLayer.IsChfShowed = value;
+                OnPropertyChanged(nameof(IsChfFiltered));
+                OnPropertyChanged(nameof(IsChfShowed));
+            }
+        }
 
         public float EuroPurchase => viewModelLayer.ModelLayer.EuroPurchase;
 
@@ -52,6 +81,14 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         public float ChfPurchase => viewModelLayer.ModelLayer.ChfPurchase;
 
         public float ChfSell => viewModelLayer.ModelLayer.ChfSell;
+
+        public Visibility IsEuroShowed => IsEuroFiltered ? Visibility.Visible : Visibility.Hidden;
+
+        public Visibility IsUsdShowed => IsUsdFiltered ? Visibility.Visible : Visibility.Hidden;
+
+        public Visibility IsGbpShowed => IsGbpFiltered ? Visibility.Visible : Visibility.Hidden;
+
+        public Visibility IsChfShowed => IsChfFiltered ? Visibility.Visible : Visibility.Hidden;
 
         #endregion
 
