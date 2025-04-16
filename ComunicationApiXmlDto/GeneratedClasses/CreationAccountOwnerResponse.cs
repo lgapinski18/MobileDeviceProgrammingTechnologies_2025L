@@ -48,30 +48,4 @@ namespace ComunicationApiXmlDto {
             }
         }
     }
-    
-    /// <remarks/>
-    [System.FlagsAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("xsd", "4.8.3928.0")]
-    [System.SerializableAttribute()]
-    [System.Xml.Serialization.XmlTypeAttribute(Namespace="http://banksystem.com/xml")]
-    public enum CreationAccountOwnerFlags {
-        
-        /// <remarks/>
-        EMPTY = 1,
-        
-        /// <remarks/>
-        SUCCESS = 2,
-        
-        /// <remarks/>
-        INCORRECT_NAME = 4,
-        
-        /// <remarks/>
-        INCORRECT_SURNAME = 8,
-        
-        /// <remarks/>
-        INCORRECT_EMAIL = 16,
-        
-        /// <remarks/>
-        INCORRECT_PASSWORD = 32,
-    }
 }
