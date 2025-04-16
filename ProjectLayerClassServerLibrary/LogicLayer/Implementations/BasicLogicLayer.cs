@@ -57,7 +57,6 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
                 change = (float)((random.NextDouble() * 0.2) - 0.1);
                 currenciesRates.ChfPurchaseRate += change;
                 currenciesRates.ChfSellRate += change;
-
                 currenciesRatesChangeTracker.TrackCurrenciesRatesChanged(currenciesRates);
             };
             currenciesRatesChangeTimer.Enabled = true;
