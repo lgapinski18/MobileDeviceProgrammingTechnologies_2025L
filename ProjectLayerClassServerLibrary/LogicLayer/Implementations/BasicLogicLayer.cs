@@ -30,13 +30,40 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
 
         public ADataLayer DataLayer { get { return dataLayer; } }
 
+        private ACurrenciesRates currenciesRates;
+        private Timer currenciesRatesChangeTimer;
         private ACurrenciesRatesChangeTracker currenciesRatesChangeTracker;
         public override ACurrenciesRatesChangeTracker CurrenciesRatesChangeTracker => currenciesRatesChangeTracker;
 
         public BasicLogicLayer(ADataLayer? dataLayer = default)
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
+
+            currenciesRates = new BasicCurrenciesRates(4.26f, 4.29f, 3.74f, 3.77f, 5.01f, 5.05f, 4.61f, 4.64f);
             currenciesRatesChangeTracker = new BasicCurrenciesRatesChangeTracker();
+            currenciesRatesChangeTimer = new Timer(new TimeSpan(0, 0, 30));
+            currenciesRatesChangeTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
+            {
+                Random random = new Random();
+                float change = (float)((random.NextDouble() * 0.2) - 0.1);
+                currenciesRates.EuroPurchaseRate += change;
+                currenciesRates.EuroSellRate += change;
+                change = (float)((random.NextDouble() * 0.2) - 0.1);
+                currenciesRates.UsdPurchaseRate += change;
+                currenciesRates.UsdSellRate += change;
+                change = (float)((random.NextDouble() * 0.2) - 0.1);
+                currenciesRates.GbpPurchaseRate += change;
+                currenciesRates.GbpSellRate += change;
+                change = (float)((random.NextDouble() * 0.2) - 0.1);
+                currenciesRates.ChfPurchaseRate += change;
+                currenciesRates.ChfSellRate += change;
+
+                currenciesRatesChangeTracker.TrackCurrenciesRatesChanged(currenciesRates);
+            };
+            currenciesRatesChangeTimer.Enabled = true;
+            currenciesRatesChangeTimer.AutoReset = true;
+            currenciesRatesChangeTimer.Start();
+
 
             bankAccountReportTimer = new Timer(new TimeSpan(0, 1, 0));
             bankAccountReportTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>
@@ -60,6 +87,8 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
         {
             bankAccountReportTimer.Stop();
             bankAccountReportTimer.Dispose();
+            currenciesRatesChangeTimer.Stop();
+            currenciesRatesChangeTimer.Dispose();
         }
 
         public override bool AuthenticateAccountOwner(string login, string password)
