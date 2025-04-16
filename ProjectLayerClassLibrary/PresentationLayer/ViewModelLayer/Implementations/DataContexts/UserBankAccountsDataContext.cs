@@ -32,6 +32,27 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
         public ICommand LogoutCommand => logoutCommand;
         public ICommand OpenNewBankAccountCommand => openNewBankAccountCommand;
 
+        public bool IsEuroShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsUsdShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsGbpShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public bool IsChfShowed { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+
+        public float EuroPurchase => throw new NotImplementedException();
+
+        public float EuroSell => throw new NotImplementedException();
+
+        public float UsdPurchase => throw new NotImplementedException();
+
+        public float UsdSell => throw new NotImplementedException();
+
+        public float GbpPurchase => throw new NotImplementedException();
+
+        public float GbpSell => throw new NotImplementedException();
+
+        public float ChfPurchase => throw new NotImplementedException();
+
+        public float ChfSell => throw new NotImplementedException();
+
         #endregion
 
         public UserBankAccountsDataContext(AViewModelLayer viewModelLayer) : base(viewModelLayer)

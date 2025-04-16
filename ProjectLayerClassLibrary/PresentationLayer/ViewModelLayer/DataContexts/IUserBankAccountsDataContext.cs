@@ -14,6 +14,18 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
         string UserSurname { get; }
         ICollection<IBankAccount> BankAccounts { get; }
         ICollection<string> ReportMessages { get; }
+        bool IsEuroShowed { get; set; }
+        bool IsUsdShowed { get; set; }
+        bool IsGbpShowed { get; set; }
+        bool IsChfShowed { get; set; }
+        float EuroPurchase { get; }
+        float EuroSell { get; }
+        float UsdPurchase { get; }
+        float UsdSell { get; }
+        float GbpPurchase { get; }
+        float GbpSell { get; }
+        float ChfPurchase { get; }
+        float ChfSell { get; }
 
         ICommand LogoutCommand { get; }
         ICommand OpenNewBankAccountCommand { get; }

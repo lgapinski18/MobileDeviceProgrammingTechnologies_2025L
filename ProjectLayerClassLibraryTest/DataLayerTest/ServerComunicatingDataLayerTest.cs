@@ -26,7 +26,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
             clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
-            ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.CreationAccountOwnerDataLayerFlags creationAccountOwnerFlagsServer = ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.CreationAccountOwnerDataLayerFlags.SUCCESS;
+            CreationAccountOwnerFlags creationAccountOwnerFlagsServer = CreationAccountOwnerFlags.SUCCESS;
             AccountOwnerDto accountOwnerDto = new AccountOwnerDto();
             accountOwnerDto.Id = id;
             accountOwnerDto.Name = ownerName;
