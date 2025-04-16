@@ -1,6 +1,6 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Additionals;
+﻿using ComunicationApiXmlDto;
+using ProjectLayerClassLibrary.DataLayer.Additionals;
 using ProjectLayerClassLibrary.DataLayer.Exceptions;
-using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
 using System.IO;
 using System.Net.WebSockets;
 using System.Runtime.CompilerServices;
@@ -209,7 +209,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         serializer = new XmlSerializer(typeof(CreationAccountOwnerResponse));
                         lock (createAccountOwnerResponseLock)
                         {
-                            createAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml(((CreationAccountOwnerResponse?)serializer.Deserialize(reader)).AccountOwner));
+                            createAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml(((CreationAccountOwnerResponse?)serializer.Deserialize(reader))?.AccountOwner));
                         }
                         //Monitor.PulseAll(createAccountOwnerMonitorLock);
                         lock (createAccountOwnerMonitorLock)
@@ -345,7 +345,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         serializer = new XmlSerializer(typeof(bool));
                         lock (authenticateAccountOwnerResponseLock)
                         {
-                            authenticateAccountOwnerReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
+                            authenticateAccountOwnerReponses.Add(sequenceNo, ((Success?)serializer.Deserialize(reader)).IsSuccess);
                         }
                         //Monitor.PulseAll(authenticateAccountOwnerMonitorLock);
                         myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER \nChecking Lock");
@@ -364,7 +364,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         serializer = new XmlSerializer(typeof(bool));
                         lock (checkForReportsUpdatesResponseLock)
                         {
-                            checkForReportsUpdatesReponses.Add(sequenceNo, (bool)serializer.Deserialize(reader));
+                            checkForReportsUpdatesReponses.Add(sequenceNo, ((Success?)serializer.Deserialize(reader)).IsSuccess);
                         }
                         //Monitor.PulseAll(checkForReportsUpdatesMonitorLock);
                         lock (checkForReportsUpdatesMonitorLock)
@@ -378,7 +378,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case ComunicationCodeFromServer.PERFORM_TRANSFER_CODE:
                         myLogger.Log($"TRANSFER");
-                        serializer = new XmlSerializer(typeof(ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.TransferResultCodes));
+                        serializer = new XmlSerializer(typeof(TransferResultCodes));
                         lock (performTransferResponseLock)
                         {
                             performTransferReponses.Add(sequenceNo, (ADataLayer.TransferResultCodes)serializer.Deserialize(reader));
@@ -411,36 +411,41 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case ComunicationCodeFromServer.REACTIVE_BROADCAST_TO_FILTER_CURRENCY_UPDATE_CODE:
                         myLogger.Log($"BANK_ACCOUNTS_UPDATES");
-                        serializer = new XmlSerializer(typeof(int));
+                        serializer = new XmlSerializer(typeof(CurrenciesPurchaseSellRateDto));
                         Task.Factory.StartNew(() =>
                         {
+                            CurrenciesPurchaseSellRateDto? currencies = (CurrenciesPurchaseSellRateDto?)serializer.Deserialize(reader);
+                            if (currencies == null)
+                            {
+                                return;
+                            }
                             lock (euroRateUpdateLock)
                             {
-                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.EURO) == CurrenciesOfInterest.EURO)
+                                if ((CurrenciesOfInterestFilter & CurrenciesOfInterest.EURO) == CurrenciesOfInterest.EURO)
                                 {
-
+                                    EuroRatesUpdateEvent?.Invoke(new SimpleCurrencyRateOfPurchaseAndSell(currencies.PurchaseEuro, currencies.SellEuro));
                                 }
                             }
 
                             lock (usdRateUpdateLock)
                             {
-                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.USD) == CurrenciesOfInterest.USD)
+                                if ((CurrenciesOfInterestFilter & CurrenciesOfInterest.USD) == CurrenciesOfInterest.USD)
                                 {
-
+                                    UsdRatesUpdateEvent?.Invoke(new SimpleCurrencyRateOfPurchaseAndSell(currencies.PurchaseUsd, currencies.SellUsd));
                                 }
                             }
                             lock (gbpRateUpdateLock)
                             {
-                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.GBP) == CurrenciesOfInterest.GBP)
+                                if ((CurrenciesOfInterestFilter & CurrenciesOfInterest.GBP) == CurrenciesOfInterest.GBP)
                                 {
-
+                                    GbpRatesUpdateEvent?.Invoke(new SimpleCurrencyRateOfPurchaseAndSell(currencies.PurchaseGbp, currencies.SellGbp));
                                 }
                             }
                             lock (chfRateUpdateLock)
                             {
-                                if ((CurrenciesOfInterestFilter | CurrenciesOfInterest.CHF) == CurrenciesOfInterest.CHF)
+                                if ((CurrenciesOfInterestFilter & CurrenciesOfInterest.CHF) == CurrenciesOfInterest.CHF)
                                 {
-
+                                    ChfRatesUpdateEvent?.Invoke(new SimpleCurrencyRateOfPurchaseAndSell(currencies.PurchaseChf, currencies.SellChf));
                                 }
                             }
                         });
@@ -539,9 +544,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = createBankAccountSequenceNoCounter++;
                 }
-                XmlSerializer serializer = new XmlSerializer(typeof(int));
+                XmlSerializer serializer = new XmlSerializer(typeof(Identificator));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, ownerId);
+                serializer.Serialize(writer, new Identificator() { Id = ownerId });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CREATE_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
@@ -595,9 +600,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = getAccountOwnerSequenceNoCounter++;
                 }
-                XmlSerializer serializer = new XmlSerializer(typeof(int));
+                XmlSerializer serializer = new XmlSerializer(typeof(Identificator));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, ownerId);
+                serializer.Serialize(writer, new Identificator() { Id = ownerId });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
@@ -870,9 +875,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     sequenceNo = getBankAccountsSequenceNoCounter++;
                 }
 
-                XmlSerializer serializer = new XmlSerializer(typeof(int));
+                XmlSerializer serializer = new XmlSerializer(typeof(Identificator));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, ownerId);
+                serializer.Serialize(writer, new Identificator() { Id = ownerId });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.GET_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();
@@ -1049,9 +1054,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     sequenceNo = checkForReportsUpdatesSequenceNoCounter++;
                 }
-                XmlSerializer serializer = new XmlSerializer(typeof(int));
+                XmlSerializer serializer = new XmlSerializer(typeof(Identificator));
                 StringWriter writer = new StringWriter();
-                serializer.Serialize(writer, ownerId);
+                serializer.Serialize(writer, new Identificator() { Id = ownerId });
                 byte[] sendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
                 byte[] header = BitConverter.GetBytes((int)ComunicationCodeFromClient.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE).Concat(BitConverter.GetBytes(sequenceNo)).Concat(BitConverter.GetBytes(sendBuffer.Length)).ToArray();
                 sendBuffer = header.Concat(sendBuffer).ToArray();

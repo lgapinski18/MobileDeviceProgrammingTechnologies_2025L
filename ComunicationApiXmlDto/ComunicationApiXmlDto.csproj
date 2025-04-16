@@ -4,6 +4,20 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+	<RootNamespace>ComunicationApiXmlDto</RootNamespace>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="GeneratedClasses\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="xmlSchema\LoginDto.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Update="xmlSchema\AccountNumberDto.xsd">
+      <SubType>Designer</SubType>
+    </None>
+  </ItemGroup>
 
 </Project>

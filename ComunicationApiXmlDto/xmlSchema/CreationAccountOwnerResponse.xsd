@@ -1,5 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns="http://banksystem.com/xml"
+           targetNamespace="http://banksystem.com/xml">
+
+  <xs:include schemaLocation="AccountOwnerDto.xsd"/>
   <xs:element name="CreationAccountOwnerResponse" nillable="true" type="CreationAccountOwnerResponse" />
   <xs:complexType name="CreationAccountOwnerResponse">
     <xs:sequence>
@@ -21,13 +25,4 @@
       </xs:simpleType>
     </xs:list>
   </xs:simpleType>
-  <xs:complexType name="AccountOwnerDto">
-    <xs:sequence>
-      <xs:element minOccurs="1" maxOccurs="1" name="Id" type="xs:int" />
-      <xs:element minOccurs="0" maxOccurs="1" name="Login" type="xs:string" />
-      <xs:element minOccurs="0" maxOccurs="1" name="Name" type="xs:string" />
-      <xs:element minOccurs="0" maxOccurs="1" name="Surname" type="xs:string" />
-      <xs:element minOccurs="0" maxOccurs="1" name="Email" type="xs:string" />
-    </xs:sequence>
-  </xs:complexType>
 </xs:schema>

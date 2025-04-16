@@ -1,4 +1,4 @@
-﻿using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
+﻿using ComunicationApiXmlDto;
 using System;
 using System.Collections.Generic;
 using System.Linq;

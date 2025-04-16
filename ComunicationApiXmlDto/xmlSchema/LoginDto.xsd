@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://banksystem.com/xml"
+           xmlns="http://banksystem.com/xml">
 	<xs:element name="LoginDto" nillable="true" type="LoginDto" />
 	<xs:complexType name="LoginDto">
 		<xs:sequence>

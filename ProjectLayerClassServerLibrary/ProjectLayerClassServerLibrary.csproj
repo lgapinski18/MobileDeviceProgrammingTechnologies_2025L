@@ -13,4 +13,8 @@
     <None Remove="PresentationLayer\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ComunicationApiXmlDto\ComunicationApiXmlDto.csproj" />
+  </ItemGroup>
+
 </Project>

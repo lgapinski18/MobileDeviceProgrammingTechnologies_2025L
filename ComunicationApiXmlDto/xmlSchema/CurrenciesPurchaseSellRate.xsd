@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://banksystem.com/xml"
+           xmlns="http://banksystem.com/xml">
+  <xs:element name="CurrenciesPurchaseSellRate" nillable="true" type="CurrenciesPurchaseSellRateDto" />
+  <xs:complexType name="CurrenciesPurchaseSellRateDto">
+    <xs:sequence>
+      <xs:element minOccurs="1" maxOccurs="1" name="PurchaseEuro" type="xs:float" />
+      <xs:element minOccurs="1" maxOccurs="1" name="SellEuro" type="xs:float" />
+		<xs:element minOccurs="1" maxOccurs="1" name="PurchaseUsd" type="xs:float" />
+		<xs:element minOccurs="1" maxOccurs="1" name="SellUsd" type="xs:float" />
+		<xs:element minOccurs="1" maxOccurs="1" name="PurchaseGbp" type="xs:float" />
+		<xs:element minOccurs="1" maxOccurs="1" name="SellGbp" type="xs:float" />
+		<xs:element minOccurs="1" maxOccurs="1" name="PurchaseChf" type="xs:float" />
+		<xs:element minOccurs="1" maxOccurs="1" name="SellChf" type="xs:float" />
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

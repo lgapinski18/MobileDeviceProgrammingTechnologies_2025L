@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://banksystem.com/xml"
+           xmlns="http://banksystem.com/xml">
   <xs:element name="TransferData" nillable="true" type="TransferData" />
   <xs:complexType name="TransferData">
     <xs:sequence>

@@ -1,5 +1,5 @@
-﻿using ProjectLayerClassLibrary.DataLayer.Implementations;
-using ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures;
+﻿using ComunicationApiXmlDto;
+using ProjectLayerClassLibrary.DataLayer.Implementations;
 using System;
 using System.Collections.Generic;
 using System.Linq;
