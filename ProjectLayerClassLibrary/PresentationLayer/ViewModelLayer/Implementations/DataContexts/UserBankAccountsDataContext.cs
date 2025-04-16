@@ -66,21 +66,21 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
             }
         }
 
-        public float EuroPurchase => viewModelLayer.ModelLayer.EuroPurchase;
+        public string EuroPurchase => viewModelLayer.ModelLayer.EuroPurchase > 0.001f ? $"{viewModelLayer.ModelLayer.EuroPurchase} PLN" : "-- PLN";
 
-        public float EuroSell => viewModelLayer.ModelLayer.EuroSell;
-
-        public float UsdPurchase => viewModelLayer.ModelLayer.UsdPurchase;
-
-        public float UsdSell => viewModelLayer.ModelLayer.UsdSell;
-
-        public float GbpPurchase => viewModelLayer.ModelLayer.GbpPurchase;
-
-        public float GbpSell => viewModelLayer.ModelLayer.GbpSell;
-
-        public float ChfPurchase => viewModelLayer.ModelLayer.ChfPurchase;
-
-        public float ChfSell => viewModelLayer.ModelLayer.ChfSell;
+        public string EuroSell => viewModelLayer.ModelLayer.EuroSell != 0.0f ? $"{viewModelLayer.ModelLayer.EuroSell} PLN" : "-- PLN";
+               
+        public string UsdPurchase => viewModelLayer.ModelLayer.UsdPurchase != 0.0f ? $"{viewModelLayer.ModelLayer.UsdPurchase} PLN" : "-- PLN";
+               
+        public string UsdSell => viewModelLayer.ModelLayer.UsdSell != 0.0f ? $"{viewModelLayer.ModelLayer.UsdSell} PLN" : "-- PLN";
+               
+        public string GbpPurchase => viewModelLayer.ModelLayer.GbpPurchase != 0.0f ? $"{viewModelLayer.ModelLayer.GbpPurchase} PLN" : "-- PLN";
+               
+        public string GbpSell => viewModelLayer.ModelLayer.GbpSell != 0.0f ? $"{viewModelLayer.ModelLayer.GbpSell} PLN" : "-- PLN";
+               
+        public string ChfPurchase => viewModelLayer.ModelLayer.ChfPurchase != 0.0f ? $"{viewModelLayer.ModelLayer.ChfPurchase} PLN" : "-- PLN";
+               
+        public string ChfSell => viewModelLayer.ModelLayer.ChfSell != 0.0f ? $"{viewModelLayer.ModelLayer.ChfSell} PLN" : "-- PLN";
 
         public Visibility IsEuroShowed => IsEuroFiltered ? Visibility.Visible : Visibility.Hidden;
 

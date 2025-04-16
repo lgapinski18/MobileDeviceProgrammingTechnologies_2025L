@@ -58,48 +58,40 @@
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="EURO Purchase: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding EuroPurchase, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="EURO Sell: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding EuroSell, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Visibility="{Binding IsUsdShowed}" Orientation="Vertical">
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="USD Purchase: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding UsdPurchase, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="USD Sell: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding UsdSell, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Visibility="{Binding IsGbpShowed}" Orientation="Vertical">
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="GBP Purchase: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding GbpPurchase, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="GBP Sell: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding GbpSell, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                 </StackPanel>
                 <StackPanel Visibility="{Binding IsChfShowed}" Orientation="Vertical">
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="CHF Purchase: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding ChfPurchase, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Left" Orientation="Horizontal">
                         <Label Content="CHF Sell: "/>
                         <TextBlock HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="2.5, 0, 0, 0" Text="{Binding ChfSell, Mode=OneWay}" FontWeight="Bold"/>
-                        <Label Margin="2.5, 0, 0, 0" Content="PLN" VerticalAlignment="Center" FontWeight="Bold"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>

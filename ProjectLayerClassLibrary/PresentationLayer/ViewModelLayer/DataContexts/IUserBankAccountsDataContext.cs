@@ -23,14 +23,14 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.DataContexts
         Visibility IsUsdShowed { get; }
         Visibility IsGbpShowed { get; }
         Visibility IsChfShowed { get; }
-        float EuroPurchase { get; }
-        float EuroSell { get; }
-        float UsdPurchase { get; }
-        float UsdSell { get; }
-        float GbpPurchase { get; }
-        float GbpSell { get; }
-        float ChfPurchase { get; }
-        float ChfSell { get; }
+        string EuroPurchase { get; }
+        string EuroSell { get; }
+        string UsdPurchase { get; }
+        string UsdSell { get; }
+        string GbpPurchase { get; }
+        string GbpSell { get; }
+        string ChfPurchase { get; }
+        string ChfSell { get; }
 
         ICommand LogoutCommand { get; }
         ICommand OpenNewBankAccountCommand { get; }
