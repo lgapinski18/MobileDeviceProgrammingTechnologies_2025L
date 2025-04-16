@@ -103,13 +103,47 @@ namespace ProjectLayerClassLibrary.PresentationLayer.ViewModelLayer.Implementati
 
         private void ViewModelLayer_PropertyChanged(object? sender, System.ComponentModel.PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == nameof(BankAccounts))
+            switch (e.PropertyName)
             {
-                OnPropertyChanged(nameof(BankAccounts));
-            }
-            else if (e.PropertyName == nameof(ReportMessages))
-            {
-                OnPropertyChanged(nameof(ReportMessages));
+                case nameof(BankAccounts):
+                    OnPropertyChanged(nameof(BankAccounts));
+                    break;
+
+                case nameof(ReportMessages):
+                    OnPropertyChanged(nameof(ReportMessages));
+                    break;
+
+                case nameof(EuroPurchase):
+                    OnPropertyChanged(nameof(EuroPurchase));
+                    break;
+
+                case nameof(EuroSell):
+                    OnPropertyChanged(nameof(EuroSell));
+                    break;
+
+                case nameof(UsdPurchase):
+                    OnPropertyChanged(nameof(UsdPurchase));
+                    break;
+
+                case nameof(UsdSell):
+                    OnPropertyChanged(nameof(UsdSell));
+                    break;
+
+                case nameof(GbpPurchase):
+                    OnPropertyChanged(nameof(GbpPurchase));
+                    break;
+
+                case nameof(GbpSell):
+                    OnPropertyChanged(nameof(GbpSell));
+                    break;
+
+                case nameof(ChfPurchase):
+                    OnPropertyChanged(nameof(ChfPurchase));
+                    break;
+
+                case nameof(ChfSell):
+                    OnPropertyChanged(nameof(ChfSell));
+                    break;
             }
         }
 

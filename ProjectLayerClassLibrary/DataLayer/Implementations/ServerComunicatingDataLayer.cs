@@ -191,7 +191,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                         count += result.Count;
                     }
                     //string _message = Encoding.UTF8.GetString(buffer, 0, count);
-                    processReceivedData((byte[])buffer.Clone(), count);
+                    Task.Factory.StartNew(() => processReceivedData((byte[])buffer.Clone(), count));
                 }
             }
             catch (Exception _ex)
@@ -426,9 +426,9 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                     case ComunicationCodeFromServer.REACTIVE_BROADCAST_TO_FILTER_CURRENCY_UPDATE_CODE:
                         myLogger.Log($"BANK_ACCOUNTS_UPDATES");
                         serializer = new XmlSerializer(typeof(CurrenciesPurchaseSellRateDto));
+                        CurrenciesPurchaseSellRateDto? currencies = (CurrenciesPurchaseSellRateDto?)serializer.Deserialize(reader);
                         Task.Factory.StartNew(() =>
                         {
-                            CurrenciesPurchaseSellRateDto? currencies = (CurrenciesPurchaseSellRateDto?)serializer.Deserialize(reader);
                             if (currencies == null)
                             {
                                 return;
