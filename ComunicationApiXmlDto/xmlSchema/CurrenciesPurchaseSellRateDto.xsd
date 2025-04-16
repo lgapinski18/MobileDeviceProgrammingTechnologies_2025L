@@ -2,7 +2,7 @@
 <xs:schema elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="http://banksystem.com/xml"
            xmlns="http://banksystem.com/xml">
-  <xs:element name="CurrenciesPurchaseSellRate" nillable="true" type="CurrenciesPurchaseSellRateDto" />
+  <xs:element name="CurrenciesPurchaseSellRateDto" nillable="true" type="CurrenciesPurchaseSellRateDto" />
   <xs:complexType name="CurrenciesPurchaseSellRateDto">
     <xs:sequence>
       <xs:element minOccurs="1" maxOccurs="1" name="PurchaseEuro" type="xs:float" />

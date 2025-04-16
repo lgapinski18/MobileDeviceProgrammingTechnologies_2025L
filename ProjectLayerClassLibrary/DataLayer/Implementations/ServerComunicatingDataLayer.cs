@@ -31,8 +31,21 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
         private object gbpRateUpdateLock = new();
         private object chfRateUpdateLock = new();
 
+        private object currenciesOfInterestFilterLock = new();
         private CurrenciesOfInterest currenciesOfInterestFilter = (CurrenciesOfInterest)0;
-        public override CurrenciesOfInterest CurrenciesOfInterestFilter { get => currenciesOfInterestFilter; set => currenciesOfInterestFilter = value; }
+        public override CurrenciesOfInterest CurrenciesOfInterestFilter { get {
+                lock (currenciesOfInterestFilterLock)
+                {
+                    return currenciesOfInterestFilter;
+                }
+            }
+            set {
+                lock (currenciesOfInterestFilterLock)
+                {
+                    currenciesOfInterestFilter = value;
+                }
+            } 
+        }
 
         internal enum ComunicationCodeFromClient
         {

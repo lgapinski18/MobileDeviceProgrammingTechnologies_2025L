@@ -8,10 +8,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="GeneratedClasses\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="xmlSchema\LoginDto.xsd">
       <SubType>Designer</SubType>
     </None>

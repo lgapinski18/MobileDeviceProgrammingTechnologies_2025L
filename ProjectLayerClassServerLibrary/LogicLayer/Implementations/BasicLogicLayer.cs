@@ -30,9 +30,13 @@ namespace ProjectLayerClassServerLibrary.LogicLayer.Implementations
 
         public ADataLayer DataLayer { get { return dataLayer; } }
 
+        private ACurrenciesRatesChangeTracker currenciesRatesChangeTracker;
+        public override ACurrenciesRatesChangeTracker CurrenciesRatesChangeTracker => currenciesRatesChangeTracker;
+
         public BasicLogicLayer(ADataLayer? dataLayer = default)
         {
             this.dataLayer = dataLayer ?? ADataLayer.CreateDataLayerInstance();
+            currenciesRatesChangeTracker = new BasicCurrenciesRatesChangeTracker();
 
             bankAccountReportTimer = new Timer(new TimeSpan(0, 1, 0));
             bankAccountReportTimer.Elapsed += (Object? source, ElapsedEventArgs e) =>

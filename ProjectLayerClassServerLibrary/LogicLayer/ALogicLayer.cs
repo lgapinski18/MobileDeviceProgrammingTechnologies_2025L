@@ -30,6 +30,8 @@ namespace ProjectLayerClassServerLibrary.LogicLayer
             INCORRECT_PASSWORD = 32
         }
 
+        public abstract ACurrenciesRatesChangeTracker CurrenciesRatesChangeTracker { get; }
+
         public abstract AReportsUpdateLogicLayerTracker  ReportsUpdateLogicLayerTracker { get; }
 
         public delegate void TransferCallback(TransferCodes transferResult, string ownerAccountNumber, string targetAccountNumber, float amount, string description);
@@ -53,5 +55,7 @@ namespace ProjectLayerClassServerLibrary.LogicLayer
         public abstract TransferCodes PerformTransfer(string ownerAccountNumber, string targetAccountNumber, float amount, string description);
 
         public abstract bool CheckForReportsUpdates(int ownerId);
+
+
     }
 }
