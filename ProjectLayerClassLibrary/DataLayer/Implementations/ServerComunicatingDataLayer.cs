@@ -343,7 +343,7 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
 
                     case ComunicationCodeFromServer.AUTHENTICATE_ACCOUNT_OWNER_CODE:
                         myLogger.Log($"AUTHENTICATE_ACCOUNT_OWNER");
-                        serializer = new XmlSerializer(typeof(bool));
+                        serializer = new XmlSerializer(typeof(Success));
                         lock (authenticateAccountOwnerResponseLock)
                         {
                             authenticateAccountOwnerReponses.Add(sequenceNo, ((Success?)serializer.Deserialize(reader)).IsSuccess);
