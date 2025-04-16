@@ -149,7 +149,7 @@ namespace ProjectLayerClassServerLibrary.Presentation.Implementations
                 case ComunicationCodeFromClient.CREATE_ACCOUNT_OWNER_CODE:
                     //_CAO - create account owner; Dane: "{ownerName};{ownerSurname};{ownerEmail};{ownerPassword}"
                     responseContent = ProcessCreateAccountOwner(GetData<AccountOwnerCreationData>(messageContent));
-                    serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                    serializer = new XmlSerializer(typeof(CreationAccountOwnerResponse));
                     responseType = ComunicationCodeFromServer.CREATE_ACCOUNT_OWNER_CODE;
                     break;
 

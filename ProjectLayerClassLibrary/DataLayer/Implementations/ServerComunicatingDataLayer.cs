@@ -206,10 +206,10 @@ namespace ProjectLayerClassLibrary.DataLayer.Implementations
                 {
                     case ComunicationCodeFromServer.CREATE_ACCOUNT_OWNER_CODE:
                         myLogger.Log($"CREATE_ACCOUNT_OWNER");
-                        serializer = new XmlSerializer(typeof(AccountOwnerDto));
+                        serializer = new XmlSerializer(typeof(CreationAccountOwnerResponse));
                         lock (createAccountOwnerResponseLock)
                         {
-                            createAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml((AccountOwnerDto?)serializer.Deserialize(reader)));
+                            createAccountOwnerReponses.Add(sequenceNo, AAccountOwner.CreateAcountOwnerFromXml(((CreationAccountOwnerResponse?)serializer.Deserialize(reader)).AccountOwner));
                         }
                         //Monitor.PulseAll(createAccountOwnerMonitorLock);
                         lock (createAccountOwnerMonitorLock)
