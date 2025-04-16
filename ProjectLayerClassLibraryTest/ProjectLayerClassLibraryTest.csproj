@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\ProjectLayerClassLibrary\ProjectLayerClassLibrary.csproj" />
+    <ProjectReference Include="..\ProjectLayerClassServerLibrary\ProjectLayerClassServerLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>

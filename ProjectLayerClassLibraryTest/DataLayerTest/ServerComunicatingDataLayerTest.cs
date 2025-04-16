@@ -24,7 +24,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, accountOwnerCreationData);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("_CAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             AccountOwnerDto accountOwnerDto = new AccountOwnerDto();
             accountOwnerDto.Id = id;
@@ -36,7 +36,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, accountOwnerDto);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("_CAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.CREATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -79,7 +79,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, ownerId);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            byte[] header = Encoding.ASCII.GetBytes("_CBA").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).ToArray();
+            byte[] header = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.CREATE_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).ToArray();
             clientSendBuffer = header.Concat(clientSendBuffer).ToArray();
 
             BankAccountDto bankAccountDto = new BankAccountDto();
@@ -91,7 +91,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, bankAccountDto);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("_CBA").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.CREATE_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -133,7 +133,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, ownerId);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("_GAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             AccountOwnerDto accountOwnerDto = new AccountOwnerDto();
             accountOwnerDto.Id = ownerId;
@@ -145,7 +145,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, accountOwnerDto);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("_GAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.GET_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -188,7 +188,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, ownerLogin);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("GAOL").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_ACCOUNT_OWNER_LOGIN_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             AccountOwnerDto accountOwnerDto = new AccountOwnerDto();
             accountOwnerDto.Id = ownerId;
@@ -200,7 +200,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, accountOwnerDto);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("GAOL").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.GET_ACCOUNT_OWNER_LOGIN_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -240,14 +240,14 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         public async Task ShouldGetAllAccountOwnersSendCorrectComunicateANdReceiveCorectResponse(int portNo)
         {
             byte[] clientSendBuffer = [];
-            clientSendBuffer = Encoding.ASCII.GetBytes("GAAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_ALL_ACCOUNT_OWNERS_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             List<AccountOwnerDto> accountOwnerDtos = new List<AccountOwnerDto>();
             XmlSerializer serializer = new XmlSerializer(typeof(List<AccountOwnerDto>));
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, accountOwnerDtos);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("GAAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.GET_ALL_ACCOUNT_OWNERS_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -283,14 +283,14 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
         public async Task ShouldGetAllBankAccountsSendCorrectComunicateANdReceiveCorectResponse(int portNo)
         {
             byte[] clientSendBuffer = [];
-            clientSendBuffer = Encoding.ASCII.GetBytes("GABA").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_ALL_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             List<BankAccountDto> bankAccountDtos = new List<BankAccountDto>();
             XmlSerializer serializer = new XmlSerializer(typeof(List<BankAccountDto>));
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, bankAccountDtos);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("GABA").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.GET_ALL_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -330,7 +330,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, accountNumber);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("GBAN").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             BankAccountDto bankAccountDto = new BankAccountDto();
             bankAccountDto.Id = accountId;
@@ -341,7 +341,7 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, bankAccountDto);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("GBAN").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.GET_BANK_ACCOUNT_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -383,14 +383,14 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, ownerId);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("GBAS").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.GET_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             List<BankAccountDto> bankAccountDtos = new List<BankAccountDto>();
             serializer = new XmlSerializer(typeof(List<BankAccountDto>));
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, bankAccountDtos);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("GBAS").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.GET_BANK_ACCOUNTS_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -430,13 +430,13 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, credentials);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("_AAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.AUTHENTICATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             serializer = new XmlSerializer(typeof(bool));
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, true);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("_AAO").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.AUTHENTICATE_ACCOUNT_OWNER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -481,13 +481,13 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, transferData);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("___T").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.PERFORM_TRANSFER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             serializer = new XmlSerializer(typeof(ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.TransferResultCodes));
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, ProjectLayerClassLibrary.DataLayer.XmlSerializationStructures.TransferResultCodes.SUCCESS);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("___T").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.PERFORM_TRANSFER_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
@@ -526,13 +526,13 @@ namespace ProjectLayerClassLibraryTest.DataLayerTest
             StringWriter writer = new StringWriter();
             serializer.Serialize(writer, ownerId);
             byte[] clientSendBuffer = Encoding.UTF8.GetBytes(writer.ToString());
-            clientSendBuffer = Encoding.ASCII.GetBytes("CFRU").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
+            clientSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromClient.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(clientSendBuffer.Length)).Concat(clientSendBuffer).ToArray();
 
             serializer = new XmlSerializer(typeof(bool));
             StringWriter writer2 = new StringWriter();
             serializer.Serialize(writer2, true);
             byte[] serverSendBuffer = Encoding.UTF8.GetBytes(writer2.ToString());
-            serverSendBuffer = Encoding.ASCII.GetBytes("CFRU").Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
+            serverSendBuffer = BitConverter.GetBytes((int)ServerComunicatingDataLayer.ComunicationCodeFromServer.CHECK_FOR_BANK_ACCOUNT_REPORTS_UPDATE_CODE).Concat(BitConverter.GetBytes(0)).Concat(BitConverter.GetBytes(1)).Concat(BitConverter.GetBytes(serverSendBuffer.Length)).Concat(serverSendBuffer).ToArray();
 
             byte[] recievedByServerBytes = [];
             int recievedByServerCount = 0;
